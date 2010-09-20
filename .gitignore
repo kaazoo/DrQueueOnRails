@@ -1,0 +1,7 @@
+*.patch
+db/schema.rb
+db/*.db
+db/*.sqlite3
+config/environment.rb
+log/*
+
