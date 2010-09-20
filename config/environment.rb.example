@@ -34,6 +34,9 @@ ENV['USER_ADMIN_PW'] ||= "changeme"
 # suffix for user's temp dir (use "id" for number, "ldap_account" for user's account name)
 ENV['USER_TMP_DIR'] ||= "id"
 
+# CloudControl support
+ENV['CLOUDCONTROL'] ||= "false"
+
 # text for login dialog
 ENV['LOG_SHOW_USER'] ||= "account name"
 ENV['LOG_SHOW_PW'] ||= "password"

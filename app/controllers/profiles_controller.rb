@@ -5,6 +5,9 @@ class ProfilesController < ApplicationController
   # for drqueue
   require 'drqueue'
 
+  # for hash computation
+  require 'MD5'
+
   # for disk usage output
   include ActionView::Helpers::NumberHelper
 
@@ -37,10 +40,13 @@ class ProfilesController < ApplicationController
     else
       @profile = Profile.find(params[:id])
       
-      if (ENV['USER_TMP_DIR'] != "ldap_account")
-        userdir = ENV["DRQUEUE_TMP"]+"/"+profile.id.to_s
-      else
-        userdir = ENV["DRQUEUE_TMP"]+"/"+profile.ldap_account.to_s
+      if ENV['USER_TMP_DIR'] == "id"
+        userdir = ENV['DRQUEUE_TMP']+"/"+@profile.id.to_s
+      elsif ENV['USER_TMP_DIR'] == "ldap_account"
+        userdir = ENV['DRQUEUE_TMP']+"/"+@profile.ldap_account.to_s
+      elsif ENV['CLOUDCONTROL'] == "true"
+        user_hash = MD5.md5(@profile.ldap_account)
+        userdir = ENV['DRQUEUE_TMP']+"/"+user_hash.to_s
       end
 
       # calculate quota usage (in GB)
@@ -147,17 +153,20 @@ class ProfilesController < ApplicationController
       end
       
       # delete userdir
-      if (ENV['USER_TMP_DIR'] != "ldap_account")
-        userdir = ENV["DRQUEUE_TMP"]+"/"+profile.id.to_s
-      else
-        userdir = ENV["DRQUEUE_TMP"]+"/"+profile.ldap_account.to_s
+      if ENV['USER_TMP_DIR'] == "id"
+        userdir = ENV['DRQUEUE_TMP']+"/"+@profile.id.to_s
+      elsif ENV['USER_TMP_DIR'] == "ldap_account"
+        userdir = ENV['DRQUEUE_TMP']+"/"+@profile.ldap_account.to_s
+      elsif ENV['CLOUDCONTROL'] == "true"
+        user_hash = MD5.md5(@profile.ldap_account)
+        userdir = ENV['DRQUEUE_TMP']+"/"+user_hash.to_s
       end
-      
+
       if File.exist? userdir
         puts `rm -rf #{userdir}`
       end
     end
-    
+
     # delete profile
     Profile.find(params[:id]).destroy
     

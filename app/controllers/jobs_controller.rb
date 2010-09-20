@@ -5,6 +5,9 @@ class JobsController < ApplicationController
   # for drqueue
   require 'drqueue'
 
+  # for hash computation
+  require 'MD5'
+
   # for generating job scripts
   require_dependency 'jobscript_generators'
 
@@ -144,12 +147,15 @@ ENV['WEB_PROTO']+"://")
 
     # check disk usage of user
     profile = Profile.find(session[:profile].id)  
-    if (ENV['USER_TMP_DIR'] != "ldap_account")
-      userdir = ENV["DRQUEUE_TMP"]+"/"+profile.id.to_s
-    else
-      userdir = ENV["DRQUEUE_TMP"]+"/"+profile.ldap_account.to_s
+    if ENV['USER_TMP_DIR'] == "id"
+      userdir = ENV['DRQUEUE_TMP']+"/"+profile.id.to_s
+    elsif ENV['USER_TMP_DIR'] == "ldap_account"
+      userdir = ENV['DRQUEUE_TMP']+"/"+profile.ldap_account.to_s
+    elsif ENV['CLOUDCONTROL'] == "true"
+      user_hash = MD5.md5(profile.ldap_account)
+      userdir = ENV['DRQUEUE_TMP']+"/"+user_hash.to_s
     end
-    
+
     if File.directory?(userdir) 
       # calculate quota usage (in GB)
 
@@ -278,11 +284,15 @@ ENV['WEB_PROTO']+"://")
     end
     
     # create user directory
-    if (ENV['USER_TMP_DIR'] != "ldap_account")
-      userdir = ENV["DRQUEUE_TMP"]+"/"+profile.id.to_s
-    else
-      userdir = ENV["DRQUEUE_TMP"]+"/"+profile.ldap_account.to_s
+    if ENV['USER_TMP_DIR'] == "id"
+      userdir = ENV['DRQUEUE_TMP']+"/"+profile.id.to_s
+    elsif ENV['USER_TMP_DIR'] == "ldap_account"
+      userdir = ENV['DRQUEUE_TMP']+"/"+profile.ldap_account.to_s
+    elsif ENV['CLOUDCONTROL'] == "true"
+      user_hash = MD5.md5(profile.ldap_account)
+      userdir = ENV['DRQUEUE_TMP']+"/"+user_hash.to_s
     end
+
     if File.directory?(userdir)
       File.makedirs(userdir)
     end
@@ -1085,18 +1095,23 @@ ENV['WEB_PROTO']+"://")
       if File.exist? renderpath
         #exit_status = system("/bin/rm -rf "+renderpath)
         #puts `rm -rf #{renderpath}`
-        if (ENV['USER_TMP_DIR'] != "ldap_account")
-          userdir = ENV["DRQUEUE_TMP"]+"/"+profile.id.to_s
-        else
-          userdir = ENV["DRQUEUE_TMP"]+"/"+profile.ldap_account.to_s
+
+        if ENV['USER_TMP_DIR'] == "id"
+          userdir = ENV['DRQUEUE_TMP']+"/"+profile.id.to_s
+        elsif ENV['USER_TMP_DIR'] == "ldap_account"
+          userdir = ENV['DRQUEUE_TMP']+"/"+profile.ldap_account.to_s
+        elsif ENV['CLOUDCONTROL'] == "true"
+          user_hash = MD5.md5(profile.ldap_account)
+          userdir = ENV['DRQUEUE_TMP']+"/"+user_hash.to_s
         end
+
         FileUtils.cd(userdir)
         FileUtils.remove_dir(renderpath, true) 
       end
       # delete in db
       job_db.destroy
     end
-    
+
     # delete in master
     job.request_delete(Drqueue::CLIENT)
     
