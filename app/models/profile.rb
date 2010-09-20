@@ -53,7 +53,9 @@ class Profile < ActiveRecord::Base
         # give user the lowest status
         myprofile.status = "admin"
         myprofile.name = "Admin Account"
-        myprofile.email = "admin@"+ENV['DRQUEUE_MASTER']
+        # user ldap treebase as domain name
+        ldap_domain = ENV['LDAP_TREEBASE'].gsub("dc=","").gsub(" ","").split(",")
+        myprofile.email = "admin@"+ldap_domain[0]+"."+ldap_domain[1]
         # save profile
         myprofile.save
         return myprofile
