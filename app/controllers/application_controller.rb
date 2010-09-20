@@ -5,9 +5,6 @@ class ApplicationController < ActionController::Base
   # By default, don't log passwords.
   # Comment out the following line to help diagnose authentication issues.
   filter_parameter_logging "password"
-
-  # Pick a unique cookie name to distinguish our session data from others'
-  session :session_key => '_DrQueueOnRails_session_id'
   
   # authentification
   before_filter :authenticate, :except => [:login_form, :login, :feed]
