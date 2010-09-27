@@ -9,13 +9,21 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 5) do
+ActiveRecord::Schema.define(:version => 20100926194508) do
 
   create_table "jobs", :force => true do |t|
     t.integer "queue_id"
     t.string  "renderer"
     t.string  "sort"
     t.integer "profile_id"
+  end
+
+  create_table "payments", :force => true do |t|
+    t.integer  "profile_id"
+    t.date     "paid_on"
+    t.decimal  "amount"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "profiles", :force => true do |t|
@@ -25,6 +33,17 @@ ActiveRecord::Schema.define(:version => 5) do
     t.string  "ldap_account"
     t.string  "status"
     t.integer "accepted",     :default => 0
+  end
+
+  create_table "rendersessions", :force => true do |t|
+    t.integer  "num_slaves"
+    t.integer  "run_time"
+    t.integer  "payment_id"
+    t.integer  "time_passed",     :default => 0
+    t.decimal  "costs"
+    t.integer  "start_timestamp", :default => 0
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "sessions", :force => true do |t|

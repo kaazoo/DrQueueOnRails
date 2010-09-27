@@ -4,6 +4,7 @@ class Profile < ActiveRecord::Base
   require 'net/ldap'
   
   has_many :jobs
+  has_many :payments
   
   @@per_page = 10
 
