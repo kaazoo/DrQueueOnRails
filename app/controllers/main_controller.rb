@@ -248,7 +248,28 @@ class MainController < ApplicationController
     end
   
   end
-  
+
+
+  # cloudcontrol page
+  def cloudcontrol
+    # only admins are allowed to use cloudcontrol
+    if session[:profile].status != 'admin'
+      redirect_to :action => 'index' and return
+    else
+      # fetch all running sessions
+      @rendersessions = Rendersession.find(:all)
+
+      # fetch all unconnected payments
+      all_payments = Payment.find(:all)
+      @payments = []
+      all_payments.each do |pm|
+        puts pm.id
+        if Rendersession.find_by_payment_id(pm.id) == nil
+          @payments << pm
+        end
+      end
+    end
+  end
   
   
 end
