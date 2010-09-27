@@ -1,0 +1,2 @@
+module RendersessionsHelper
+end

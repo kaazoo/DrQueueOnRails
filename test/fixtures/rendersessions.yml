@@ -1,0 +1,19 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  num_slaves: 1
+  run_time: 1
+  payment_id: 1
+  time_passed: 1
+  costs: 9.99
+  start_timestamp: 1
+  profile_id: 1
+
+two:
+  num_slaves: 1
+  run_time: 1
+  payment_id: 1
+  time_passed: 1
+  costs: 9.99
+  start_timestamp: 1
+  profile_id: 1

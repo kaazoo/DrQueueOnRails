@@ -1,0 +1,76 @@
+<h2>Manage rendersessions</h2>
+
+Current rendersessions:
+<br /><br />
+
+<table border="1" style="border-width:1px; border-style:solid; border-color:black;">
+  <tr>
+  <th>User</th>
+  <th>Number of slaves</th>
+  <th>Run-time</th>
+  <th>Costs</th>
+  <th>Started at</th>
+  <th>Time passed</th>
+  <th> </th>
+  </tr>
+
+<%
+i = 0
+for rs in @rendersessions
+  payment = Payment.find(rs.payment_id)
+  profile = Profile.find(payment.profile_id)
+%>
+  <tr>
+  <td><%= profile.name %></td>
+  <td><%= rs.num_slaves %></td>
+  <td><%= rs.run_time %></td>
+  <td><%= rs.costs %></td>
+  <td><%= rs.start_timestamp %></td>
+  <td><%= rs.time_passed %></td>
+  <td><%= link_to 'Edit', edit_rendersession_path(rs) %> <%= link_to 'Destroy', rs, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% 
+  i += 1
+end
+%>
+</table>
+
+<br />
+<%= link_to 'New rendersession', new_rendersession_path %>
+
+
+<br /><br /><br />
+
+<h2>Manage payments</h2>
+
+Unconnected payments:
+<br /><br />
+
+<table border="1" style="border-width:1px; border-style:solid; border-color:black;">
+  <tr>
+  <th>User</th>
+  <th>Amount</th>
+  <th>Paid on</th>
+  <th> </th>
+  </tr>
+
+<%
+i = 0
+for pm in @payments
+  profile = Profile.find(pm.profile_id)
+%>
+  <tr>
+  <td><%= profile.name %></td>
+  <td><%= pm.amount %></td>
+  <td><%= pm.paid_on %></td>
+  <td><%= link_to 'Edit', edit_payment_path(pm) %> <%= link_to 'Destroy', pm, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% 
+  i += 1
+end
+%>
+</table>
+
+<br />
+<%= link_to 'New payment', new_payment_path %>
+

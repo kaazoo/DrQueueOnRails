@@ -1,0 +1,35 @@
+<h1>New rendersession</h1>
+
+<% form_for(@rendersession) do |f| %>
+  <%= f.error_messages %>
+
+  <p>
+    <%= f.label :num_slaves %><br />
+    <%= f.text_field :num_slaves %>
+  </p>
+  <p>
+    <%= f.label :run_time %><br />
+    <%= f.text_field :run_time %>
+  </p>
+  <p>
+    <%= f.label :payment_id %><br />
+    <%= select ("rendersession", "payment_id", @payments.map {|p| [p.paid_on.to_s+" - "+p.amount.to_s,p.id]}) %>
+  </p>
+  <p>
+    <%= f.label :time_passed %><br />
+    <%= f.text_field :time_passed %>
+  </p>
+  <p>
+    <%= f.label :costs %><br />
+    <%= f.text_field :costs %>
+  </p>
+  <p>
+    <%= f.label :start_timestamp %><br />
+    <%= f.text_field :start_timestamp %>
+  </p>
+  <p>
+    <%= f.submit 'Create' %>
+  </p>
+<% end %>
+
+<%= link_to 'Back', {:controller => 'main', :action => 'cloudcontrol'} %>
