@@ -1,0 +1,18 @@
+<p>
+  <b>Profile:</b>
+  <%=h @payment.profile_id %>
+</p>
+
+<p>
+  <b>Paid on:</b>
+  <%=h @payment.paid_on %>
+</p>
+
+<p>
+  <b>Amount:</b>
+  <%=h @payment.amount %>
+</p>
+
+
+<%= link_to 'Edit', edit_payment_path(@payment) %> |
+<%= link_to 'Back', payments_path %>

@@ -1,0 +1,11 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  profile_id: 1
+  paid_on: 2010-09-26
+  amount: 9.99
+
+two:
+  profile_id: 1
+  paid_on: 2010-09-26
+  amount: 9.99
