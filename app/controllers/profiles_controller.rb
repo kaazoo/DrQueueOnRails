@@ -6,7 +6,7 @@ class ProfilesController < ApplicationController
   require 'drqueue'
 
   # for hash computation
-  require 'MD5'
+  require 'digest/md5'
 
   # for disk usage output
   include ActionView::Helpers::NumberHelper
@@ -45,7 +45,7 @@ class ProfilesController < ApplicationController
       elsif ENV['USER_TMP_DIR'] == "ldap_account"
         userdir = ENV['DRQUEUE_TMP']+"/"+@profile.ldap_account.to_s
       elsif ENV['CLOUDCONTROL'] == "true"
-        user_hash = MD5.md5(@profile.ldap_account)
+        user_hash = Digest::MD5.hexdigest(@profile.ldap_account)
         userdir = ENV['DRQUEUE_TMP']+"/"+user_hash.to_s
       end
 
@@ -158,7 +158,7 @@ class ProfilesController < ApplicationController
       elsif ENV['USER_TMP_DIR'] == "ldap_account"
         userdir = ENV['DRQUEUE_TMP']+"/"+@profile.ldap_account.to_s
       elsif ENV['CLOUDCONTROL'] == "true"
-        user_hash = MD5.md5(@profile.ldap_account)
+        user_hash = Digest::MD5.hexdigest(@profile.ldap_account)
         userdir = ENV['DRQUEUE_TMP']+"/"+user_hash.to_s
       end
 
