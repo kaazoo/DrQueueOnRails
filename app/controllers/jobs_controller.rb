@@ -285,11 +285,11 @@ ENV['WEB_PROTO']+"://")
     
     # create user directory
     if ENV['USER_TMP_DIR'] == "id"
-      userdir = ENV['DRQUEUE_TMP']+"/"+profile.id.to_s
+      userdir = ENV['DRQUEUE_TMP']+"/"+session[:profile].id.to_s
     elsif ENV['USER_TMP_DIR'] == "ldap_account"
-      userdir = ENV['DRQUEUE_TMP']+"/"+profile.ldap_account.to_s
+      userdir = ENV['DRQUEUE_TMP']+"/"+session[:profile].ldap_account.to_s
     elsif ENV['CLOUDCONTROL'] == "true"
-      user_hash = Digest::MD5.hexdigest(profile.ldap_account)
+      user_hash = Digest::MD5.hexdigest(session[:profile].ldap_account)
       userdir = ENV['DRQUEUE_TMP']+"/"+user_hash.to_s
     end
 
