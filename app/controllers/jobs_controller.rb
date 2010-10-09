@@ -379,7 +379,12 @@ ENV['WEB_PROTO']+"://")
       #@jobm.koji.general.scriptdir = jobdir
     
       # add job to specific pool
-      @jobm.limits.pool="blender" 
+      if ENV['CLOUDCONTROL'] == "true"
+        user_hash = Digest::MD5.hexdigest(profile.ldap_account)
+        @jobm.limits.pool=user_hash+"_blender"
+      else
+        @jobm.limits.pool="blender"
+      end
     
       # create job script
       if params[:job][:sort] == "animation"
