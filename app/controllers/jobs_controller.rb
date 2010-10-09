@@ -283,13 +283,15 @@ ENV['WEB_PROTO']+"://")
       @jobm.flags = @jobm.flags | 2
     end
     
+    # user hash
+    user_hash = Digest::MD5.hexdigest(session[:profile].ldap_account)
+
     # create user directory
     if ENV['USER_TMP_DIR'] == "id"
       userdir = ENV['DRQUEUE_TMP']+"/"+session[:profile].id.to_s
     elsif ENV['USER_TMP_DIR'] == "ldap_account"
       userdir = ENV['DRQUEUE_TMP']+"/"+session[:profile].ldap_account.to_s
     elsif ENV['CLOUDCONTROL'] == "true"
-      user_hash = Digest::MD5.hexdigest(session[:profile].ldap_account)
       userdir = ENV['DRQUEUE_TMP']+"/"+user_hash.to_s
     end
 
@@ -380,7 +382,6 @@ ENV['WEB_PROTO']+"://")
     
       # add job to specific pool
       if ENV['CLOUDCONTROL'] == "true"
-        user_hash = Digest::MD5.hexdigest(profile.ldap_account)
         @jobm.limits.pool=user_hash+"_blender"
       else
         @jobm.limits.pool="blender"
