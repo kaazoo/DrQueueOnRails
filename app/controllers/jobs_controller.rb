@@ -146,14 +146,18 @@ ENV['WEB_PROTO']+"://")
     end
 
     # check disk usage of user
-    profile = Profile.find(session[:profile].id)  
-    if ENV['USER_TMP_DIR'] == "id"
+    profile = Profile.find(session[:profile].id)
+
+    # user hash
+    user_hash = Digest::MD5.hexdigest(profile.ldap_account)
+
+    # create user directory
+    if ENV['CLOUDCONTROL'] == "true"
+      userdir = ENV['DRQUEUE_TMP']+"/"+user_hash.to_s
+    elsif ENV['USER_TMP_DIR'] == "id"
       userdir = ENV['DRQUEUE_TMP']+"/"+profile.id.to_s
     elsif ENV['USER_TMP_DIR'] == "ldap_account"
       userdir = ENV['DRQUEUE_TMP']+"/"+profile.ldap_account.to_s
-    elsif ENV['CLOUDCONTROL'] == "true"
-      user_hash = Digest::MD5.hexdigest(profile.ldap_account)
-      userdir = ENV['DRQUEUE_TMP']+"/"+user_hash.to_s
     end
 
     if File.directory?(userdir) 
@@ -287,12 +291,12 @@ ENV['WEB_PROTO']+"://")
     user_hash = Digest::MD5.hexdigest(session[:profile].ldap_account)
 
     # create user directory
-    if ENV['USER_TMP_DIR'] == "id"
+    if ENV['CLOUDCONTROL'] == "true"
+      userdir = ENV['DRQUEUE_TMP']+"/"+user_hash.to_s
+    elsif ENV['USER_TMP_DIR'] == "id"
       userdir = ENV['DRQUEUE_TMP']+"/"+session[:profile].id.to_s
     elsif ENV['USER_TMP_DIR'] == "ldap_account"
       userdir = ENV['DRQUEUE_TMP']+"/"+session[:profile].ldap_account.to_s
-    elsif ENV['CLOUDCONTROL'] == "true"
-      userdir = ENV['DRQUEUE_TMP']+"/"+user_hash.to_s
     end
 
     if File.directory?(userdir)
@@ -450,7 +454,11 @@ ENV['WEB_PROTO']+"://")
       #@jobm.koji.general.scriptdir = jobdir
       
       # add job to specific pool
-      @jobm.limits.pool="blenderlux" 
+      if ENV['CLOUDCONTROL'] == "true"
+        @jobm.limits.pool=user_hash+"_blenderlux"
+      else
+        @jobm.limits.pool="blenderlux"
+      end
       
       # create job script
       if params[:job][:sort] == "animation"
@@ -749,7 +757,11 @@ ENV['WEB_PROTO']+"://")
       #@jobm.koji.general.scriptdir = jobdir
     
       # add job to specific pool
-      @jobm.limits.pool="mentalray" 
+      if ENV['CLOUDCONTROL'] == "true"
+        @jobm.limits.pool=user_hash+"_mentalray"
+      else
+        @jobm.limits.pool="mentalray"
+      end
       
       # create job script
       if params[:job][:sort] == "animation"
@@ -803,7 +815,11 @@ ENV['WEB_PROTO']+"://")
       end
     
       # add job to specific pool
-      @jobm.limits.pool="cinema4d" 
+      if ENV['CLOUDCONTROL'] == "true"
+        @jobm.limits.pool=user_hash+"_cinema4d"
+      else
+        @jobm.limits.pool="cinema4d"
+      end
     
       # create job script
       if params[:job][:sort] == "animation"
@@ -842,7 +858,11 @@ ENV['WEB_PROTO']+"://")
       ### how can we automate the script file generation?
     
       # add job to specific pool
-      @jobm.limits.pool="luxrender" 
+      if ENV['CLOUDCONTROL'] == "true"
+        @jobm.limits.pool=user_hash+"_luxrender"
+      else
+        @jobm.limits.pool="luxrender"
+      end
     
       # create job script
       if params[:job][:sort] == "animation"
@@ -886,7 +906,11 @@ ENV['WEB_PROTO']+"://")
       end
     
       # add job to specific pool
-      @jobm.limits.pool="maya" 
+      if ENV['CLOUDCONTROL'] == "true"
+        @jobm.limits.pool=user_hash+"_maya"
+      else
+        @jobm.limits.pool="maya"
+      end
     
       # create job script
       if params[:job][:sort] == "animation"
@@ -930,7 +954,11 @@ ENV['WEB_PROTO']+"://")
       end
     
       # add job to specific pool
-      @jobm.limits.pool="maya" 
+      if ENV['CLOUDCONTROL'] == "true"
+        @jobm.limits.pool=user_hash+"_maya"
+      else
+        @jobm.limits.pool="maya"
+      end
     
       # create job script
       if params[:job][:sort] == "animation"
@@ -975,7 +1003,11 @@ ENV['WEB_PROTO']+"://")
       ### how can we automate the script file generation?
     
       # add job to specific pool
-      @jobm.limits.pool="vray" 
+      if ENV['CLOUDCONTROL'] == "true"
+        @jobm.limits.pool=user_hash+"_vray"
+      else
+        @jobm.limits.pool="vray"
+      end
       
       # force same directory as image output path
       # sed 's!img_dir=.*!img_dir=\".";!' test.vscene >test2.vscene
@@ -1107,13 +1139,16 @@ ENV['WEB_PROTO']+"://")
         #exit_status = system("/bin/rm -rf "+renderpath)
         #puts `rm -rf #{renderpath}`
 
-        if ENV['USER_TMP_DIR'] == "id"
-          userdir = ENV['DRQUEUE_TMP']+"/"+profile.id.to_s
-        elsif ENV['USER_TMP_DIR'] == "ldap_account"
-          userdir = ENV['DRQUEUE_TMP']+"/"+profile.ldap_account.to_s
-        elsif ENV['CLOUDCONTROL'] == "true"
-          user_hash = Digest::MD5.hexdigest(profile.ldap_account)
+        # user hash
+        user_hash = Digest::MD5.hexdigest(session[:profile].ldap_account)
+
+        # create user directory
+        if ENV['CLOUDCONTROL'] == "true"
           userdir = ENV['DRQUEUE_TMP']+"/"+user_hash.to_s
+        elsif ENV['USER_TMP_DIR'] == "id"
+          userdir = ENV['DRQUEUE_TMP']+"/"+session[:profile].id.to_s
+        elsif ENV['USER_TMP_DIR'] == "ldap_account"
+          userdir = ENV['DRQUEUE_TMP']+"/"+session[:profile].ldap_account.to_s
         end
 
         FileUtils.cd(userdir)
