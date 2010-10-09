@@ -1008,7 +1008,12 @@ ENV['WEB_PROTO']+"://")
       flash[:notice] = 'No correct renderer specified.'
       redirect_to :action => 'new' and return
     end
-  
+
+    # set permissions
+    ### TODO: find a way to do this recursively in Ruby
+    `chmod o+w -R #{userdir}`
+    `chmod g+w -R #{userdir}`
+
     # send job to master
     begin
       @jobm.send_to_queue()
