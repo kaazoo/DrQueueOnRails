@@ -10,6 +10,7 @@ Current rendersessions:
   <th>Run-time</th>
   <th>Costs</th>
   <th>Started at</th>
+  <th>Stopped at</th>
   <th>Time passed</th>
   <th> </th>
   </tr>
@@ -26,6 +27,7 @@ for rs in @rendersessions
   <td><%= rs.run_time %></td>
   <td><%= rs.costs %></td>
   <td><%= rs.start_timestamp %></td>
+  <td><%= rs.stop_timestamp %></td>
   <td><%= rs.time_passed %></td>
   <td><%= link_to 'Edit', edit_rendersession_path(rs) %> <%= link_to 'Destroy', rs, :confirm => 'Are you sure?', :method => :delete %></td>
   </tr>
