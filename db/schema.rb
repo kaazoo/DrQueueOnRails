@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101021000000) do
+ActiveRecord::Schema.define(:version => 20101021000100) do
 
   create_table "jobs", :force => true do |t|
     t.integer "queue_id"
@@ -39,12 +39,13 @@ ActiveRecord::Schema.define(:version => 20101021000000) do
     t.integer  "num_slaves"
     t.integer  "run_time"
     t.integer  "payment_id"
-    t.integer  "time_passed",     :default => 0
+    t.integer  "time_passed",         :default => 0
     t.decimal  "costs"
-    t.integer  "start_timestamp", :default => 0
+    t.integer  "start_timestamp",     :default => 0
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "stop_timestamp",  :default => 0
+    t.integer  "stop_timestamp",      :default => 0
+    t.integer  "overall_time_passed", :default => 0
   end
 
   create_table "sessions", :force => true do |t|
