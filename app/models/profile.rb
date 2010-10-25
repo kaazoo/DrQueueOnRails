@@ -25,7 +25,7 @@ class Profile < ActiveRecord::Base
 
     # demo account
     # account & password == "demo"
-    if (account == "demo") && (password == "demo")
+    if (account == "demo") && (password == "demo") && (ENV['USER_DEMO_ENABLED'] == "true")
       # search user in db
       if myprofile = Profile.find_by_ldap_account(account)
         return myprofile
