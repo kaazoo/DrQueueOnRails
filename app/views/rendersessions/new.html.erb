@@ -4,32 +4,24 @@
   <%= f.error_messages %>
 
   <p>
-    <%= f.label :num_slaves %><br />
+    <%= f.label 'Number of slaves' %><br />
     <%= f.text_field :num_slaves %>
   </p>
   <p>
-    <%= f.label :run_time %><br />
+    <%= f.label 'Run time in hours' %><br />
     <%= f.text_field :run_time %>
   </p>
   <p>
-    <%= f.label :payment_id %><br />
-    <%= select ("rendersession", "payment_id", @payments.map {|p| [p.paid_on.to_s+" - "+p.amount.to_s,p.id]}) %>
+    <%= f.label 'VM machine type' %><br />
+    <%= f.select :vm_type, "<option value='t1.micro'>Mini</option> <option value='m1.large'>Large</option> <option value='m1.xlarge'>Extra Large (RAM)</option><option value='c1.xlarge'>Extra Large (Cores)</option>" %>
   </p>
   <p>
-    <%= f.label :time_passed %><br />
-    <%= f.text_field :time_passed %>
+    <%= f.label :payment_id %><br />
+    <%= select ("rendersession", "payment_id", @payments.map {|p| [p.paid_on.to_s+" - "+p.amount.to_s+" USD", p.id]}) %>
   </p>
   <p>
     <%= f.label :costs %><br />
     <%= f.text_field :costs %>
-  </p>
-  <p>
-    <%= f.label :start_timestamp %><br />
-    <%= f.text_field :start_timestamp %>
-  </p>
-  <p>
-    <%= f.label :stop_timestamp %><br />
-    <%= f.text_field :stop_timestamp %>
   </p>
   <p>
     <%= f.submit 'Create' %>

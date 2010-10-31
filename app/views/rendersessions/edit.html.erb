@@ -4,12 +4,16 @@
   <%= f.error_messages %>
 
   <p>
-    <%= f.label :num_slaves %><br />
+    <%= f.label 'Number of slaves' %><br />
     <%= f.text_field :num_slaves %>
   </p>
   <p>
-    <%= f.label :run_time %><br />
+    <%= f.label 'Run time in hours' %><br />
     <%= f.text_field :run_time %>
+  </p>
+  <p>
+    <%= f.label 'VM machine type' %><br />
+    <%= f.text_field :vm_type %>
   </p>
   <p>
     <%= f.label :payment_id %><br />

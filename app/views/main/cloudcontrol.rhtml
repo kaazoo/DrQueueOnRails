@@ -8,10 +8,12 @@ Current rendersessions:
   <th>User</th>
   <th>Number of slaves</th>
   <th>Run-time</th>
+  <th>VM type</th>
   <th>Costs</th>
   <th>Started at</th>
   <th>Stopped at</th>
   <th>Time passed</th>
+  <th>Overall time passed</th>
   <th> </th>
   </tr>
 
@@ -25,10 +27,12 @@ for rs in @rendersessions
   <td><%= profile.name %></td>
   <td><%= rs.num_slaves %></td>
   <td><%= rs.run_time %></td>
+  <td><%= rs.vm_type %></td>
   <td><%= rs.costs %></td>
   <td><%= rs.start_timestamp %></td>
   <td><%= rs.stop_timestamp %></td>
   <td><%= rs.time_passed %></td>
+  <td><%= rs.overall_time_passed %></td>
   <td><%= link_to 'Edit', edit_rendersession_path(rs) %> <%= link_to 'Destroy', rs, :confirm => 'Are you sure?', :method => :delete %></td>
   </tr>
 <% 

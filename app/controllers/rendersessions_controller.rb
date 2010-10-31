@@ -32,7 +32,7 @@ class RendersessionsController < ApplicationController
   def new
     # only admins are allowed to use cloudcontrol
     if session[:profile].status != 'admin'
-      redirect_to :action => 'index' and return
+      redirect_to :controller => 'main', :action => 'index' and return
     else
       @rendersession = Rendersession.new
       
@@ -59,7 +59,7 @@ class RendersessionsController < ApplicationController
   def edit
     # only admins are allowed to use cloudcontrol
     if session[:profile].status != 'admin'
-      redirect_to :action => 'index' and return
+      redirect_to :controller => 'main', :action => 'index' and return
     else
       @rendersession = Rendersession.find(params[:id])
       
@@ -82,7 +82,7 @@ class RendersessionsController < ApplicationController
   def create
     # only admins are allowed to use cloudcontrol
     if session[:profile].status != 'admin'
-      redirect_to :action => 'index' and return
+      redirect_to :controller => 'main', :action => 'index' and return
     else
       @rendersession = Rendersession.new(params[:rendersession])
       
@@ -114,7 +114,7 @@ class RendersessionsController < ApplicationController
   def update
     # only admins are allowed to use cloudcontrol
     if session[:profile].status != 'admin'
-      redirect_to :action => 'index' and return
+      redirect_to :controller => 'main', :action => 'index' and return
     else
       @rendersession = Rendersession.find(params[:id])
 
@@ -137,7 +137,7 @@ class RendersessionsController < ApplicationController
   def destroy
     # only admins are allowed to use cloudcontrol
     if session[:profile].status != 'admin'
-      redirect_to :action => 'index' and return
+      redirect_to :controller => 'main', :action => 'index' and return
     else
       @rendersession = Rendersession.find(params[:id])
       @rendersession.destroy
