@@ -91,7 +91,8 @@ class Profile < ActiveRecord::Base
         myprofile = Profile.new
         myprofile.ldap_account = account
         # give user the lowest status
-        myprofile.status = "student"
+        status_arr = ENV['USER_STATUS'].split(",")
+        myprofile.status = status_arr[0]
         # get user info from ldap server  
         filter = Net::LDAP::Filter.eq(ENV['LDAP_FILTER'], account )
         attrs = ENV['LDAP_ATTRS'].split(",")

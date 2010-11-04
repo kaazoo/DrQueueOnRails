@@ -19,7 +19,7 @@
    <td><%=h profile.name %></td>
    <td><%=h profile.email %></td>
    <td><%=h profile.ldap_account %></td>
-   <td><%=h profile.status %></td>
+   <td><%=h profile.status.capitalize %></td>
    <% if profile.accepted  == 1 %>
    	<td style="text-align:center;">yes</td>
    <% else %>

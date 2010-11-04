@@ -16,7 +16,7 @@
 <%= text_field 'profile', 'ldap_account', :disabled => 'disabled'  %></p>
 
 <p><label for="profile_status">Status</label><br/>
-<%= select('profile', 'status', [ ["Student", "student"], ["Advanced", "advanced"], ["Admin", "admin"] ]) %></p>
+<%= select('profile', 'status', @option_arr) %></p>
 
 <p><label for="profile_accepted">Accepted</label><br/>
 <%= text_field 'profile', 'accepted', :disabled => 'disabled' %></p>

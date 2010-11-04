@@ -69,21 +69,7 @@ class ProfilesController < ApplicationController
         end
         i += 1
       end
-      
-      # calculate quota usage (in GB)
-      #case @profile.status
-      # when "admin"
-      #   @quota = 35
-      # when "advanced"
-      #   @quota = 15
-      # when "student"
-      #   @quota = 5
-      # when "demo"
-      #   @quota = 0.5
-      # else
-      #   @quota = 0
-      #end
-      
+
       if File.directory?(userdir)
         # userdir size in KB
         du = `du -s #{userdir} | awk '{print $1}'`.to_f   
@@ -115,6 +101,13 @@ class ProfilesController < ApplicationController
 
   def edit
     @profile = Profile.find(params[:id])
+
+    status_arr = ENV['USER_STATUS'].split(",")
+    @option_arr = []
+
+    status_arr.each do |stat|
+      @option_arr << [stat.capitalize, stat]
+    end
   end
 
 
