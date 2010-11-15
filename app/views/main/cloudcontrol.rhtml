@@ -23,6 +23,18 @@ for rs in @rendersessions
   payment = Payment.find(rs.payment_id) rescue nil
   profile = Profile.find(rs.profile_id) rescue nil
 
+  if rs.start_timestamp > 0
+    start_time = Time.at(rs.start_timestamp).strftime("%m.%d.%Y - %H:%M:%S")
+  else
+    start_time = "Not yet"
+  end
+
+  if rs.stop_timestamp > 0
+    stop_time = Time.at(rs.stop_timestamp).strftime("%m.%d.%Y - %H:%M:%S")
+  else
+    stop_time = "Not yet"
+  end
+
   tp_hours = (rs.time_passed/3600).to_i
   tp_minutes = (rs.time_passed/60 - tp_hours * 60).to_i
   tp_seconds = (rs.time_passed - (tp_minutes * 60 + tp_hours * 3600)).to_i
@@ -37,8 +49,8 @@ for rs in @rendersessions
   <td><%= rs.run_time %></td>
   <td><%= vm_type_name(rs.vm_type).+" ("+rs.vm_type+")" %></td>
   <td><%= rs.costs %></td>
-  <td><%= Time.at(rs.start_timestamp).strftime("%m.%d.%Y - %H:%M:%S") %></td>
-  <td><%= Time.at(rs.stop_timestamp).strftime("%m.%d.%Y - %H:%M:%S") %></td>
+  <td><%= start_time %></td>
+  <td><%= stop_time %></td>
   <td><%= "%02d"%tp_hours+":"+"%02d"%tp_minutes+":"+"%02d"%tp_seconds %></td>
   <td><%= "%02d"%otp_hours+":"+"%02d"%otp_minutes+":"+"%02d"%otp_seconds %></td>
   <td><%= link_to 'Edit', edit_rendersession_path(rs) %> <%= link_to 'Destroy', rs, :confirm => 'Are you sure?', :method => :delete %></td>
