@@ -7,7 +7,7 @@ Current rendersessions:
   <tr>
   <th>User</th>
   <th>Number of slaves</th>
-  <th>Run-time</th>
+  <th>Run-time in hours</th>
   <th>VM type</th>
   <th>Costs</th>
   <th>Started at</th>
@@ -21,16 +21,16 @@ Current rendersessions:
 i = 0
 for rs in @rendersessions
   payment = Payment.find(rs.payment_id) rescue nil
-  profile = Profile.find(rs.profile_id)
+  profile = Profile.find(rs.profile_id) rescue nil
 %>
   <tr>
-  <td><%= profile.name %></td>
+  <td><%= profile.name rescue "nobody" %></td>
   <td><%= rs.num_slaves %></td>
   <td><%= rs.run_time %></td>
   <td><%= rs.vm_type %></td>
   <td><%= rs.costs %></td>
-  <td><%= rs.start_timestamp %></td>
-  <td><%= rs.stop_timestamp %></td>
+  <td><%= Time.at(rs.start_timestamp).strftime("%m.%d.%Y - %H:%M:%S") %></td>
+  <td><%= Time.at(rs.stop_timestamp).strftime("%m.%d.%Y - %H:%M:%S") %></td>
   <td><%= rs.time_passed %></td>
   <td><%= rs.overall_time_passed %></td>
   <td><%= link_to 'Edit', edit_rendersession_path(rs) %> <%= link_to 'Destroy', rs, :confirm => 'Are you sure?', :method => :delete %></td>
