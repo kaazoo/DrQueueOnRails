@@ -390,7 +390,10 @@ ENV['WEB_PROTO']+"://")
       else
         @jobm.limits.pool="blender"
       end
-    
+
+      # use internal multithreading/multiprocessing
+      @jobm.limits.nmaxcpus = 1
+
       # create job script
       if params[:job][:sort] == "animation"
         # each computer renders one frame of an animation
@@ -459,7 +462,10 @@ ENV['WEB_PROTO']+"://")
       else
         @jobm.limits.pool="blenderlux"
       end
-      
+
+      # use internal multithreading/multiprocessing
+      @jobm.limits.nmaxcpus = 1
+
       # create job script
       if params[:job][:sort] == "animation"
         # each computer renders one frame of an animation
@@ -762,6 +768,9 @@ ENV['WEB_PROTO']+"://")
       else
         @jobm.limits.pool="mentalray"
       end
+
+      # use internal multithreading/multiprocessing
+      @jobm.limits.nmaxcpus = 1
       
       # create job script
       if params[:job][:sort] == "animation"
@@ -820,7 +829,10 @@ ENV['WEB_PROTO']+"://")
       else
         @jobm.limits.pool="cinema4d"
       end
-    
+
+      # use internal multithreading/multiprocessing
+      @jobm.limits.nmaxcpus = 1
+
       # create job script
       if params[:job][:sort] == "animation"
         # each computer renders one frame of an animation
@@ -863,7 +875,10 @@ ENV['WEB_PROTO']+"://")
       else
         @jobm.limits.pool="luxrender"
       end
-    
+
+      # use internal multithreading/multiprocessing
+      @jobm.limits.nmaxcpus = 1
+
       # create job script
       if params[:job][:sort] == "animation"
         # each computer renders one frame of an animation
@@ -911,7 +926,10 @@ ENV['WEB_PROTO']+"://")
       else
         @jobm.limits.pool="maya"
       end
-    
+
+      # use internal multithreading/multiprocessing
+      @jobm.limits.nmaxcpus = 1
+
       # create job script
       if params[:job][:sort] == "animation"
         # each computer renders one frame of an animation
@@ -959,7 +977,10 @@ ENV['WEB_PROTO']+"://")
       else
         @jobm.limits.pool="maya"
       end
-    
+
+      # use internal multithreading/multiprocessing
+      @jobm.limits.nmaxcpus = 1
+
       # create job script
       if params[:job][:sort] == "animation"
         # each computer renders one frame of an animation
@@ -1008,7 +1029,10 @@ ENV['WEB_PROTO']+"://")
       else
         @jobm.limits.pool="vray"
       end
-      
+
+      # use internal multithreading/multiprocessing
+      @jobm.limits.nmaxcpus = 1
+
       # force same directory as image output path
       # sed 's!img_dir=.*!img_dir=\".";!' test.vscene >test2.vscene
       FileUtils.cd(jobdir)
