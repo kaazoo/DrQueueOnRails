@@ -39,6 +39,10 @@ ENV['USER_TMP_DIR'] ||= "id"
 
 # CloudControl support
 ENV['CLOUDCONTROL'] ||= "false"
+ENV['CC_AWS_FEES'] ||= "0.03,0.16,0.32,0.33"
+ENV['CC_SERVICE_FEES'] ||= "0.5,0.5,0.5,0.5"
+ENV['CC_SERVICE_BETA_FEES'] ||= "0.1,0.1,0.1,0.1"
+ENV['CC_DISCOUNTS'] ||= "1.0,1.0,1.0,1.0,1.0,1.0,1.0"
 
 # text for login dialog
 ENV['LOG_SHOW_USER'] ||= "account name"

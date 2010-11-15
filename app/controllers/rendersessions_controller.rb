@@ -179,21 +179,25 @@ class RendersessionsController < ApplicationController
     usage_time = form_vars[:run_time].to_i
     vm_type = form_vars[:vm_type].to_s
 
-    aws_fee_t1micro = 0.03
-    aws_fee_m1large = 0.16
-    aws_fee_m1xlarge = 0.32
-    aws_fee_c1xlarge = 0.33
+    af_arr = ENV['CC_AWS_FEES'].split(",")
+    aws_fee_t1micro = af_arr[0].to_f
+    aws_fee_m1large = af_arr[1].to_f
+    aws_fee_m1xlarge = af_arr[2].to_f
+    aws_fee_c1xlarge = af_arr[3].to_f
 
-    service_fee_t1micro = 0.4
-    service_fee_beta_t1micro = 0.1
-    service_fee_m1large = 0.5
-    service_fee_beta_m1large = 0.15
-    service_fee_m1xlarge = 0.6
-    service_fee_beta_m1xlarge = 0.2
-    service_fee_c1xlarge = 0.6
-    service_fee_beta_c1xlarge = 0.2
+    sf_arr = ENV['CC_SERVICE_FEES'].split(",")
+    service_fee_t1micro = sf_arr[0].to_f
+    service_fee_m1large = sf_arr[1].to_f
+    service_fee_m1xlarge = sf_arr[2].to_f
+    service_fee_c1xlarge = sf_arr[3].to_f
 
-    discount_arr = [1.0, 0.95, 0.9, 0.85, 0.8, 0.75, 0.7]
+    sbf_arr = ENV['CC_SERVICE_BETA_FEES'].split(",")
+    service_fee_beta_t1micro = sbf_arr[0].to_f
+    service_fee_beta_m1large = sbf_arr[1].to_f
+    service_fee_beta_m1xlarge = sbf_arr[2].to_f
+    service_fee_beta_c1xlarge = sbf_arr[3].to_f
+
+    discount_arr = ENV['CC_DISCOUNTS'].split(",")
 
     case vm_type
       when "t1.micro":
@@ -220,21 +224,21 @@ class RendersessionsController < ApplicationController
 
     case usage_time
       when 1..9:
-        discount = discount_arr[0]
+        discount = discount_arr[0].to_f
       when 10..19:
-        discount = discount_arr[1]
+        discount = discount_arr[1].to_f
       when 20..29:
-        discount = discount_arr[2]
+        discount = discount_arr[2].to_f
       when 30..39:
-        discount = discount_arr[3]
+        discount = discount_arr[3].to_f
       when 40..49:
-        discount = discount_arr[4]
+        discount = discount_arr[4].to_f
       when 50..59:
-        discount = discount_arr[5]
+        discount = discount_arr[5].to_f
       when 60..99999:
-        discount = discount_arr[6]
+        discount = discount_arr[6].to_f
       else
-        discount = discount_arr[0]
+        discount = discount_arr[0].to_f
     end
 
     beta_costs_usd = sprintf('%.2f', beta_costs * discount)
