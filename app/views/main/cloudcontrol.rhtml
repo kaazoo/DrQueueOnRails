@@ -20,8 +20,8 @@ Current rendersessions:
 <%
 i = 0
 for rs in @rendersessions
-  payment = Payment.find(rs.payment_id)
-  profile = Profile.find(payment.profile_id)
+  payment = Payment.find(rs.payment_id) rescue nil
+  profile = Profile.find(rs.profile_id)
 %>
   <tr>
   <td><%= profile.name %></td>
