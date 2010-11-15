@@ -21,7 +21,7 @@
   </p>
   <p>
     <%= f.label :payment_id %><br />
-    <%= select ("rendersession", "payment_id", @payments.map {|p| [p.paid_on.to_s+" - "+p.amount.to_s+" USD", p.id]}, :include_blank => true) %>
+    <%= select ("rendersession", "payment_id", @payments.map {|p| [Profile.find_by_id(p.profile_id).name+" - "+p.paid_on.to_s+" - "+p.amount.to_s+" USD", p.id]}, :include_blank => true) %>
   </p>
   <p>
     <%= f.label :time_passed %><br />
