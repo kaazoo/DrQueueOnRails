@@ -69,14 +69,16 @@ class RendersessionsController < ApplicationController
       @rendersession = Rendersession.find(params[:id])
       
       # fetch all unconnected payments
-      all_payments = Payment.find(:all)
-      @payments = []
-      all_payments.each do |pm|
-        puts pm.id
-        if Rendersession.find_by_payment_id(pm.id) == nil
-          @payments << pm
-        end
-      end
+      #all_payments = Payment.find(:all)
+      #@payments = []
+      #all_payments.each do |pm|
+      #  puts pm.id
+      #  if Rendersession.find_by_payment_id(pm.id) == nil
+      #    @payments << pm
+      #  end
+      #end
+
+      @payments = Payment.find(:all)
 
       @profiles = Profile.find(:all)
 
