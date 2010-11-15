@@ -49,8 +49,6 @@ class ProfilesController < ApplicationController
         userdir = ENV['DRQUEUE_TMP']+"/"+user_hash.to_s
       end
 
-      # calculate quota usage (in GB)
-      
       # use user and quota settings from environment.rb
       status_arr = ENV['USER_STATUS'].split(",")
       quota_arr = ENV['USER_QUOTA'].split(",")
@@ -70,6 +68,7 @@ class ProfilesController < ApplicationController
         i += 1
       end
 
+      # calculate quota usage (in GB)
       if File.directory?(userdir)
         # userdir size in KB
         du = `du -s #{userdir} | awk '{print $1}'`.to_f   
@@ -93,6 +92,12 @@ class ProfilesController < ApplicationController
         @usage = 0
       end
       
+      # fetch render sessions
+      @rendersessions = Rendersession.find_all_by_profile_id(@profile.id)
+
+      # fetch payments
+      @payments = Payment.find_all_by_profile_id(@profile.id)
+
       session[:return_path] = url_for(:controller => 'profiles', :action => 'show', :id => params[:id], :protocol => ENV['WEB_PROTO']+"://")
     end
     

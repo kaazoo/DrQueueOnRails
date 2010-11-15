@@ -5,19 +5,23 @@
 
   <p>
     <%= f.label 'Number of slaves' %><br />
-    <%= f.text_field :num_slaves %>
+    <%= f.text_field :num_slaves, :size => 3, :maxlength => 2 %>
   </p>
   <p>
-    <%= f.label 'Run time in hours' %><br />
-    <%= f.text_field :run_time %>
+    <%= f.label 'Run-time in hours' %><br />
+    <%= f.text_field :run_time, :size => 6, :maxlength => 5 %>
   </p>
   <p>
     <%= f.label 'VM machine type' %><br />
-    <%= f.text_field :vm_type %>
+    <%= f.select :vm_type, "<option value='t1.micro'>Mini</option> <option value='m1.large'>Large</option> <option value='m1.xlarge'>Extra Large (RAM)</option><option value='c1.xlarge'>Extra Large (Cores)</option>" %>
+  </p>
+  <p>
+    <%= f.label :profile_id %><br />
+    <%= select ("rendersession", "profile_id", @profiles.map {|p| [p.name, p.id]}) %>
   </p>
   <p>
     <%= f.label :payment_id %><br />
-    <%= f.text_field :payment_id %>
+    <%= select ("rendersession", "payment_id", @payments.map {|p| [p.paid_on.to_s+" - "+p.amount.to_s+" USD", p.id]}, :include_blank => true) %>
   </p>
   <p>
     <%= f.label :time_passed %><br />
