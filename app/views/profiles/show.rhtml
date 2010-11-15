@@ -23,12 +23,49 @@ You have reached your quota of <%= @quota %> GB.
 <p><b>Email:</b> <%=h @profile.email %></p>
 <p><b>Status:</b> <%=h @profile.status.capitalize %></p>
 
-<br />
 
+
+
+
+<br /><br />
+<h3>Rendersessions</h3>
+
+<table border="1" style="border-width:1px; border-style:solid; border-color:black;">
+  <tr>
+  <th>Number of slaves</th>
+  <th>Run-time in hours</th>
+  <th>VM type</th>
+  <th>Costs</th>
+  <th>Paid on</th>
+  <th>Overall time passed</th>
+  </tr>
+
+<%
+for rs in @rendersessions
+  if rs.payment_id != nil
+    paid_on = Payment.find(rs.payment_id).paid_on.to_s
+  else
+    paid_on = "Not yet"
+  end
+%>
+  <tr>
+  <td><%= rs.num_slaves %></td>
+  <td><%= rs.run_time %></td>
+  <td><%= rs.vm_type %></td>
+  <td><%= rs.costs %></td>
+  <td><%= paid_on %></td>
+  <td><%= rs.overall_time_passed %></td>
+  </tr>
+<% end %>
+</table>
+
+<br /><br />
 <% if session[:profile].status == 'admin' %>
-	<%= link_to 'Edit', :action => 'edit', :id => @profile %>
+	<%= link_to 'Edit profile', :action => 'edit', :id => @profile %> | 
 	
 	<% if params[:id].to_i != session[:profile].id %>
 		 | <%= link_to 'Back', :action => 'list' %>
 	<% end %>
 <% end %>
+
+<%= link_to 'Request new rendersession', :controller => 'rendersessions', :action => 'new' %>
