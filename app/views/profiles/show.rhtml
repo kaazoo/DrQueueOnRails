@@ -47,14 +47,18 @@ for rs in @rendersessions
   else
     paid_on = "Not yet"
   end
+
+  otp_hours = (rs.overall_time_passed/3600).to_i
+  otp_minutes = (rs.overall_time_passed/60 - otp_hours * 60).to_i
+  otp_seconds = (rs.overall_time_passed - (otp_minutes * 60 + otp_hours * 3600)).to_i
 %>
   <tr>
   <td><%= rs.num_slaves %></td>
   <td><%= rs.run_time %></td>
-  <td><%= rs.vm_type %></td>
+  <td><%= vm_type_name(rs.vm_type) %></td>
   <td><%= rs.costs %></td>
   <td><%= paid_on %></td>
-  <td><%= rs.overall_time_passed %></td>
+  <td><%= "%02d"%otp_hours+":"+"%02d"%otp_minutes+":"+"%02d"%otp_seconds %></td>
   </tr>
 <% end %>
 </table>
