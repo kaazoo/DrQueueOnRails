@@ -5,7 +5,7 @@
 
   <p>
     <%= f.label :profile_id %><br />
-    <%= select ("payment", "profile_id", @profiles.map {|p| [p.name,p.id]}) %>
+    <%= select("payment", "profile_id", @profiles.map {|p| [p.name,p.id]}) %>
   </p>
   <p>
     <%= f.label :paid_on %><br />
