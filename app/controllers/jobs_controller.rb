@@ -392,7 +392,7 @@ ENV['WEB_PROTO']+"://")
       end
 
       # use internal multithreading/multiprocessing
-      @jobm.limits.nmaxcpus = 1
+      @jobm.limits.nmaxcpuscomputer = 1
 
       # create job script
       if params[:job][:sort] == "animation"
@@ -464,7 +464,7 @@ ENV['WEB_PROTO']+"://")
       end
 
       # use internal multithreading/multiprocessing
-      @jobm.limits.nmaxcpus = 1
+      @jobm.limits.nmaxcpuscomputer = 1
 
       # create job script
       if params[:job][:sort] == "animation"
@@ -770,7 +770,7 @@ ENV['WEB_PROTO']+"://")
       end
 
       # use internal multithreading/multiprocessing
-      @jobm.limits.nmaxcpus = 1
+      @jobm.limits.nmaxcpuscomputer = 1
       
       # create job script
       if params[:job][:sort] == "animation"
@@ -831,7 +831,7 @@ ENV['WEB_PROTO']+"://")
       end
 
       # use internal multithreading/multiprocessing
-      @jobm.limits.nmaxcpus = 1
+      @jobm.limits.nmaxcpuscomputer = 1
 
       # create job script
       if params[:job][:sort] == "animation"
@@ -877,7 +877,7 @@ ENV['WEB_PROTO']+"://")
       end
 
       # use internal multithreading/multiprocessing
-      @jobm.limits.nmaxcpus = 1
+      @jobm.limits.nmaxcpuscomputer = 1
 
       # create job script
       if params[:job][:sort] == "animation"
@@ -928,7 +928,7 @@ ENV['WEB_PROTO']+"://")
       end
 
       # use internal multithreading/multiprocessing
-      @jobm.limits.nmaxcpus = 1
+      @jobm.limits.nmaxcpuscomputer = 1
 
       # create job script
       if params[:job][:sort] == "animation"
@@ -979,7 +979,7 @@ ENV['WEB_PROTO']+"://")
       end
 
       # use internal multithreading/multiprocessing
-      @jobm.limits.nmaxcpus = 1
+      @jobm.limits.nmaxcpuscomputer = 1
 
       # create job script
       if params[:job][:sort] == "animation"
@@ -1031,7 +1031,7 @@ ENV['WEB_PROTO']+"://")
       end
 
       # use internal multithreading/multiprocessing
-      @jobm.limits.nmaxcpus = 1
+      @jobm.limits.nmaxcpuscomputer = 1
 
       # force same directory as image output path
       # sed 's!img_dir=.*!img_dir=\".";!' test.vscene >test2.vscene
@@ -1067,8 +1067,8 @@ ENV['WEB_PROTO']+"://")
 
     # set permissions
     ### TODO: find a way to do this recursively in Ruby
-    `chmod o+w -R #{userdir}`
-    `chmod g+w -R #{userdir}`
+    `chmod o+rw -R #{userdir}`
+    `chmod g+rw -R #{userdir}`
 
     # send job to master
     begin
