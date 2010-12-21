@@ -24,13 +24,13 @@ for rs in @rendersessions
   profile = Profile.find(rs.profile_id) rescue nil
 
   if rs.start_timestamp > 0
-    start_time = Time.at(rs.start_timestamp).strftime("%m.%d.%Y - %H:%M:%S")
+    start_time = Time.at(rs.start_timestamp).strftime("%d.%m.%Y - %H:%M:%S")
   else
     start_time = "Not yet"
   end
 
   if rs.stop_timestamp > 0
-    stop_time = Time.at(rs.stop_timestamp).strftime("%m.%d.%Y - %H:%M:%S")
+    stop_time = Time.at(rs.stop_timestamp).strftime("%d.%m.%Y - %H:%M:%S")
   else
     stop_time = "Not yet"
   end
