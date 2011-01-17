@@ -1396,35 +1396,37 @@ ENV['WEB_PROTO']+"://")
     dir.each do |entry|
       entrypath = jobdir+"/"+entry
       if (File.file? entrypath) && (File.ctime(entrypath).to_i > oldest_ctime) && !(entry.start_with? '.')
-        # determine image type
-        img = Magick::Image::read(entrypath).first
-        # convert: BMP, Iris, TGA, TGA RAW, Cineon, DPX, EXR, Radiance HDR, TIF
-        # don't convert: PNG, JPG
-        case img.format
-          when 'PNG', 'JPG', 'JPEG', 'JPX', 'JNG':
-            # don't convert
-            found_files << entry
-            break
-          when 'BMP', 'BMP2', 'BMP3', 'ICB', 'TGA', 'VDA', 'VST', 'CIN', 'DPX', 'EXR', 'PTIF', 'TIFF', 'TIFF64':
-            # convert if not yet done
-            if (File.file? entrypath+"_preview.png") == false
-              img.write(entrypath+"_preview.png")
-            end
-            found_files << entry+"_preview.png"
-            break
-        end
+        found_files << entry
       end
     end
     dir.close
 
     found_files.sort!
     imagefile = found_files[params[:nr].to_i]
+    imagepath = jobdir+"/"+imagefile
+
+    # determine image type
+    img = Magick::Image::read(imagepath).first
+    # convert: BMP, Iris, TGA, TGA RAW, Cineon, DPX, EXR, Radiance HDR, TIF
+    # don't convert: PNG, JPG
+    case img.format
+      when 'PNG', 'JPG', 'JPEG', 'JPX', 'JNG'
+        # don't convert
+        final_path = imagepath
+        final_filename = imagefile
+      when 'BMP', 'BMP2', 'BMP3', 'ICB', 'TGA', 'VDA', 'VST', 'CIN', 'DPX', 'EXR', 'PTIF', 'TIFF', 'TIFF64'
+        # convert if not yet done
+        if (File.file? imagepath+"_preview.png") == false
+          img.write(imagepath+"_preview.png")
+        end
+        final_path = imagepath+"_preview.png"
+        final_filename = File.basename(final_path)
+    end
+
     if imagefile == nil
       render :text => "<br /><br />Image file was not found.<br /><br />" and return false
     else
-      imagepath = jobdir+"/"+imagefile
-      img = Magick::Image::read(imagepath).first
-      send_file imagepath, :filename => imagefile, :type => 'image/'+img.format.downcase, :disposition => 'inline'
+      send_file final_path, :filename => final_filename, :type => 'image/'+img.format.downcase, :disposition => 'inline'
     end
   end
 
