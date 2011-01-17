@@ -18,6 +18,9 @@ class JobsController < ApplicationController
   # for text sanitizing
   include ActionView::Helpers::TextHelper
 
+  # for working with images
+  require 'RMagick'
+
   # template
   layout "main_layout", :except => [:feed, :load_image]
 
@@ -1385,40 +1388,53 @@ ENV['WEB_PROTO']+"://")
     job_db = Job.find_by_queue_id(params[:id].to_i)
     job_master = Job.job_data_from_master(params[:id].to_i)
     jobdir = File.dirname(job_master.cmd)
-    #oldpwd = Dir.pwd
-    #Dir.chdir jobdir
-    #imagefile = Dir.glob("*"+params[:nr]+"*.{jpg,jpeg,png,gif}")[0]
-    #puts imagepath = jobdir+"/"+imagefile
-    #Dir.chdir oldpwd
-    
-    # get all image files which are newer than the job script file
+
+    # get all files which are newer than the job script file
     oldest_ctime = File.ctime(job_master.cmd).to_i
     found_files = []
     dir = Dir.open(jobdir)
     dir.each do |entry|
       entrypath = jobdir+"/"+entry
-      if (File.file? entrypath) && (File.ctime(entrypath).to_i > oldest_ctime) && ( (File.extname(entrypath) == ".jpeg") || (File.extname(entrypath) == ".jpg") || (File.extname(entrypath) == ".png") || (File.extname(entrypath) == ".gif") )
-        found_files << entry
+      if (File.file? entrypath) && (File.ctime(entrypath).to_i > oldest_ctime) && !(entry.start_with? '.')
+        # determine image type
+        img = Magick::Image::read(entrypath).first
+        # convert: BMP, Iris, TGA, TGA RAW, Cineon, DPX, EXR, Radiance HDR, TIF
+        # don't convert: PNG, JPG
+        case img.format
+          when 'PNG', 'JPG', 'JPEG', 'JPX', 'JNG':
+            # don't convert
+            found_files << entry
+            break
+          when 'BMP', 'BMP2', 'BMP3', 'ICB', 'TGA', 'VDA', 'VST', 'CIN', 'DPX', 'EXR', 'PTIF', 'TIFF', 'TIFF64':
+            # convert if not yet done
+            if (File.file? entrypath+"_preview.png") == false
+              img.write(entrypath+"_preview.png")
+            end
+            found_files << entry+"_preview.png"
+            break
+        end
       end
     end
     dir.close
-  
+
     found_files.sort!
     imagefile = found_files[params[:nr].to_i]
     if imagefile == nil
       render :text => "<br /><br />Image file was not found.<br /><br />" and return false
     else
       imagepath = jobdir+"/"+imagefile
-      send_file imagepath, :filename => imagefile, :type => 'image/jpeg', :disposition => 'inline'
+      img = Magick::Image::read(imagepath).first
+      send_file imagepath, :filename => imagefile, :type => 'image/'+img.format.downcase, :disposition => 'inline'
     end
   end
-  
-  
+
+
   # newsfeed for jobs
   def feed
   
     @headers["Content-Type"] = "application/xml" 
-    
+
+    ### TODO: make this configurable
     @title = "My render jobs at renderfarm MMZ Hochschule Wismar"
     @description = "This is a list of your jobs which finished recently."
     @link = "https://renderfarm.rz.hs-wismar.de"
