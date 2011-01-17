@@ -1417,7 +1417,13 @@ ENV['WEB_PROTO']+"://")
       when 'BMP', 'BMP2', 'BMP3', 'ICB', 'TGA', 'VDA', 'VST', 'CIN', 'DPX', 'EXR', 'PTIF', 'TIFF', 'TIFF64'
         # convert if not yet done
         if (File.file? imagepath+"_preview.png") == false
-          img.write(imagepath+"_preview.png")
+          # resize if too big
+          if img.columns > 1000
+            preview_img = img.resize_to_fit(1000)
+          else
+            preview_img = img
+          end
+          preview_img.write(imagepath+"_preview.png")
         end
         final_path = imagepath+"_preview.png"
         final_filename = File.basename(final_path)
@@ -1426,6 +1432,7 @@ ENV['WEB_PROTO']+"://")
     if imagefile == nil
       render :text => "<br /><br />Image file was not found.<br /><br />" and return false
     else
+      img = Magick::Image::read(final_path).first
       send_file final_path, :filename => final_filename, :type => 'image/'+img.format.downcase, :disposition => 'inline'
     end
   end
