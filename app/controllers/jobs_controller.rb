@@ -1395,7 +1395,7 @@ ENV['WEB_PROTO']+"://")
     dir = Dir.open(jobdir)
     dir.each do |entry|
       entrypath = jobdir+"/"+entry
-      if (File.file? entrypath) && (File.ctime(entrypath).to_i > oldest_ctime) && !(entry.start_with? '.')
+      if (File.file? entrypath) && (File.ctime(entrypath).to_i > oldest_ctime) && !(entry.start_with? '.') && !(entry.end_with? '.zip') && !(entry.end_with? '_preview.png')
         found_files << entry
       end
     end
