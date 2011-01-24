@@ -245,11 +245,11 @@ ENV['WEB_PROTO']+"://")
       redirect_to :action => 'new' and return
     end
     if (params[:jobm][:frame_start] == nil) || (params[:jobm][:frame_start] == "") || (params[:jobm][:frame_start].to_i < 1)
-      flash[:notice] = 'No or wrong start frame given.'
+      flash[:notice] = 'No or wrong start frame given. Must be equal or greater 1.'
       redirect_to :action => 'new' and return
     end
     if (params[:jobm][:frame_end] == nil) || (params[:jobm][:frame_end] == "") || (params[:jobm][:frame_end].to_i < 1)
-      flash[:notice] = 'No or wrong end frame given.'
+      flash[:notice] = 'No or wrong end frame given. Must be equal or greater 1.'
       redirect_to :action => 'new' and return
     end
     
@@ -284,17 +284,15 @@ ENV['WEB_PROTO']+"://")
     @jobm.block_size = 1
     
     # email notification
-    if session[:profile].ldap_account != "demo"
+    if (session[:profile].ldap_account != "demo") && (ENV['DQOR_NOTIFY_EMAIL'] == "true")
       @jobm.email = session[:profile].email.to_s
       @jobm.flags = @jobm.flags | 1
       @jobm.flags = @jobm.flags | 2
     end
-    
-    # user hash
-    user_hash = Digest::MD5.hexdigest(session[:profile].ldap_account)
 
     # create user directory
     if ENV['CLOUDCONTROL'] == "true"
+      user_hash = Digest::MD5.hexdigest(session[:profile].ldap_account)
       userdir = ENV['DRQUEUE_TMP']+"/"+user_hash.to_s
     elsif ENV['USER_TMP_DIR'] == "id"
       userdir = ENV['DRQUEUE_TMP']+"/"+session[:profile].id.to_s
@@ -334,7 +332,7 @@ ENV['WEB_PROTO']+"://")
           file.write params[:file].read
         end
       else
-        FileUtils.copy params[:file].local_path, jobdir+"/"+just_filename
+        FileUtils.mv params[:file].local_path, jobdir+"/"+just_filename
       end
     end
     

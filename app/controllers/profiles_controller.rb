@@ -39,14 +39,14 @@ class ProfilesController < ApplicationController
       redirect_to :controller => 'main' and return
     else
       @profile = Profile.find(params[:id])
-      
-      if ENV['USER_TMP_DIR'] == "id"
-        userdir = ENV['DRQUEUE_TMP']+"/"+@profile.id.to_s
-      elsif ENV['USER_TMP_DIR'] == "ldap_account"
-        userdir = ENV['DRQUEUE_TMP']+"/"+@profile.ldap_account.to_s
-      elsif ENV['CLOUDCONTROL'] == "true"
-        user_hash = Digest::MD5.hexdigest(@profile.ldap_account)
+
+      if ENV['CLOUDCONTROL'] == "true"
+        user_hash = Digest::MD5.hexdigest(profile.ldap_account)
         userdir = ENV['DRQUEUE_TMP']+"/"+user_hash.to_s
+      elsif ENV['USER_TMP_DIR'] == "id"
+        userdir = ENV['DRQUEUE_TMP']+"/"+profile.id.to_s
+      elsif ENV['USER_TMP_DIR'] == "ldap_account"
+        userdir = ENV['DRQUEUE_TMP']+"/"+profile.ldap_account.to_s
       end
 
       # use user and quota settings from environment.rb
