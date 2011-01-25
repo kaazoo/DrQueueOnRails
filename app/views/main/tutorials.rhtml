@@ -1,99 +1,147 @@
 
-On this page you can read some small tutorials for the supported combinations of modeling and render programs.
-<br /><br />
+<h3>Workflow</h3>
+<ol>
+<li>Keep your scene file and all resources in one directory</li>
+<li>Pack the contents (not the directory itself) in one archive. You can use the archive types rar, zip, tgz, tbz2 (DO NOT use tar.gz or tar.bz2).</li>
+<li>Login into DrQueueOnRails, click on 'my jobs' and press the button 'Create a new job'.</li>
+<li>Choose a name for the job. Select the archive file on your harddisk. Choose the renderer which fits to your scene file and select the rendering type. Set start frame (>= 1) and end frame (>= 1).</li>
+<li>Press the 'Create' button and wait for the upload to finish. A status message will appear.</li>
+<% if ENV['CLOUDCONTROL'] ||= "true" %>
+<li>If there is an error, contact the support and provide the message which is shown in order to get help on finding a solution.</li>
+<li>If the form completes successfully and you have a valid rendersession, a number of render slaves is booted immediately to process your scene.</li>
+<li>The render slaves will be shut down if the job is finished or if the time of your rendersession is exceeded.</li>
+<% else %>
+<li>If there is an error, try to figure the problem. Contact the system administrator if needed.</li>
+<li>If the form completes successfully and there are available render slaves, your scene will be processed immediately.</li>
+<% end %>
+<li>You can preview single frames when you click on 'View Output Image'. The results of your job can be retrieved when you press 'Download'.</li>
+</ol>
+<br />
 
-<a href="#blender">Blender</a> <a href="#3dsmax">3D Studio Max</a> <a href="#maya">Maya</a> <a href="#cinema4d">Cinema4D</a> 
+<h3>General tips</h3>
+<ul>
+<li>Avoid filenames with special characters or spaces in it.</li>
+<li>Use lossless image formats. Don't use video formats, because video files would be created for every single frame (create a video out of them later).</li>
+<li>Use always only one active camera for rendering.</li>
+<li>When rendering single images, the image height has to be a multiple of 4 (low), 8 (medium) or 16 (high resolution).</li>
+<li>Manage your files in a project (a project directory with all files belonging to it).</li>
+<li>When working with additional files like textures, always choose the path out of your project directory (relative instead of absolute).</li>
+</ul>
+<br />
 
-<br /><br /><br /><br />
+<%
 
-<b>Links for more information</b>
-<br /><br />
-
-Blender:<br />
-- <a target="_blank" href="http://www.blender.org">www.blender.org</a><br />
-- <a target="_blank" href="http://www.yafray.org">www.yafray.org</a><br />
-- <a target="_blank" href="http://www.blenderartists.org">www.blenderartists.org</a><br />
-- <a target="_blank" href="http://www.blendpolis.de">www.blendpolis.de</a><br />
-- <a target="_blank" href="http://de.wikibooks.org/wiki/Blender_Dokumentation">de.wikibooks.org/wiki/Blender_Dokumentation</a><br />
-- <a target="_blank" href="http://www.blendernation.com">www.blendernation.com</a><br /><br />
-
-Mental Ray:<br />
-- <a target="_blank" href="http://www.mentalimages.com">www.mentalimages.com</a><br />
-- <a target="_blank" href="http://www.mymentalray.com">www.mymentalray.com</a><br />
-- <a target="_blank" href="http://mentalraytips.blogspot.com">mentalraytips.blogspot.com</a><br />
-- <a target="_blank" href="http://www.lamrug.org">www.lamrug.org</a><br />
-- <a target="_blank" href="http://www.german-mentalray-wiki.info">www.german-mentalray-wiki.info</a><br />
-
-<br /><br /><br />
-
-<b>General tips</b>
-<br /><br />
-- avoid filenames with special characters or spaces in it<br />
-- use always only one camera for rendering<br />
-- when rendering single images, the image height has to be a multiple of 4 (low), 8 (medium) or 16 (high resolution)<br />
-- manage your files in a project (a project directory with all files belonging to it)<br />
-- when working with additional files like textures, always choose the path out of your project directory (relative instead of absolute)<br /> 
-- pack the scene file and all other needed files into one archive without any subdirectories<br />
-- you can use the following archive types: rar, zip, tgz, tbz2 (DO NOT use tar.gz or tar.bz2)<br />
-- upload the archive file in the form<br />
-
-<br /><br /><br />
-
-<a name="blender"></a>
-<b>Rendering with Blender / Yafray</b>
-<br /><br />
+rend_array = ENV['AVAIL_RENDERERS'].split(",")
+rend_array.each do |ren|
+  case ren
+    when "blender"
+      %>
+<h3>Rendering with Blender / Yafray</h3>
+<ul>
 <img src="/images/tutorials/blender_render_dialog.jpg" /><br />
-- choose 'Blender Internal' or 'YafRay' in the render dialog<br /><br />
+<li>choose 'Blender Internal' or 'YafRay' in the render dialog</li><br />
 <img src="/images/tutorials/blender_format_dialog.jpg" /><br />
-- set resolution ('SizeX', 'SizeY') and image output settings in the format dialog<br /><br />
-- you don't have to export anything, just put the blend file into an archive<br />
+<li>set resolution ('SizeX', 'SizeY') and image output settings in the format dialog</li>
+<li>you don't have to export anything, just put the blend file into an archive</li>
+</ul>
 
-<br /><br /><br />
+<h4>Useful links</h4>
+<ul>
+<li><a target="_blank" href="http://www.blender.org">www.blender.org</a></li>
+<li><a target="_blank" href="http://www.yafray.org">www.yafray.org</a></li>
+<li><a target="_blank" href="http://www.blenderartists.org">www.blenderartists.org</a></li>
+<li><a target="_blank" href="http://www.blendpolis.de">www.blendpolis.de</a></li>
+<li><a target="_blank" href="http://de.wikibooks.org/wiki/Blender_Dokumentation">de.wikibooks.org/wiki/Blender_Dokumentation</a></li>
+<li><a target="_blank" href="http://www.blendernation.com">www.blendernation.com</a></li>
+</ul>
+<br />
 
-<b>Rendering with Mental Ray</b>
-<br /><br />
+      <%
+    when "cinema4d"
+      %>
+<h3>Rendering with Cinema4D</h3>
+<ul>
+<li>Open your scene.</li>
+<li>At 'Render Settings' -> 'Save' enable 'Save Image' and add a name with no path into the textbox.</li>
+<li>At 'Options' enable 'Log File' to be able to see some more output in the logfiles.</li>
+<li>To get all material paths right, save your scene into a new directory via 'File' -> 'Save Project...'.</li>
+<li>Pack the contents of that directory and upload the archive.</li>
+</ul>
+<br />
 
-<a name="3dsmax"></a>
-Exporting from 3DStudioMax:<br />
-- DO NOT use any hair functions (we don't have support for it yet)<br />
-- you can use the tool 'Resource Collector' from 'Utilities' -> 'More...' to save all files into one directory (enable 'Include MAX File' and 'Copy')<br />
-- when using Final Gather, render the scene once, then enable 'Read Only (FG Freeze)' in 'Indirect Illumination' -> 'Final Gather Map' and save that .fgm file also into the archive<br />
-- select 'mental ray Renderer' in 'Rendering' -> 'Render...' -> 'Common' -> 'Assign Renderer'<br />
-- at 'Common' -> 'Render Output' choose format and name of the output image file<br />
-- at 'Processing' -> 'Export to .mi File' choose the name of the mi file<br />
-- activate 'Export on Render', 'Un-compressed' and 'Incremental (Single File)'<br />
-- click the 'Render' button to save the mi file<br /><br /><br />
+      <%
+    when "luxrender"
+      %>
+<h3>Rendering with LuxRender</h3>
+todo
+<br />
 
-<a name="maya"></a>
-Exporting from Maya:<br /><br />
+      <%
+    when "maya"
+      %>
+<h3>Rendering with Maya</h3>
+todo
+<br />
+
+      <%
+    when "mentalray"
+      %>
+<h3>Rendering with MentalRay</h3>
+
+<h4>Exporting from 3DStudioMax:</h4>
+<ul>
+<li>DO NOT use any hair functions (we don't have support for it yet)</li>
+<li>you can use the tool 'Resource Collector' from 'Utilities' -> 'More...' to save all files into one directory (enable 'Include MAX File' and 'Copy')</li>
+<li>when using Final Gather, render the scene once, then enable 'Read Only (FG Freeze)' in 'Indirect Illumination' -> 'Final Gather Map' and save that .fgm file also into the archive</li>
+<li>select 'mental ray Renderer' in 'Rendering' -> 'Render...' -> 'Common' -> 'Assign Renderer'</li>
+<li>at 'Common' -> 'Render Output' choose format and name of the output image file</li>
+<li>at 'Processing' -> 'Export to .mi File' choose the name of the mi file</li>
+<li>activate 'Export on Render', 'Un-compressed' and 'Incremental (Single File)'</li>
+<li>click the 'Render' button to save the mi file</li>
+</ul>
+
+<h4>Exporting from Maya:</h4>
+<ul>
 <img src="/images/tutorials/maya_export_all.jpg" /><br />
-- click on 'File' -> 'Export All'<br /><br />
+<li>click on 'File' -> 'Export All'</li><br />
 <img src="/images/tutorials/maya_export_format.jpg" /><br />
-- at 'Write As:' select 'mentalRay'<br /><br />
+<li>at 'Write As:' select 'mentalRay'</li><br />
 <img src="/images/tutorials/maya_export_options.jpg" /><br />
-- at 'Options' -> 'Options...' activate 'ASCII' file format and set 'Compression' to 'Off'<br /><br />
-- disable 'Output file per frame' and enable 'Output file per layer'<br />
+<li>at 'Options' -> 'Options...' activate 'ASCII' file format and set 'Compression' to 'Off'</li><br />
+<li>disable 'Output file per frame' and enable 'Output file per layer'</li>
 <img src="/images/tutorials/maya_export_options2.jpg" /><br />
-- enable 'Export file paths' and set all selection fields to 'Relative to project'<br />
-- set 'Export selection output' to 'Renderable scene'<br /><br />
+<li>enable 'Export file paths' and set all selection fields to 'Relative to project'</li>
+<li>set 'Export selection output' to 'Renderable scene'</li><br />
 <img src="/images/tutorials/maya_export_options3.jpg" /><br />
-- click 'Export All'<br /><br />
-- select a path and specify a mi filename<br />
-- click 'Export All' again<br />
+<li>click 'Export All'</li>
+<li>select a path and specify a mi filename</li>
+<li>click 'Export All' again</li>
+</ul>
 
-<br /><br /><br />
+<h4>Useful links</h4>
+<ul>
+<li><a target="_blank" href="http://www.mentalimages.com">www.mentalimages.com</a></li>
+<li><a target="_blank" href="http://www.mymentalray.com">www.mymentalray.com</a></li>
+<li><a target="_blank" href="http://mentalraytips.blogspot.com">mentalraytips.blogspot.com</a></li>
+<li><a target="_blank" href="http://www.lamrug.org">www.lamrug.org</a></li>
+<li><a target="_blank" href="http://www.german-mentalray-wiki.info">www.german-mentalray-wiki.info</a></li>
+</ul>
+<br />
 
-<a name="cinema4d"></a>
-<b>Rendering with Cinema4D</b>
-<br /><br />
+      <%
+    when "vray"
+      %>
+<h3>Rendering with V-Ray</h3>
+todo
+<br />
 
-- DO NOT use any advanced rendering functions like Global Illumination, Caustics, Ambient Occlusion, Effects (we don't have support for it yet)<br />
-- open your scene<br />
-- at 'Render Settings' -> 'Save' enable 'Save Image' and add a name with no path into the textbox<br />
-- do not use a video format when rendering animations because it's far better to have all frames as single images (create a video out of them later)<br />
-- at 'Options' enable 'Log File' to be able to see some more output in the logfiles<br />
-- to get all material paths right, save your scene into a new directory via 'File' -> 'Save Project...'<br />
-- pack the contents of that directory and upload the archive<br /><br />
+      <%
+  end
+end
+
+%>
+
+
 
 
 
