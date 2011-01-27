@@ -28,6 +28,7 @@ You have reached your quota of <%= @quota %> GB.
 
 
 <br /><br />
+<% if ENV['CLOUDCONTROL'] == "true" %>
 <h3>Rendersessions</h3>
 
 <table border="1" style="border-width:1px; border-style:solid; border-color:black;">
@@ -64,6 +65,8 @@ for rs in @rendersessions
 </table>
 
 <br /><br />
+<% end %>
+
 <% if session[:profile].status == 'admin' %>
 	<%= link_to 'Edit profile', :action => 'edit', :id => @profile %> | 
 	
@@ -72,4 +75,7 @@ for rs in @rendersessions
 	<% end %>
 <% end %>
 
-<%= link_to 'Request new rendersession', :controller => 'rendersessions', :action => 'new' %>
+<% if ENV['CLOUDCONTROL'] == "true" %>
+  <%= link_to 'Request new rendersession', :controller => 'rendersessions', :action => 'new' %>
+<% end %>
+
