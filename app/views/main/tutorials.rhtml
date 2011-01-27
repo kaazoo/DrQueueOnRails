@@ -1,14 +1,14 @@
 
 <h3>Workflow</h3>
 <ol>
-<li>Keep your scene file and all resources in one directory</li>
+<li>Keep your scene file and all resources in one directory.</li>
 <li>Pack the contents (not the directory itself) in one archive. You can use the archive types rar, zip, tgz, tbz2 (DO NOT use tar.gz or tar.bz2).</li>
 <li>Login into DrQueueOnRails, click on 'my jobs' and press the button 'Create a new job'.</li>
 <li>Choose a name for the job. Select the archive file on your harddisk. Choose the renderer which fits to your scene file and select the rendering type. Set start frame (>= 1) and end frame (>= 1).</li>
 <li>Press the 'Create' button and wait for the upload to finish. A status message will appear.</li>
 <% if ENV['CLOUDCONTROL'] ||= "true" %>
 <li>If there is an error, contact the support and provide the message which is shown in order to get help on finding a solution.</li>
-<li>If the form completes successfully and you have a valid rendersession, a number of render slaves is booted immediately to process your scene.</li>
+<li>If the form completes successfully and you have a valid rendersession, a number of render slaves are started immediately to process your scene.</li>
 <li>The render slaves will be shut down if the job is finished or if the time of your rendersession is exceeded.</li>
 <% else %>
 <li>If there is an error, try to figure the problem. Contact the system administrator if needed.</li>
