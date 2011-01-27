@@ -1439,7 +1439,6 @@ ENV['WEB_PROTO']+"://")
   # newsfeed for jobs
   def feed
   
-    @headers["Content-Type"] = "application/xml" 
     @title = ENV['DQOR_FEED_TITLE']
     @description = ENV['DQOR_FEED_DESC']
     @link = ENV['DQOR_WEBURL']
