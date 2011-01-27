@@ -133,7 +133,8 @@ for job in jobs_master
 
 <%=
 if @jobs_db.length > 0
-	link_to(image_tag("rss.png", :size => "14x14", :border => 0, :style => "vertical-align:middle;")+" subscribe to RSS feed", {:controller => 'jobs', :action => 'feed', :protocol => "https://", :only_path => false})
+	image_tag("rss.png", :size => "14x14", :border => 0, :style => "vertical-align:middle;")
+	link_to(" subscribe to RSS feed", {:controller => 'jobs', :action => 'feed', :protocol => ENV['WEB_PROTO']+"://", :only_path => false})
 end
 %>
 
