@@ -1440,11 +1440,9 @@ ENV['WEB_PROTO']+"://")
   def feed
   
     @headers["Content-Type"] = "application/xml" 
-
-    ### TODO: make this configurable
-    @title = "My render jobs at renderfarm MMZ Hochschule Wismar"
-    @description = "This is a list of your jobs which finished recently."
-    @link = "https://renderfarm.rz.hs-wismar.de"
+    @title = ENV['DQOR_FEED_TITLE']
+    @description = ENV['DQOR_FEED_DESC']
+    @link = ENV['DQOR_WEBURL']
     
     # get only owners jobs from db (last 10 jobs)
     @jobs_db = Job.find_all_by_profile_id(session[:profile].id, :order => "id DESC")
