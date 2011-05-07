@@ -9,13 +9,13 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101115150538) do
+ActiveRecord::Schema.define(:version => 20110507205238) do
 
   create_table "jobs", :force => true do |t|
-    t.integer "queue_id"
     t.string  "renderer"
     t.string  "sort"
     t.integer "profile_id"
+    t.string  "queue_id"
   end
 
   create_table "payments", :force => true do |t|
