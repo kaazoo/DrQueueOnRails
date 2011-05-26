@@ -2,8 +2,17 @@ class JobsController < ApplicationController
 
   require 'rubygems'
 
-  # for drqueue
-  require 'drqueue'
+  # check for DrQueueIPython
+  if ENV['DRQUEUE_IMP'] == 'ipython'
+    require 'rubypython'
+  # check for legacy DrQueue
+  elsif ENV['DRQUEUE_IMP'] == 'legacy'
+    require 'drqueue'
+  # quit if not configured
+  else
+    puts "DRQUEUE_IMP not configured."
+    exit(1)
+  end
 
   # for hash computation
   require 'digest/md5'
@@ -90,8 +99,8 @@ ENV['WEB_PROTO']+"://")
       redirect_to :action => 'list' and return
     end
 
-    # get list of all computers (without update)
-    @computer_list = Job.global_computer_list(0)
+    # get list of all computers
+    @computer_list = Job.global_computer_list()
     # get all frames of job
     @frame_list = @job_data.request_frame_list(Drqueue::CLIENT)
         

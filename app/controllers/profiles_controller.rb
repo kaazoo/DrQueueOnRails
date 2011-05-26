@@ -2,8 +2,17 @@ class ProfilesController < ApplicationController
   
   require 'rubygems'
   
-  # for drqueue
-  require 'drqueue'
+  # check for DrQueueIPython
+  if ENV['DRQUEUE_IMP'] == 'ipython'
+    require 'rubypython'
+  # check for legacy DrQueue
+  elsif ENV['DRQUEUE_IMP'] == 'legacy'
+    require 'drqueue'
+  # quit if not configured
+  else
+    puts "DRQUEUE_IMP not configured."
+    exit(1)
+  end
 
   # for hash computation
   require 'digest/md5'

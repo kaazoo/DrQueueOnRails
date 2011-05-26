@@ -1,13 +1,19 @@
 class Job < ActiveRecord::Base
 
   belongs_to :profile
-  
   validates_presence_of :renderer, :sort, :queue_id
-  
-  require 'rubygems'
-  
-  # for drqueue
-  require 'drqueue'
+
+  # check for DrQueueIPython
+  if ENV['DRQUEUE_IMP'] == 'ipython'
+    require 'rubypython'
+  # check for legacy DrQueue
+  elsif ENV['DRQUEUE_IMP'] == 'legacy'
+    require 'drqueue'
+  # quit if not configured
+  else
+    puts "DRQUEUE_IMP not configured."
+    exit(1)
+  end
 
   # for working with files 
   require 'ftools'
@@ -85,72 +91,144 @@ class Job < ActiveRecord::Base
   # update on 1
   def self.global_computer_list(update)
     
-    if (update.to_i != 0) && (update.to_i != 1)
-      raise "wrong value for update parameter"
-      return nil
-    end
-    
-    # set timer for the first time
-    if $gcl_time == nil
-      $gcl_time = Time.now.to_i
-    end
-    
-    # update only every DQOR_SLAVES_CACHE_TIME seconds
-    if ($gcl_time != nil) && (Time.now.to_i > ($gcl_time + ENV['DQOR_SLAVES_CACHE_TIME'].to_i )) && (update == 1)
-      update = 1
-      # update timer
-      $gcl_time = Time.now.to_i
-    else
-      update = 0
-    end
-    
-    if ($gcl != nil) && ($gcl.length > 0) && (update == 0)
+    # check for DrQueueIPython
+    if ENV['DRQUEUE_IMP'] == 'ipython'
+      # initialize rubypython
+      RubyPython.start(:python_exe => "python2.6")
+      sys = RubyPython.import "sys"
+      sys.argv = [""]
+      pyDrQueue = RubyPython.import("DrQueue")
+      # NOTHING TO DO
+      RubyPython.stop
+      $gcl = []
       return $gcl
-    else
-      puts "DEBUG: i have to create new global computer list"
-      $gcl = Drqueue::request_computer_list(Drqueue::CLIENT)
-      return $gcl
-    end
     
+    # check for legacy DrQueue
+    elsif ENV['DRQUEUE_IMP'] == 'legacy'
+      if (update.to_i != 0) && (update.to_i != 1)
+        raise "wrong value for update parameter"
+        return nil
+      end
+      
+      # set timer for the first time
+      if $gcl_time == nil
+        $gcl_time = Time.now.to_i
+      end
+      
+      # update only every DQOR_SLAVES_CACHE_TIME seconds
+      if ($gcl_time != nil) && (Time.now.to_i > ($gcl_time + ENV['DQOR_SLAVES_CACHE_TIME'].to_i )) && (update == 1)
+        update = 1
+        # update timer
+        $gcl_time = Time.now.to_i
+      else
+        update = 0
+      end
+      
+      if ($gcl != nil) && ($gcl.length > 0) && (update == 0)
+        return $gcl
+      else
+        puts "DEBUG: i have to create new global computer list"
+        $gcl = Drqueue::request_computer_list(Drqueue::CLIENT)
+        return $gcl
+      end
+    
+    # quit if not configured
+    else
+      puts "DRQUEUE_IMP not configured."
+      exit(1)
+    end
   end
   
   
   # return job object as seen from the master
   def self.job_data_from_master(queue_id)
+  
+    # check for DrQueueIPython
+    if ENV['DRQUEUE_IMP'] == 'ipython'
+      # initialize rubypython
+      RubyPython.start(:python_exe => "python2.6")
+      sys = RubyPython.import "sys"
+      sys.argv = [""]
+      pyDrQueue = RubyPython.import("DrQueue")
       
-    found = 0
-    # new job object
-    ret_job = Drqueue::Job.new
-    # get job data
-    found = Drqueue::request_job_xfer(queue_id, ret_job, Drqueue::CLIENT)
-
-    # job was not found
-    if found == 0
-      return nil
+      job = pyDrQueue.Job.new(queue_id, 1, 1, 1, 'blender', '/tmp/foo.blend', 1, 'foobar')
+      job.name = queue_id
+      
+      RubyPython.stop
+      return job
+    
+    # check for legacy DrQueue
+    elsif ENV['DRQUEUE_IMP'] == 'legacy'
+      found = 0
+      # new job object
+      ret_job = Drqueue::Job.new
+      # get job data
+      found = Drqueue::request_job_xfer(queue_id, ret_job, Drqueue::CLIENT)
+      # job was not found
+      if found == 0
+        return nil
+      else
+        return ret_job
+      end
+    
+    # quit if not configured
     else
-      return ret_job
+      puts "DRQUEUE_IMP not configured."
+      exit(1)
     end
-
   end
   
   
   # return array of jobs only listed in master, not in db
   def self.no_db_jobs()
+
+    # check for DrQueueIPython
+    if ENV['DRQUEUE_IMP'] == 'ipython'
+      RubyPython.start(:python_exe => "python2.6")
+      sys = RubyPython.import "sys"
+      sys.argv = [""]
+      pyDrQueue = RubyPython.import("DrQueue")
   
-    # get all jobs from master
-    jobs_master = Drqueue::request_job_list(Drqueue::CLIENT)
-      
-    no_db_jobs = Array.new
-      
-    # search for queue_id
-    jobs_master.each do |jm|
-      # job is not found in db
-      if Job.find_by_queue_id(jm.id) == nil
-        # add job to list
-        no_db_jobs << jm
+      client = pyDrQueue.Client.new
+  
+      # get all jobs from master
+      jobs_master = client.query_job_list()
+        
+      no_db_jobs = Array.new
+        
+      # search for queue_id
+      jobs_master.to_enum.each do |jm|
+        # job is not found in db
+        if Job.find_by_queue_id(jm) == nil
+          # add job to list
+          no_db_jobs << jm
+        end
       end
-    end
+      
+      RubyPython.stop
     
+    # check for legacy DrQueue
+    elsif ENV['DRQUEUE_IMP'] == 'legacy'
+      # get all jobs from master
+      jobs_master = Drqueue::request_job_list(Drqueue::CLIENT)
+     
+      no_db_jobs = Array.new
+     
+      # search for queue_id
+      jobs_master.each do |jm|
+        # job is not found in db
+        if Job.find_by_queue_id(jm.id) == nil
+          # add job to list
+          no_db_jobs << jm
+        end
+      end
+    
+    # quit if not configured
+    else
+      puts "DRQUEUE_IMP not configured."
+      exit(1)
+    end
+
     # return matching jobs
     return no_db_jobs
     
@@ -160,17 +238,29 @@ class Job < ActiveRecord::Base
   # nicer status output
   def self.human_readable_status(status)
     
-    case status
-      when Drqueue::JOBSTATUS_WAITING
-        return "Waiting"
-      when Drqueue::JOBSTATUS_ACTIVE
-        return "Active"
-      when Drqueue::JOBSTATUS_STOPPED
-        return "Stopped"
-      when Drqueue::JOBSTATUS_FINISHED
-        return "Finished"
-      else
-        return "Unknown"
+    # check for DrQueueIPython
+    if ENV['DRQUEUE_IMP'] == 'ipython'
+      return "Not defined yet"
+    
+    # check for legacy DrQueue
+    elsif ENV['DRQUEUE_IMP'] == 'legacy'
+      case status
+        when Drqueue::JOBSTATUS_WAITING
+          return "Waiting"
+        when Drqueue::JOBSTATUS_ACTIVE
+          return "Active"
+        when Drqueue::JOBSTATUS_STOPPED
+          return "Stopped"
+        when Drqueue::JOBSTATUS_FINISHED
+          return "Finished"
+        else
+          return "Unknown"
+      end
+    
+    # quit if not configured
+    else
+      puts "DRQUEUE_IMP not configured."
+      exit(1)
     end
     
   end 
