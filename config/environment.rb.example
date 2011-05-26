@@ -8,6 +8,8 @@
 
 ######## BEGIN DQOR CONFIG
 
+# DrQueue implementation (legay, ipython)
+ENV['DRQUEUE_IMP'] ||= 'legacy'
 
 # DrQueue variables
 ENV['DRQUEUE_MASTER'] ||= 'MASTER'
