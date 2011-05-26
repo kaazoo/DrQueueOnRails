@@ -10,7 +10,7 @@ DrQueue has been created by Jorge Daza Garcia-Blanes. See http://www.drqueue.org
 Support development
 -------------------
 
-[![Flattr Button](http://api.flattr.com/button/button-static-50x60.png "Flattr This!")](http://flattr.com/thing/181901/DrQueueOnRails-project "DrQueueOnRails project")
+[![Flattr Button](http://api.flattr.com/button/button-static-50x60.png "Flattr This!")](http://flattr.com/thing/289480/DrQueueOnRails-project "DrQueueOnRails project")
 
 
 License
