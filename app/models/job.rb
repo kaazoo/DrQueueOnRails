@@ -5,7 +5,12 @@ class Job < ActiveRecord::Base
 
   # check for DrQueueIPython
   if ENV['DRQUEUE_IMP'] == 'ipython'
-    require 'rubypython'
+    #require 'rubypython'
+    #RubyPython.start(:python_exe => "python2.6")
+    #sys = RubyPython.import "sys"
+    #sys.argv = [""]
+    #pyDrQueue = RubyPython.import("DrQueue")
+    #RubyPython.stop
   # check for legacy DrQueue
   elsif ENV['DRQUEUE_IMP'] == 'legacy'
     require 'drqueue'
@@ -93,14 +98,8 @@ class Job < ActiveRecord::Base
     
     # check for DrQueueIPython
     if ENV['DRQUEUE_IMP'] == 'ipython'
-      # initialize rubypython
-      RubyPython.start(:python_exe => "python2.6")
-      sys = RubyPython.import "sys"
-      sys.argv = [""]
-      pyDrQueue = RubyPython.import("DrQueue")
-      # NOTHING TO DO
-      RubyPython.stop
-      $gcl = []
+      # get list of slaves
+      $gcl = $pyDrQueueClient.query_engine_list().rubify
       return $gcl
     
     # check for legacy DrQueue
@@ -145,16 +144,8 @@ class Job < ActiveRecord::Base
   
     # check for DrQueueIPython
     if ENV['DRQUEUE_IMP'] == 'ipython'
-      # initialize rubypython
-      RubyPython.start(:python_exe => "python2.6")
-      sys = RubyPython.import "sys"
-      sys.argv = [""]
-      pyDrQueue = RubyPython.import("DrQueue")
-      
-      job = pyDrQueue.Job.new(queue_id, 1, 1, 1, 'blender', '/tmp/foo.blend', 1, 'foobar')
-      job.name = queue_id
-      
-      RubyPython.stop
+      # get specific job from master
+      job = $pyDrQueueClient.query_job(queue_id).rubify
       return job
     
     # check for legacy DrQueue
@@ -184,28 +175,23 @@ class Job < ActiveRecord::Base
 
     # check for DrQueueIPython
     if ENV['DRQUEUE_IMP'] == 'ipython'
-      RubyPython.start(:python_exe => "python2.6")
-      sys = RubyPython.import "sys"
-      sys.argv = [""]
-      pyDrQueue = RubyPython.import("DrQueue")
-  
-      client = pyDrQueue.Client.new
-  
       # get all jobs from master
-      jobs_master = client.query_job_list()
+      jobs_master = $pyDrQueueClient.query_job_list()
         
       no_db_jobs = Array.new
         
       # search for queue_id
       jobs_master.to_enum.each do |jm|
         # job is not found in db
-        if Job.find_by_queue_id(jm) == nil
+        if Job.find_by_queue_id(jm['_id'].to_s) == nil
+          # fix for compatibility
+          jm.id = jm['_id'].to_s
           # add job to list
           no_db_jobs << jm
         end
       end
       
-      RubyPython.stop
+      #RubyPython.stop
     
     # check for legacy DrQueue
     elsif ENV['DRQUEUE_IMP'] == 'legacy'
