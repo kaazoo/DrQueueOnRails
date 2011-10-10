@@ -1,8 +1,5 @@
-*.patch
-db/schema.rb
-db/*.db
+.bundle
 db/*.sqlite3
-config/environment.rb
-config/database.yml
-log/*
-
+log/*.log
+tmp/
+.sass-cache/
