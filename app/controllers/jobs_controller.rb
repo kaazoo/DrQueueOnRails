@@ -16,7 +16,7 @@ class JobsController < ApplicationController
 
     #if (params[:id] == 'all') && (session[:profile].status == 'admin')
       # get all jobs from db
-      @jobs_db = Job.all
+      @jobs = Job.all
 
       # get all jobs from master which are not in db
       #@jobs_only_master = Job.no_db_jobs()
