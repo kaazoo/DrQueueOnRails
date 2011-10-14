@@ -1,0 +1,139 @@
+
+
+
+
+<div style="color:red"><%= flash[:notice] %></div>
+
+<br />
+<h2>Job: <%= @job.name %></h2>
+<br />
+
+<table border="1">
+<tr>
+ <td>Id:</td>
+ <td><%= @job._id %></td>
+</tr>
+<tr>
+ <td>Status:</td>
+ <td><%= $pyDrQueueClient.job_status(@job._id.to_s) %></td>
+</tr>
+<tr>
+ <td>Owner:</td>
+ <td><%= @job.owner %></td>
+</tr>
+<tr>
+ <td>Submit time:</td>
+ <td>don't know yet</td>
+</tr>
+<tr>
+ <td>Estimated finish time:</td>
+ <td>don't know yet</td>
+</tr>
+<tr>
+ <td>Renderer:</td>
+ <td><%= @job.renderer %></td>
+</tr>
+</table>
+
+<br /><br /><br />
+Task list:<br /><br />
+
+<table border="1">
+<tr>
+ <td>Id</td>
+ <td>Frame</td>
+ <td>Status</td>
+ <td>Requeued</td>
+ <td>Computer</td>
+ <td>Start time</td>
+ <td>Finish time</td>
+ <td>Log</td>
+ <% if (ENV['DQOR_SHOW_FRAME_IMG'] == "true") && (@job != nil)%>
+ <td>Output Image</td>
+ <% end %>
+</tr> 
+<%
+index = 0
+frame = @job['startframe'].to_i
+@tasks.each do |task|
+  #puts task.methods.sort
+  puts task.keys
+  tmsg_id = task['msg_id']
+  theader = task['header']
+  if task['completed'] == nil:
+    status = "pending"
+  else
+    result_header = task['result_header']
+    result_content = task['result_content']
+    status = result_header['status']
+    cpl = task['completed']
+    #print("%s   %s  %s  %i-%02i-%02i %02i:%02i:%02i" % (tmsg_id, string.ljust(status, 8), string.ljust(username, 10), cpl.year, cpl.month, cpl.day, cpl.hour, cpl.minute, cpl.second))
+  end
+%>
+	<tr>
+	 <td style="text-align:center;"><%= task['msg_id'].to_s %></td>
+	 <td><%= frame.to_s %></td>
+   <td style="text-align:center;"><%= status %></td>
+	 <td style="text-align:center;">foo</td>
+	 <td>None</td>
+	 <td>Not started</td>
+   <td>Not started</td>
+   <td><%= 
+   #link_to 'View log', :action => 'view_log', :id => @job._id.to_s, :nr => index 
+   %></td>
+   <td><%=
+   # link_to 'View Output Image', :action => 'view_image', :id => @job._id.to_s, :nr => index 
+   %></td>
+	</tr>
+	<%
+	index += 1
+	frame += 1
+end
+%>
+</table>
+
+<br /><br />
+
+<div style="float:left;">
+Control job: &nbsp;
+</div>
+
+<%
+case $pyDrQueueClient.job_status(@job._id.to_s)
+	when "Drqueue::JOBSTATUS_WAITING"
+		%>
+		<div id="ButtonDiv">
+		<%= button_to 'Stop', {:action => 'stop', :id => @job_data.id}, {:title => "Stop waiting job."} %></div>
+		<%
+	when "Drqueue::JOBSTATUS_ACTIVE"
+		%>
+		<div id="ButtonDiv">
+		<%= button_to 'Stop', {:action => 'stop', :id => @job_data.id}, {:title => "Stop running job."} %></div>
+		<div id="ButtonDiv">
+		<%= button_to 'Hard stop', {:action => 'hstop', :id => @job_data.id}, {:title => "Stop running job and processing of all frames."} %></div>
+		<%
+	when "Drqueue::JOBSTATUS_STOPPED"
+		%>
+		<div id="ButtonDiv">
+		<%= button_to 'Continue', {:action => 'continue', :id => @job_data.id}, {:title => "Continue stopped job."} %></div>
+		<div id="ButtonDiv">
+		<%= button_to 'Rerun', {:action => 'rerun', :id => @job_data.id}, {:title => "Run stopped job again."} %></div>
+		<div id="ButtonDiv">
+		<%= button_to 'Delete', { :action => 'delete', :id => @job_data.id }, {:title => "Delete stopped job.", :confirm => 'Are you sure?'} %></div>
+		<%
+	when "Drqueue::JOBSTATUS_FINISHED"
+		%>
+		<div id="ButtonDiv">
+		<%= button_to 'Rerun', {:action => 'rerun', :id => @job_data.id}, {:title => "Run finished job again."} %></div>
+		<div id="ButtonDiv">
+		<%= button_to 'Download', {:action => 'download', :id => @job_data.id}, {:title => "Download renderings of job."} %></div>
+		<div id="ButtonDiv">
+		<%= button_to 'Delete', { :action => 'delete', :id => @job_data.id }, {:title => "Delete finished job.", :confirm => 'Are you sure?'} %></div>
+		<%
+end
+%>
+
+<div>
+<br /><br /><br />
+<%= link_to 'Back', session[:return_path] %>
+</div>
