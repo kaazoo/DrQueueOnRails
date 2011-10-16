@@ -1,5 +1,9 @@
-
-
+<%
+pool = @job.limits['pool_name']
+if pool == nil
+  pool = "not set"
+end
+%>
 
 
 <div style="color:red"><%= flash[:notice] %></div>
@@ -10,20 +14,20 @@
 
 <table border="1">
 <tr>
- <td>Id:</td>
+ <td>ID:</td>
  <td><%= @job._id %></td>
-</tr>
-<tr>
- <td>Status:</td>
- <td><%= $pyDrQueueClient.job_status(@job._id.to_s) %></td>
 </tr>
 <tr>
  <td>Owner:</td>
  <td><%= @job.owner %></td>
 </tr>
 <tr>
+ <td>Status:</td>
+ <td><%= $pyDrQueueClient.job_status(@job._id.to_s) %></td>
+</tr>
+<tr>
  <td>Submit time:</td>
- <td>don't know yet</td>
+ <td><%= Time.at(@job.submit_time) %></td>
 </tr>
 <tr>
  <td>Estimated finish time:</td>
@@ -33,6 +37,10 @@
  <td>Renderer:</td>
  <td><%= @job.renderer %></td>
 </tr>
+<tr>
+ <td>Pool:</td>
+ <td><%= pool %></td>
+</tr>
 </table>
 
 <br /><br /><br />
@@ -40,7 +48,7 @@ Task list:<br /><br />
 
 <table border="1">
 <tr>
- <td>Id</td>
+ <td>ID</td>
  <td>Frame</td>
  <td>Status</td>
  <td>Requeued</td>

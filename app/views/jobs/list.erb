@@ -20,32 +20,44 @@ Jobs created with DrQueueOnRails:<br />
 
 <table border="1" style="border-width:1px; border-style:solid; border-color:black;">
   <tr>
-  <th>Id</th>
+  <th>ID</th>
   <th>Name</th>
   <th>Owner</th>
   <th>Status</th>
-  <th>Frames left</th>
-  <th>Frames done</th>
-  <th>Frames running</th>
-  <th>Average frame time</th>
-  <th>Startframe</th>
-  <th>Endframe</th>
-  <th>Blocksize</th>
+  <th>Total tasks</th>
+  <th>Tasks left</th>
+  <th>Done</th>
+  <th>Pool</th>
   </tr>
   
-<% for job in @jobs %>
+<%
+for job in @jobs
+  total_tasks = job.endframe - job.startframe + 1
+  tasks_left = $pyDrQueueClient.query_job_tasks_left(job._id.to_s).rubify
+  # hide email task if existing
+  if job.send_email && tasks_left > 0
+    tasks_left -= 1
+  end
+  if tasks_left > 0
+    diff_tasks = tasks_left.to_f / total_tasks.to_f
+  else
+    diff_tasks = 0
+  end
+  tasks_done = 100 - (diff_tasks * 100)
+  pool = job.limits['pool_name']
+  if pool == nil
+    pool = "not set"
+  end
+%>
   <tr>
   <td><%= job._id %></td>
-  <td><%= link_to job.name, :action => 'show', :id => job._id %></td>
+  <td><%= link_to job.name, :action => 'show', :id => job._id.to_s %></td>
   <td><%= job.owner %></td>  
   <td><%= $pyDrQueueClient.job_status(job._id.to_s) %></td>
-  <td style="text-align:center;">don't know yet</td>
-  <td style="text-align:center;">don't know yet</td>
-  <td style="text-align:center;">don't know yet</td>
-  <td style="text-align:center;">don't know yet</td>
-  <td><%= job.startframe %></td>
-  <td><%= job.endframe %></td>
-  <td><%= job.blocksize %></td>
+  <td style="text-align:center;"><%= total_tasks %></td>
+  <td style="text-align:center;"><%= tasks_left %></td>
+  <td width="100px"><div style="background-image:url(<%= image_path 'progress_bar.png' %>); width:<%= tasks_done %>px">&nbsp;</div></td>
+  <td><%= pool %></td>
   </tr>
 <% end %>
 </table> 
