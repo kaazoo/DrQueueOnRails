@@ -3,6 +3,9 @@ DrQueueOnRails::Application.routes.draw do
 
 
   resources :jobs
+  match 'jobs/:id/view_log' => 'jobs#view_log'
+  match 'jobs/:id/view_image' => 'jobs#view_image'
+  match 'jobs/:id/load_image' => 'jobs#load_image'
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

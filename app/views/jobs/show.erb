@@ -48,11 +48,11 @@ Task list:<br /><br />
 
 <table border="1">
 <tr>
- <td>ID</td>
+ <td>Task ID</td>
  <td>Frame</td>
  <td>Status</td>
  <td>Requeued</td>
- <td>Computer</td>
+ <td>Computer ID</td>
  <td>Start time</td>
  <td>Finish time</td>
  <td>Log</td>
@@ -64,34 +64,34 @@ Task list:<br /><br />
 index = 0
 frame = @job['startframe'].to_i
 @tasks.each do |task|
-  #puts task.methods.sort
-  puts task.keys
   tmsg_id = task['msg_id']
   theader = task['header']
   if task['completed'] == nil:
     status = "pending"
+    computer = "Unknown"
+    start_time = "Unknown"
+    finish_time = "Unknown"
   else
     result_header = task['result_header']
     result_content = task['result_content']
     status = result_header['status']
     cpl = task['completed']
     #print("%s   %s  %s  %i-%02i-%02i %02i:%02i:%02i" % (tmsg_id, string.ljust(status, 8), string.ljust(username, 10), cpl.year, cpl.month, cpl.day, cpl.hour, cpl.minute, cpl.second))
+    computer = task['engine_uuid'].to_s
+    start_time = task['started'].to_s
+    finish_time = task['completed'].to_s
   end
 %>
 	<tr>
 	 <td style="text-align:center;"><%= task['msg_id'].to_s %></td>
 	 <td><%= frame.to_s %></td>
    <td style="text-align:center;"><%= status %></td>
-	 <td style="text-align:center;">foo</td>
-	 <td>None</td>
-	 <td>Not started</td>
-   <td>Not started</td>
-   <td><%= 
-   #link_to 'View log', :action => 'view_log', :id => @job._id.to_s, :nr => index 
-   %></td>
-   <td><%=
-   # link_to 'View Output Image', :action => 'view_image', :id => @job._id.to_s, :nr => index 
-   %></td>
+	 <td style="text-align:center;"><%= task['resubmitted'].to_s %></td>
+	 <td><%= computer %></td>
+	 <td><%= start_time %></td>
+   <td><%= finish_time %></td>
+   <td><%= link_to 'View log', :action => 'view_log', :id => @job._id.to_s, :nr => index %></td>
+   <td><%= link_to 'View Output Image', :action => 'view_image', :id => @job._id.to_s, :nr => index %></td>
 	</tr>
 	<%
 	index += 1
@@ -143,5 +143,5 @@ end
 
 <div>
 <br /><br /><br />
-<%= link_to 'Back', session[:return_path] %>
+<%= link_to 'Back', :controller => 'jobs' %>
 </div>

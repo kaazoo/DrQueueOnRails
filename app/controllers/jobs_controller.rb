@@ -1,5 +1,21 @@
 class JobsController < ApplicationController
 
+  # for hash computation
+  require 'digest/md5'
+
+  # for generating job scripts
+  #require_dependency 'jobscript_generators'
+
+  # for working with files
+  require 'ftools'
+  require 'fileutils'
+
+  # for text sanitizing
+  #include ActionView::Helpers::TextHelper
+
+  # for working with images
+  require 'RMagick'
+
   # template
   #layout "main_layout", :except => [:feed, :load_image]
 
@@ -102,5 +118,126 @@ class JobsController < ApplicationController
 
   end
 
+
+  def view_log
+
+    # only owner and admin are allowed
+    #if (job_db.profile_id != session[:profile].id) && (session[:profile].status != 'admin')
+    #  redirect_to :action => 'list' and return
+    #end
+
+    @job = Job.find_by__id(params[:id].to_s)
+    nr = params[:nr].to_i
+    current_task = @job['startframe'].to_i + nr
+    end_of_block = @job['startframe'].to_i + @job['blocksize'].to_i - 1 + nr
+    logfile = @job['name'].to_s + "-" + current_task.to_s + "_" + end_of_block.to_s + ".log"
+    @logfile = File.join(ENV['DRQUEUE_LOGS'], logfile)
+
+    # refresh timer
+    #link = url_for(:controller => 'jobs', :action => 'view_log', :id => params[:id], :nr => params[:nr], :protocol => ENV['WEB_PROTO']+"://")
+    #if params[:refresh] != nil
+    #  if params[:refresh] == ""
+    #    @refresh_content = nil
+    #    session[:last_refresh] = nil
+    #  else
+    #    @refresh_content = params[:refresh]+'; URL='+link
+    #    session[:last_refresh] = params[:refresh]
+    #  end
+    #elsif session[:last_refresh] != nil
+    #  @refresh_content = session[:last_refresh]+'; URL='+link
+    #else
+    #  @refresh_content = '300; URL='+link
+    #end
+
+  end
+
+
+  def view_image
+
+    # only owner and admin are allowed
+    #if (job_db.profile_id != session[:profile].id) && (session[:profile].status != 'admin')
+    #  redirect_to :action => 'list' and return
+    #end
+
+    @nr = params[:nr].to_i
+    @job_id = params[:id]
+    @job = Job.find_by__id(params[:id].to_s)
+
+    if @nr >= @job['endframe'].to_i
+      redirect_to :action => 'list' and return
+    end
+
+    # refresh timer
+    #link = url_for(:controller => 'jobs', :action => 'view_image', :id => params[:id], :nr => params[:nr], :protocol => ENV['WEB_PROTO']+"://")
+    #if params[:refresh] != nil
+    #  if params[:refresh] == ""
+    #    @refresh_content = nil
+    #    session[:last_refresh] = nil
+    #  else
+    #    @refresh_content = params[:refresh]+'; URL='+link
+    #    session[:last_refresh] = params[:refresh]
+    #  end
+    #elsif session[:last_refresh] != nil
+    #  @refresh_content = session[:last_refresh]+'; URL='+link
+    #else
+    #  @refresh_content = '300; URL='+link
+    #end
+
+  end
+
+
+  def load_image
+
+    job = Job.find_by__id(params[:id].to_s)
+    jobdir = File.dirname(job['scenefile'].to_s)
+
+    # get all files which are newer than the job scenefile
+    scene_ctime = File.ctime(job['scenefile'].to_s).to_i
+    found_files = []
+    dir = Dir.open(jobdir)
+    dir.each do |entry|
+      entrypath = File.join(jobdir, entry)
+      if (File.file? entrypath) && (File.ctime(entrypath).to_i > scene_ctime) && !(entry.start_with? '.') && !(entry.end_with? '.zip') && !(entry.end_with? '_preview.png')
+        found_files << entry
+      end
+    end
+    dir.close
+
+    found_files.sort!
+    imagefile = found_files[params[:nr].to_i]
+    imagepath = File.join(jobdir, imagefile)
+
+    # determine image type
+    img = Magick::Image::read(imagepath).first
+    # convert: BMP, Iris, TGA, TGA RAW, Cineon, DPX, EXR, Radiance HDR, TIF
+    # don't convert: PNG, JPG
+    case img.format
+      when 'PNG', 'JPG', 'JPEG', 'JPX', 'JNG'
+        # don't convert
+        final_path = imagepath
+        final_filename = imagefile
+      when 'BMP', 'BMP2', 'BMP3', 'ICB', 'TGA', 'VDA', 'VST', 'CIN', 'DPX', 'EXR', 'PTIF', 'TIFF', 'TIFF64'
+        # convert if not yet done
+        if (File.file? imagepath + "_preview.png") == false
+          # resize if too big
+          if img.columns > 1000
+            preview_img = img.resize_to_fit(1000)
+          else
+            preview_img = img
+          end
+          preview_img.format = "PNG"
+          preview_img.write(imagepath + "_preview.png")
+        end
+        puts final_path = imagepath + "_preview.png"
+        final_filename = File.basename(final_path)
+    end
+
+    if imagefile == nil
+      render :text => "<br /><br />Image file was not found.<br /><br />" and return false
+    else
+      img = Magick::Image::read(final_path).first
+      send_file final_path, :filename => final_filename, :type => 'image/'+img.format.downcase, :disposition => 'inline'
+    end
+  end
   
 end
