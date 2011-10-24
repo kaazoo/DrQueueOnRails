@@ -84,7 +84,7 @@ frame = @job['startframe'].to_i
 %>
 	<tr>
 	 <td title="<%= task['msg_id'].to_s %>"><%= task['msg_id'].to_s[0..7] + '…' %></td>
-	 <td><%= frame.to_s %></td>
+	 <td style="text-align:center;"><%= frame.to_s %></td>
    <td style="text-align:center;"><%= status %></td>
 	 <td style="text-align:center;"><%= task['resubmitted'].to_s[0..18] %></td>
 	 <td title="<%= computer %>"><%= computer[0..7] + '…' %></td>
@@ -138,7 +138,7 @@ case $pyDrQueueClient.job_status(@job._id.to_s).to_s
 		<%= button_to 'Download', {:action => 'download', :id => @job._id.to_s}, {:title => "Download renderings of job."} %></div>
 		<% end %>
 		<div id="ButtonDiv">
-		<%= button_to 'Delete', {:action => 'destroy', :id => @job._id.to_s}, {:title => "Delete finished job.", :confirm => 'Are you sure?'} %></div>
+		<%= button_to 'Delete', {:action => 'destroy', :id => @job._id.to_s}, {:title => "Delete finished job.", :method => "delete", :confirm => 'Are you sure?'} %></div>
 		<%
 end
 %>
