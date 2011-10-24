@@ -306,7 +306,7 @@ class JobsController < ApplicationController
     end
 
     puts userdir
-    if (userdir != nil) && (File.exist? jobdir) && (jobdir.include? userdir)
+    if (job.created_with.to_s == "DrQueueOnRails") && (File.exist? jobdir) && (jobdir.include? userdir)
       FileUtils.cd(jobdir)
       FileUtils.cd("..")
       puts job_dirname = jobdir.split(File::SEPARATOR)[-2]
@@ -315,7 +315,7 @@ class JobsController < ApplicationController
 
     $pyDrQueueClient.job_delete(id_string)
 
-    redirect_to session[:return_path] and return
+    redirect_to :controller => 'jobs' and return
   end
 
 
