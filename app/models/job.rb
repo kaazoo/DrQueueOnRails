@@ -11,5 +11,6 @@ class Job
   key :scenefile, String
   key :retries, Integer
   key :owner, String
+  key :created_with, String
 
 end

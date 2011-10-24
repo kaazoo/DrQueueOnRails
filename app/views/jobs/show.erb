@@ -107,8 +107,8 @@ Control job: &nbsp;
 </div>
 
 <%
-case $pyDrQueueClient.job_status(@job._id.to_s)
-	when "Drqueue::JOBSTATUS_WAITING"
+case $pyDrQueueClient.job_status(@job._id.to_s).to_s
+	when "pending"
 		%>
 		<div id="ButtonDiv">
 		<%= button_to 'Stop', {:action => 'stop', :id => @job_data.id}, {:title => "Stop waiting job."} %></div>
@@ -129,14 +129,16 @@ case $pyDrQueueClient.job_status(@job._id.to_s)
 		<div id="ButtonDiv">
 		<%= button_to 'Delete', { :action => 'delete', :id => @job_data.id }, {:title => "Delete stopped job.", :confirm => 'Are you sure?'} %></div>
 		<%
-	when "Drqueue::JOBSTATUS_FINISHED"
+	when "ok"
 		%>
 		<div id="ButtonDiv">
-		<%= button_to 'Rerun', {:action => 'rerun', :id => @job_data.id}, {:title => "Run finished job again."} %></div>
+		<%= button_to 'Rerun', {:action => 'rerun', :id => @job._id.to_s}, {:title => "Run finished job again."} %></div>
+		<% if @job.created_with.to_s == "DrQueueOnRails" %>
 		<div id="ButtonDiv">
-		<%= button_to 'Download', {:action => 'download', :id => @job_data.id}, {:title => "Download renderings of job."} %></div>
+		<%= button_to 'Download', {:action => 'download', :id => @job._id.to_s}, {:title => "Download renderings of job."} %></div>
+		<% end %>
 		<div id="ButtonDiv">
-		<%= button_to 'Delete', { :action => 'delete', :id => @job_data.id }, {:title => "Delete finished job.", :confirm => 'Are you sure?'} %></div>
+		<%= button_to 'Delete', {:action => 'destroy', :id => @job._id.to_s}, {:title => "Delete finished job.", :confirm => 'Are you sure?'} %></div>
 		<%
 end
 %>

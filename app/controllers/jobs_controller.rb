@@ -240,4 +240,174 @@ class JobsController < ApplicationController
     end
   end
   
+
+  # continue a stopped job
+  def continue
+
+    # only owner and admin are allowed
+    #if (job_db.profile_id != session[:profile].id) && (session[:profile].status != 'admin')
+    #  redirect_to :action => 'list' and return
+    #end
+
+    $pyDrQueueClient.job_continue(params[:id].to_s)
+    redirect_to :action => 'show', :id => params[:id]
+  end
+
+
+  # stop a job
+  def stop
+
+    # only owner and admin are allowed
+    #if (job_db.profile_id != session[:profile].id) && (session[:profile].status != 'admin')
+    #  redirect_to :action => 'list' and return
+    #end
+
+    $pyDrQueueClient.job_stop(params[:id].to_s)
+    redirect_to :action => 'show', :id => params[:id]
+  end
+
+
+  # hard stop a job
+  def hstop
+
+    # only owner and admin are allowed
+    #if (job_db.profile_id != session[:profile].id) && (session[:profile].status != 'admin')
+    #  redirect_to :action => 'list' and return
+    #end
+
+    $pyDrQueueClient.job_kill(params[:id].to_s)
+    redirect_to :action => 'show', :id => params[:id]
+  end
+
+
+  # delete a job
+  def destroy
+
+    job = Job.find_by__id(params[:id].to_s)
+    jobdir = File.dirname(job['scenefile'].to_s)
+
+    # only owner and admin are allowed
+    #if (job_db.profile_id != session[:profile].id) && (session[:profile].status != 'admin')
+    #  redirect_to :action => 'list' and return
+    #end
+
+    if ENV['USER_TMP_PREFIX'] == "id"
+      userdir = session[:profile].id.to_s
+    elsif ENV['USER_TMP_PREFIX'] == "ldap_account"
+      userdir = session[:profile].ldap_account.to_s
+    elsif ENV['USER_TMP_PREFIX'] == "hash"
+      userdir = Digest::MD5.hexdigest(session[:profile].ldap_account)
+    else
+      userdir = nil
+    end
+
+    puts userdir
+    if (userdir != nil) && (File.exist? jobdir) && (jobdir.include? userdir)
+      FileUtils.cd(jobdir)
+      FileUtils.cd("..")
+      puts job_dirname = jobdir.split(File::SEPARATOR)[-2]
+      FileUtils.remove_dir(job_dirname, true)
+    end
+
+    $pyDrQueueClient.job_delete(params[:id].to_s)
+
+    redirect_to session[:return_path] and return
+  end
+
+
+  # rerun a job
+  def rerun
+
+    job = Job.find_by__id(params[:id].to_s)
+    jobdir = File.dirname(job['scenefile'].to_s)
+
+    # only owner and admin are allowed
+    #if (job_db.profile_id != session[:profile].id) && (session[:profile].status != 'admin')
+    #  redirect_to :action => 'list' and return
+    #end
+
+    # delete output archive
+    #if `find . -maxdepth 1 -type f -name *.zip`.length > 0
+    #  archive = renderpath + "/rendered_files_#{id_string}.zip"
+    #elsif `find . -maxdepth 1 -type f -name *.tgz`.length > 0
+    #  archive = renderpath + "/rendered_files_#{id_string}.tgz"
+    #elsif `find . -maxdepth 1 -type f -name *.tbz2`.length > 0
+    #  archive = renderpath + "/rendered_files_#{id_string}.tbz2"
+    #elsif `find . -maxdepth 1 -type f -name *.rar`.length > 0
+    #  archive = renderpath + "/rendered_files_#{id_string}.rar"
+    #else
+    #  archive = renderpath + "/rendered_files_#{id_string}.zip"
+    #end
+
+    puts archive = File.join(jobdir, 'rendered_files_' + id_string + '.tbz2')
+    if File.exist? archive
+      File.unlink(archive)
+    end
+
+    $pyDrQueueClient.job_rerun(params[:id].to_s)
+
+    redirect_to :action => 'show', :id => params[:id]
+  end
+
+
+  # download results of a job
+  def download
+
+    job = Job.find_by__id(params[:id].to_s)
+    jobdir = File.dirname(job['scenefile'].to_s)
+
+    # only owner and admin are allowed
+    #if (job_db.profile_id != session[:profile].id) && (session[:profile].status != 'admin')
+    #  redirect_to :action => 'list' and return
+    #end
+
+    # path to renderings
+    FileUtils.cd(jobdir)
+    if `find . -maxdepth 1 -type f -name *.zip`.length > 0
+      archive = File.join(jobdir, "rendered_files_#{params[:id].to_s}.zip")
+    elsif `find . -maxdepth 1 -type f -name *.tgz`.length > 0
+      archive = File.join(jobdir, "rendered_files_#{params[:id].to_s}.tgz")
+    elsif `find . -maxdepth 1 -type f -name *.tbz2`.length > 0
+      archive = File.join(jobdir, "rendered_files_#{params[:id].to_s}.tbz2")
+    elsif `find . -maxdepth 1 -type f -name *.rar`.length > 0
+      archive = File.join(jobdir, "rendered_files_#{params[:id].to_s}.rar")
+    else
+      archive = File.join(jobdir, "rendered_files_#{params[:id].to_s}.zip")
+    end
+
+    if File.exist? archive
+      # find out which web server we are using
+      if request.env["SERVER_SOFTWARE"].index("Apache") == nil
+        # too slow for big files, only used without apache
+        send_file archive
+      else
+        # use mod_xsendfile which is much faster
+        x_send_file archive
+      end
+    else
+      # animation and cinema4d are always only packed
+      if (job_db.sort == "animation") || (job_db.renderer == "cinema4d")
+        # pack files in archive and send it to the user
+        Job.pack_files(params[:id].to_i)
+      else
+        # combine parts and pack files
+        Job.combine_parts(job_db)
+        #if Job.combine_parts(job_db) == nil
+        # redirect_to :action => 'new' and return
+        #end
+      end
+
+      # find out which web server we are using
+      if request.env["SERVER_SOFTWARE"].index("Apache") == nil
+        # too slow for big files, only used without apache
+        send_file archive
+      else
+        # use mod_xsendfile which is much faster
+        x_send_file archive
+      end
+    end
+  end
+
+
+
 end

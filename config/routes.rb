@@ -6,6 +6,8 @@ DrQueueOnRails::Application.routes.draw do
   match 'jobs/:id/view_log' => 'jobs#view_log'
   match 'jobs/:id/view_image' => 'jobs#view_image'
   match 'jobs/:id/load_image' => 'jobs#load_image'
+  match 'jobs/:id/rerun' => 'jobs#rerun'
+  match 'jobs/:id/download' => 'jobs#download'
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
