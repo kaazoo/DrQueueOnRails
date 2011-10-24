@@ -78,16 +78,16 @@ frame = @job['startframe'].to_i
     cpl = task['completed']
     #print("%s   %s  %s  %i-%02i-%02i %02i:%02i:%02i" % (tmsg_id, string.ljust(status, 8), string.ljust(username, 10), cpl.year, cpl.month, cpl.day, cpl.hour, cpl.minute, cpl.second))
     computer = task['engine_uuid'].to_s
-    start_time = task['started'].to_s
-    finish_time = task['completed'].to_s
+    start_time = task['started'].to_s[0..18]
+    finish_time = task['completed'].to_s[0..18]
   end
 %>
 	<tr>
-	 <td style="text-align:center;"><%= task['msg_id'].to_s %></td>
+	 <td title="<%= task['msg_id'].to_s %>"><%= task['msg_id'].to_s[0..7] + '…' %></td>
 	 <td><%= frame.to_s %></td>
    <td style="text-align:center;"><%= status %></td>
-	 <td style="text-align:center;"><%= task['resubmitted'].to_s %></td>
-	 <td><%= computer %></td>
+	 <td style="text-align:center;"><%= task['resubmitted'].to_s[0..18] %></td>
+	 <td title="<%= computer %>"><%= computer[0..7] + '…' %></td>
 	 <td><%= start_time %></td>
    <td><%= finish_time %></td>
    <td><%= link_to 'View log', :action => 'view_log', :id => @job._id.to_s, :nr => index %></td>
@@ -111,23 +111,23 @@ case $pyDrQueueClient.job_status(@job._id.to_s).to_s
 	when "pending"
 		%>
 		<div id="ButtonDiv">
-		<%= button_to 'Stop', {:action => 'stop', :id => @job_data.id}, {:title => "Stop waiting job."} %></div>
+		<%= button_to 'Stop', {:action => 'stop', :id => @job._id.to_s}, {:title => "Stop waiting job."} %></div>
 		<%
 	when "Drqueue::JOBSTATUS_ACTIVE"
 		%>
 		<div id="ButtonDiv">
-		<%= button_to 'Stop', {:action => 'stop', :id => @job_data.id}, {:title => "Stop running job."} %></div>
+		<%= button_to 'Stop', {:action => 'stop', :id => @job._id.to_s}, {:title => "Stop running job."} %></div>
 		<div id="ButtonDiv">
-		<%= button_to 'Hard stop', {:action => 'hstop', :id => @job_data.id}, {:title => "Stop running job and processing of all frames."} %></div>
+		<%= button_to 'Hard stop', {:action => 'hstop', :id => @job._id.to_s}, {:title => "Stop running job and processing of all frames."} %></div>
 		<%
 	when "Drqueue::JOBSTATUS_STOPPED"
 		%>
 		<div id="ButtonDiv">
-		<%= button_to 'Continue', {:action => 'continue', :id => @job_data.id}, {:title => "Continue stopped job."} %></div>
+		<%= button_to 'Continue', {:action => 'continue', :id => @job._id.to_s}, {:title => "Continue stopped job."} %></div>
 		<div id="ButtonDiv">
-		<%= button_to 'Rerun', {:action => 'rerun', :id => @job_data.id}, {:title => "Run stopped job again."} %></div>
+		<%= button_to 'Rerun', {:action => 'rerun', :id => @job._id.to_s}, {:title => "Run stopped job again."} %></div>
 		<div id="ButtonDiv">
-		<%= button_to 'Delete', { :action => 'delete', :id => @job_data.id }, {:title => "Delete stopped job.", :confirm => 'Are you sure?'} %></div>
+		<%= button_to 'Delete', {:action => 'delete', :id => @job._id.to_s}, {:title => "Delete stopped job.", :confirm => 'Are you sure?'} %></div>
 		<%
 	when "ok"
 		%>

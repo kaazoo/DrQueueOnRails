@@ -249,8 +249,9 @@ class JobsController < ApplicationController
     #  redirect_to :action => 'list' and return
     #end
 
-    $pyDrQueueClient.job_continue(params[:id].to_s)
-    redirect_to :action => 'show', :id => params[:id]
+    id_string = params[:id].to_s
+    $pyDrQueueClient.job_continue(id_string)
+    redirect_to :action => 'show', :id => id_string
   end
 
 
@@ -262,8 +263,9 @@ class JobsController < ApplicationController
     #  redirect_to :action => 'list' and return
     #end
 
-    $pyDrQueueClient.job_stop(params[:id].to_s)
-    redirect_to :action => 'show', :id => params[:id]
+    id_string = params[:id].to_s
+    $pyDrQueueClient.job_stop(id_string)
+    redirect_to :action => 'show', :id => id_string
   end
 
 
@@ -275,15 +277,17 @@ class JobsController < ApplicationController
     #  redirect_to :action => 'list' and return
     #end
 
-    $pyDrQueueClient.job_kill(params[:id].to_s)
-    redirect_to :action => 'show', :id => params[:id]
+    id_string = params[:id].to_s
+    $pyDrQueueClient.job_kill(id_string)
+    redirect_to :action => 'show', :id => id_string
   end
 
 
   # delete a job
   def destroy
 
-    job = Job.find_by__id(params[:id].to_s)
+    id_string = params[:id].to_s
+    job = Job.find_by__id(id_string)
     jobdir = File.dirname(job['scenefile'].to_s)
 
     # only owner and admin are allowed
@@ -309,7 +313,7 @@ class JobsController < ApplicationController
       FileUtils.remove_dir(job_dirname, true)
     end
 
-    $pyDrQueueClient.job_delete(params[:id].to_s)
+    $pyDrQueueClient.job_delete(id_string)
 
     redirect_to session[:return_path] and return
   end
@@ -318,7 +322,8 @@ class JobsController < ApplicationController
   # rerun a job
   def rerun
 
-    job = Job.find_by__id(params[:id].to_s)
+    id_string = params[:id].to_s
+    job = Job.find_by__id(id_string)
     jobdir = File.dirname(job['scenefile'].to_s)
 
     # only owner and admin are allowed
@@ -344,16 +349,17 @@ class JobsController < ApplicationController
       File.unlink(archive)
     end
 
-    $pyDrQueueClient.job_rerun(params[:id].to_s)
+    $pyDrQueueClient.job_rerun(id_string)
 
-    redirect_to :action => 'show', :id => params[:id]
+    redirect_to :action => 'show', :id => id_string
   end
 
 
   # download results of a job
   def download
 
-    job = Job.find_by__id(params[:id].to_s)
+    id_string = params[:id].to_s
+    job = Job.find_by__id(id_string)
     jobdir = File.dirname(job['scenefile'].to_s)
 
     # only owner and admin are allowed
