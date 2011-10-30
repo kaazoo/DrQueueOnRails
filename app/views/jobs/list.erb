@@ -72,7 +72,7 @@ Read the tutorials page before creating your first job!
 
 <br /><br />
 <% if params[:id] != 'all' %>
-<%= button_to 'Create a new job', :action => 'new' %> 
+<%= button_to 'Create a new job', {:action => 'new'}, {:method => 'get'} %>
 &nbsp;&nbsp;
 
 <br /><br />
