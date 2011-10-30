@@ -415,5 +415,174 @@ class JobsController < ApplicationController
   end
 
 
+  def new
+
+    #profile = Profile.find(session[:profile].id)
+
+    @job = Job.new
+
+    # default rendertype is animation
+    @job.rendertype = "animation"
+
+    # check if there is at least 500 MB available
+    if Job.check_diskspace(500) == false
+      flash[:notice] = 'There is less than 500 MB of free disk space avaiable. No new jobs at this time. Please contact the system administrator.' + df_free.to_s
+      redirect_to :action => 'list' and return
+    end
+
+    # check disk usage of user
+    #if Job.check_disk_usage(profile) == false
+    #  flash[:notice] = 'Your disk quota is reached. No new jobs at this time. Please delete some old jobs or contact the system administrator.'
+    #  redirect_to :action => 'list' and return
+    #end
+
+    # show only available renderers
+    @renderers = []
+    rend_array = ENV['AVAIL_RENDERERS'].split(",")
+    rend_array.each do |ren|
+      case ren
+        when "blender"
+          @renderers << ["Blender (internal renderer)", "blender"]
+        when "blenderlux"
+          @renderers << ["Blender (LuxRender renderer)", "blenderlux"]
+        when "cinema4d"
+          @renderers << ["Cinema 4D", "cinema4d"]
+        when "luxrender"
+          @renderers << ["LuxRender Standalone", "luxrender"]
+        when "maya"
+          @renderers << ["Maya (internal renderer)", "maya"]
+        when "mayamr"
+          @renderers << ["Maya (MentalRay renderer)", "mayamr"]
+        when "mentalray"
+          @renderers << ["MentalRay Standalone", "mentalray"]
+        when "vray"
+          @renderers << ["V-Ray Standalone", "vray"]
+      end
+    end
+
+  end
+
+
+  def create
+
+    # check user input
+    # TODO: use validate methods in the model
+    if (params[:job][:name] == nil) || (params[:job][:name] == "")
+      flash[:notice] = 'No name given.'
+      redirect_to :action => 'new' and return
+    end
+    if ((params[:file] == nil) || (params[:file] == "")) && ((params[:job][:scenefile] == nil) || (params[:job][:scenefile] == ""))
+      flash[:notice] = 'No file uploaded or scenefile specified.'
+      redirect_to :action => 'new' and return
+    end
+    if (params[:job][:renderer] == nil) || (params[:job][:renderer] == "")
+      flash[:notice] = 'No renderer given.'
+      redirect_to :action => 'new' and return
+    end
+    if (params[:job][:rendertype] == nil) || (params[:job][:rendertype] == "")
+      flash[:notice] = 'No rendertype given.'
+      redirect_to :action => 'new' and return
+    end
+    if (params[:job][:startframe] == nil) || (params[:job][:startframe] == "") || (params[:job][:startframe].to_i < 1)
+      flash[:notice] = 'No or wrong start frame given. Must be equal or greater 1.'
+      redirect_to :action => 'new' and return
+    end
+    if (params[:job][:endframe] == nil) || (params[:job][:endframe] == "") || (params[:job][:endframe].to_i < 1)
+      flash[:notice] = 'No or wrong end frame given. Must be equal or greater 1.'
+      redirect_to :action => 'new' and return
+    end
+    if (params[:job][:blocksize] == nil) || (params[:job][:blocksize] == "") || (params[:job][:blocksize].to_i < 1)
+      flash[:notice] = 'No or wrong blocksize given. Must be equal or greater 1.'
+      redirect_to :action => 'new' and return
+    end
+
+    # sanitize and fill in user input
+    job_name = params[:job][:name].strip
+    job_startframe = params[:job][:startframe].strip.to_i
+    job_endframe = params[:job][:endframe].strip.to_i
+    job_blocksize = params[:job][:blocksize].strip.to_i
+    job_renderer = params[:job][:renderer].strip
+    job_scenefile = params[:job][:scenefile].strip
+    job_retries = 1
+    # TODO
+    #job_owner = session[:profile].name
+    job_owner = "testuser"
+    job_created_with = "DrQueueOnRails"
+    job_options = {}
+    job_options['rendertype'] = params[:job][:rendertype]
+    # set priority depending on user status
+    # TODO
+    #Job.set_priority(session[:profile].status)
+    # TODO
+    # email notification
+    #if (session[:profile].ldap_account != "demo") && (ENV['DQOR_NOTIFY_EMAIL'] == "true")
+    #  job_options['send_email'] = true
+    #  job_options['email_recipients'] = session[:profile].email.to_s
+    #end
+    job_limits = {}
+
+    # prepare some stuff when an archive was uploaded
+    if (params[:file] != nil) && (params[:file] != "")
+      # create user directory
+      # TODO
+      #userdir = create_userdir(session[:profile])
+      puts userdir = File.join(ENV['DRQUEUE_ROOT'], "tmp", "testuser")
+
+      # create job directory
+      # we cannot use job_id here as we do not know it yet
+      # we use all alphanumeric chars of the name plus current time in seconds as jobdir name
+      puts jobdir = File.join(userdir, job_name.downcase.strip.gsub(/[^\w]/,'') + "_" + Time.now.to_i.to_s)
+      #puts jobdir = File.join(userdir, @job['_id'].to_s)
+
+      # process uploaded file
+      status, message = Job.handle_upload(params[:file], userdir, jobdir)
+
+      if status == false
+        flash[:notice] = message
+        redirect_to :action => 'new' and return
+      end
+
+      # Blender internal renderer
+      if job_renderer == "blender"
+        status, message, scenefile = Job.check_blender_file(userdir, jobdir)
+
+        if status == false
+          flash[:notice] = message
+        else
+          puts job_scenefile = scenefile
+        end
+      else
+        # delete jobdir
+        FileUtils.cd(userdir)
+        FileUtils.remove_dir(jobdir, true)
+        flash[:notice] = 'No correct renderer specified.'
+        redirect_to :action => 'new' and return
+      end
+
+      # set permissions
+      ### TODO: find a way to do this recursively in Ruby
+      #`chmod o+rw -R #{userdir}`
+      #`chmod g+rw -R #{userdir}`
+
+    end
+
+    # create job
+    job_options = RubyPython::Conversion.rtopHash(job_options)
+    job_limits = RubyPython::Conversion.rtopHash(job_limits)
+    puts @job = $pyDrQueueJob.new(job_name, job_startframe, job_endframe, job_blocksize, job_renderer, job_scenefile, job_retries, job_owner, job_options, job_created_with, job_limits)
+
+    # run job on renderfarm
+    status =  $pyDrQueueClient.job_run(@job)
+    if status == false
+      flash[:notice] = 'There was an error while creating your job. Please contact the administrator.'
+      redirect_to :action => 'new' and return
+    else
+      flash[:notice] = 'Job was successfully created.'
+      # lookup job in order to get job id
+      created_job = Job.find_by_name(job_name)
+      redirect_to :action => 'show', :id => created_job['_id'].to_s
+    end
+  end
+
 
 end
