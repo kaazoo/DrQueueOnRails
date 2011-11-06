@@ -1,5 +1,7 @@
 class JobsController < ApplicationController
 
+  #before_filter :authenticate_user!
+
   # for hash computation
   require 'digest/md5'
 
@@ -69,7 +71,7 @@ class JobsController < ApplicationController
   def show
 
     # seek for job info in db
-    @job = Job.find_by__id(params[:id].to_s)
+    @job = Job.find(params[:id].to_s)
 
     # get tasks of job
     tasks_db = $pyDrQueueClient.query_task_list(@job._id.to_s)
@@ -126,7 +128,7 @@ class JobsController < ApplicationController
     #  redirect_to :action => 'list' and return
     #end
 
-    @job = Job.find_by__id(params[:id].to_s)
+    @job = Job.find(params[:id].to_s)
     nr = params[:nr].to_i
     current_task = @job['startframe'].to_i + nr
     end_of_block = @job['startframe'].to_i + @job['blocksize'].to_i - 1 + nr
@@ -161,7 +163,7 @@ class JobsController < ApplicationController
 
     @nr = params[:nr].to_i
     @job_id = params[:id]
-    @job = Job.find_by__id(params[:id].to_s)
+    @job = Job.find(params[:id].to_s)
 
     if @nr >= @job['endframe'].to_i
       redirect_to :action => 'list' and return
@@ -188,7 +190,7 @@ class JobsController < ApplicationController
 
   def load_image
 
-    job = Job.find_by__id(params[:id].to_s)
+    job = Job.find(params[:id].to_s)
     jobdir = File.dirname(job['scenefile'].to_s)
 
     # get all files which are newer than the job scenefile
@@ -205,36 +207,36 @@ class JobsController < ApplicationController
 
     found_files.sort!
     imagefile = found_files[params[:nr].to_i]
-    imagepath = File.join(jobdir, imagefile)
-
-    # determine image type
-    img = Magick::Image::read(imagepath).first
-    # convert: BMP, Iris, TGA, TGA RAW, Cineon, DPX, EXR, Radiance HDR, TIF
-    # don't convert: PNG, JPG
-    case img.format
-      when 'PNG', 'JPG', 'JPEG', 'JPX', 'JNG'
-        # don't convert
-        final_path = imagepath
-        final_filename = imagefile
-      when 'BMP', 'BMP2', 'BMP3', 'ICB', 'TGA', 'VDA', 'VST', 'CIN', 'DPX', 'EXR', 'PTIF', 'TIFF', 'TIFF64'
-        # convert if not yet done
-        if (File.file? imagepath + "_preview.png") == false
-          # resize if too big
-          if img.columns > 1000
-            preview_img = img.resize_to_fit(1000)
-          else
-            preview_img = img
-          end
-          preview_img.format = "PNG"
-          preview_img.write(imagepath + "_preview.png")
-        end
-        puts final_path = imagepath + "_preview.png"
-        final_filename = File.basename(final_path)
-    end
-
     if imagefile == nil
       render :text => "<br /><br />Image file was not found.<br /><br />" and return false
     else
+      imagepath = File.join(jobdir, imagefile)
+
+      # determine image type
+      img = Magick::Image::read(imagepath).first
+      # convert: BMP, Iris, TGA, TGA RAW, Cineon, DPX, EXR, Radiance HDR, TIF
+      # don't convert: PNG, JPG
+      case img.format
+        when 'PNG', 'JPG', 'JPEG', 'JPX', 'JNG'
+          # don't convert
+          final_path = imagepath
+          final_filename = imagefile
+        when 'BMP', 'BMP2', 'BMP3', 'ICB', 'TGA', 'VDA', 'VST', 'CIN', 'DPX', 'EXR', 'PTIF', 'TIFF', 'TIFF64'
+          # convert if not yet done
+          if (File.file? imagepath + "_preview.png") == false
+            # resize if too big
+            if img.columns > 1000
+              preview_img = img.resize_to_fit(1000)
+            else
+              preview_img = img
+            end
+            preview_img.format = "PNG"
+            preview_img.write(imagepath + "_preview.png")
+          end
+          puts final_path = imagepath + "_preview.png"
+          final_filename = File.basename(final_path)
+      end
+
       img = Magick::Image::read(final_path).first
       send_file final_path, :filename => final_filename, :type => 'image/'+img.format.downcase, :disposition => 'inline'
     end
@@ -287,7 +289,7 @@ class JobsController < ApplicationController
   def destroy
 
     id_string = params[:id].to_s
-    job = Job.find_by__id(id_string)
+    job = Job.find(id_string)
     jobdir = File.dirname(job['scenefile'].to_s)
 
     # only owner and admin are allowed
@@ -323,7 +325,7 @@ class JobsController < ApplicationController
   def rerun
 
     id_string = params[:id].to_s
-    job = Job.find_by__id(id_string)
+    job = Job.find(id_string)
     jobdir = File.dirname(job['scenefile'].to_s)
 
     # only owner and admin are allowed
@@ -359,7 +361,7 @@ class JobsController < ApplicationController
   def download
 
     id_string = params[:id].to_s
-    job = Job.find_by__id(id_string)
+    job = Job.find(id_string)
     jobdir = File.dirname(job['scenefile'].to_s)
 
     # only owner and admin are allowed
