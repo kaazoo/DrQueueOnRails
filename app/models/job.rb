@@ -1,20 +1,19 @@
 class Job
-  include MongoMapper::Document
+  include Mongoid::Document
+  store_in "drqueue_jobs"
 
-  set_collection_name "drqueue_jobs"
-
-  key :name, String
-  key :startframe, Integer
-  key :endframe, Integer
-  key :blocksize, Integer
-  key :renderer, String
-  key :scenefile, String
-  key :retries, Integer
-  key :owner, String
-  key :created_with, String
-  key :rendertype, String
-  key :send_email, Boolean
-  key :email_recipients, String
+  field :name, :type => String
+  field :startframe, :type => Integer
+  field :endframe, :type => Integer
+  field :blocksize, :type => Integer
+  field :renderer, :type => String
+  field :scenefile, :type => String
+  field :retries, :type => Integer
+  field :owner, :type => String
+  field :created_with, :type => String
+  field :rendertype, :type => String
+  field :send_email, :type => Boolean
+  field :email_recipients, :type => String
 
 
   def self.check_diskspace(min_amount)
