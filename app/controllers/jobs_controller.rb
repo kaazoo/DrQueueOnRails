@@ -1,6 +1,6 @@
 class JobsController < ApplicationController
 
-  #before_filter :authenticate_user!
+  before_filter :authenticate_user!
 
   # for hash computation
   require 'digest/md5'

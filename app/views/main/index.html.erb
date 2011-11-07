@@ -1,2 +1,9 @@
-<h1>Main#index</h1>
-<p>Find me in app/views/main/index.html.erb</p>
+<h3>Welcome <%= current_user.name %>.</h3>
+<br />
+This is DrQueueOnRails, a webinterface for <a href="http://www.drqueue.org">DrQueue</a>, the open source distributed render queue. <br /><br />
+If you need support or found a bug, contact the below-mentioned persons or look at <a href="https://ssl.drqueue.org/redmine/projects/drqueue/wiki/DrQueueOnRails">this wiki page</a>.<br />
+Please have a look on the tutorials page for usage instructions.
+<br /><br /><br />
+
+<h4>Your contacts for this installation:</h4>
+<%= @contacts %>

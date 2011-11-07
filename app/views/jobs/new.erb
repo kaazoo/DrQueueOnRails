@@ -1,0 +1,70 @@
+<h2>New job</h2>
+
+
+<%= form_tag({:action => 'create'}, :multipart => true) do -%>
+  
+<div style="color:red"><%= flash[:notice] %></div>
+
+<p><label for="job_name">Name</label><br/>
+<%= text_field 'job', 'name'  %></p>
+
+<p><label for="job_scenefile">Scenefile</label><br/>
+<%= text_field 'job', 'scenefile'  %></p>
+
+<p><label for="file">Archive of project (scene file and all needed files like textures (tgz, tbz2, rar, zip))</label><br/>
+<input type="file" name="file"></p>
+
+<p><label for="job_renderer">Renderer</label><br/>
+<%= select("job", "renderer", @renderers, {}, {}) %></p>
+
+<p><label for="job_rendertype">Rendertype</label><br/>
+<%= select("job", "rendertype", [ ["Animation", "animation"], ["Single image", "image"] ], {}, {"onChange" => "if(this.value == 'image') {document.getElementById('frame_div').style.display='none'; document.getElementById('res_div').style.display='block';} else {document.getElementById('frame_div').style.display='block'; document.getElementById('res_div').style.display='none';}"}) 
+%></p>
+
+
+<div id="frame_div" 
+<% if @job.rendertype == "animation" %>
+  style="display:block">
+<% else %>
+  style="display:none">
+<% end %>
+
+<p><label for="job_startframe">Startframe</label><br/>
+<%= text_field_tag 'job[startframe]', 1, {:size => 5, :maxlength => 5} %> 
+<input name="increment" type="submit" value=" + " onClick="document.getElementById('job_startframe').value = parseInt(eval(document.getElementById('job_startframe').value) + 1); return false;" />
+<input name="decrement" type="submit" value=" - " onClick="document.getElementById('job_startframe').value = parseInt(eval(document.getElementById('job_startframe').value) - 1); return false;" />
+</p>
+
+<p><label for="job_endframe">Endframe</label><br/>
+<%= text_field_tag 'job[endframe]', 1, {:size => 5, :maxlength => 5} %>
+<input name="increment" type="submit" value=" + " onClick="document.getElementById('job_endframe').value = parseInt(eval(document.getElementById('job_endframe').value) + 1); return false;" />
+<input name="decrement" type="submit" value=" - " onClick="document.getElementById('job_endframe').value = parseInt(eval(document.getElementById('job_endframe').value) - 1); return false;" />
+</p>
+
+<p><label for="job_blocksize">Blocksize</label><br/>
+<%= text_field_tag 'job[blocksize]', 1, {:size => 5, :maxlength => 5} %>
+<input name="increment" type="submit" value=" + " onClick="document.getElementById('job_blocksize').value = parseInt(eval(document.getElementById('job_blocksize').value) + 1); return false;" />
+<input name="decrement" type="submit" value=" - " onClick="document.getElementById('job_blocksize').value = parseInt(eval(document.getElementById('job_blocksize').value) - 1); return false;" />
+</p>
+</div>
+
+
+<div id="res_div"
+<% if @job.rendertype == "image" %>
+  style="display:block">
+<% else %>
+  style="display:none">
+<% end %>
+
+<p><label for="res_height">Image height in pixel</label><br/>
+<%= select_tag "job[res_height]", "<option>0 .. 1000 (low)</option> <option> > 1000 (medium)</option> <option> > 2000 (high)</option>".html_safe %>
+</div>
+
+<br /><br />
+ 
+<%= submit_tag "Create" %>
+<% end -%>
+
+
+<br /><br />
+<%= link_to 'Back', :controller => 'jobs' %>

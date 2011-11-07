@@ -1,6 +1,9 @@
 DrQueueOnRails::Application.routes.draw do
-  get "main/index"
 
+  devise_for :users
+
+  root :to => 'main#index'
+  resources :main, :only => :index
 
   resources :jobs
   match 'jobs/:id/view_log' => 'jobs#view_log'
@@ -10,6 +13,7 @@ DrQueueOnRails::Application.routes.draw do
   match 'jobs/:id/download' => 'jobs#download'
   match 'jobs/:id/stop' => 'jobs#stop'
   match 'jobs/:id/hstop' => 'jobs#hstop'
+
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
@@ -60,7 +64,7 @@ DrQueueOnRails::Application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.
-  # root :to => 'welcome#index'
+  #root :to => 'main#index'
 
   # See how all your routes lay out with "rake routes"
 
