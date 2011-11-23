@@ -4,6 +4,10 @@ DrQueueOnRails::Application.routes.draw do
 
   root :to => 'main#index'
   resources :main, :only => :index
+  match 'main/cloudcontrol' => 'main#cloudcontrol'
+  match 'main/computers' => 'main#computers'
+  match 'main/make_admin' => 'main#make_admin'
+  match 'main/make_noadmin' => 'main#make_noadmin'
 
   resources :jobs
   match 'jobs/:id/view_log' => 'jobs#view_log'
@@ -14,6 +18,8 @@ DrQueueOnRails::Application.routes.draw do
   match 'jobs/:id/stop' => 'jobs#stop'
   match 'jobs/:id/hstop' => 'jobs#hstop'
 
+  resources :rendersessions
+  resources :payments
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
