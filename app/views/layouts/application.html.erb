@@ -36,12 +36,20 @@ a webfrontend for DrQueue
 
 
 <div align="right">
-<%= render 'shared/navigation' %>
+<% if user_signed_in? %>
+  <a href="/">Start</a>
+  <%= link_to('Jobs', jobs_path) %>
+  <%= link_to('Computers', main_computers_path) %>
+  <%= link_to('CloudControl', main_cloudcontrol_path) %>
+  <%= link_to('Logout', destroy_user_session_path, :method=>'delete') %>
+  <br /><br />
+  Logged in as <%= link_to(current_user.name, edit_user_registration_path) %>
+<% else %>
+  <%= link_to('Login', new_user_session_path)  %>
+  <%= link_to('Sign up', new_user_registration_path)  %>
+<% end %>
 </div>
 
-<ul>
-menu
-</ul>
 </div>
 
 
