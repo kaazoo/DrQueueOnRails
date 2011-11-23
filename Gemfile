@@ -11,6 +11,8 @@ gem 'jnunemaker-validatable', '>= 1.8.4'
 gem 'devise', '>= 1.2'
 #gem 'mm-devise', '>= 1.2'
 #gem "devise_ldap_authenticatable"
+gem 'google_currency'
+gem 'money'
 
 
 # Gems used only for assets and not required
