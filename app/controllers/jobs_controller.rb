@@ -32,22 +32,19 @@ class JobsController < ApplicationController
     # update list of all computers
     #Job.global_computer_list(1)
 
-    #if (params[:id] == 'all') && (session[:profile].status == 'admin')
+    if current_user.admin == true
       # get all jobs from db
       @jobs = Job.all
 
-      # get all jobs from master which are not in db
-      #@jobs_only_master = Job.no_db_jobs()
-
       # set return path to list action
       #session[:return_path] = url_for(:controller => 'jobs', :action => 'list', :id => 'all', :protocol => ENV['WEB_PROTO']+"://")
-    #else
+    else
       # get only owners jobs from db
-      #@jobs_db = Job.find_all_by_profile_id(session[:profile].id)
+      @jobs = Job.all(:conditions => { :owner => current_user.name })
 
       # set return path to list action
       #session[:return_path] = url_for(:controller => 'jobs', :action => 'list', :protocol => ENV['WEB_PROTO']+"://")
-    #end
+    end
 
     # refresh timer
     #link = url_for(:controller => 'jobs', :action => 'list', :id => params[:id], :protocol => ENV['WEB_PROTO']+"://")
@@ -73,6 +70,11 @@ class JobsController < ApplicationController
     # seek for job info in db
     @job = Job.find(params[:id].to_s)
 
+    # only owner and admin are allowed
+    if (@job != nil) && (@job.owner != current_user.name) && (current_user.admin != true)
+      redirect_to :controller => 'jobs' and return
+    end
+
     # get tasks of job
     tasks_db = $pyDrQueueClient.query_task_list(@job._id.to_s)
 
@@ -81,11 +83,6 @@ class JobsController < ApplicationController
     while tasks_db.__len__ > 0
       @tasks << tasks_db.pop
     end
-
-    # only owner and admin are allowed (only for drqueuonrails-jobs, not from drqman)
-    #if (@job != nil) && (@job.profile_id != session[:profile].id) && (session[:profile].status != 'admin')
-    #  redirect_to :action => 'list' and return
-    #end
 
     # get list of all computers
     #@computer_list = Job.global_computer_list()
@@ -123,12 +120,14 @@ class JobsController < ApplicationController
 
   def view_log
 
-    # only owner and admin are allowed
-    #if (job_db.profile_id != session[:profile].id) && (session[:profile].status != 'admin')
-    #  redirect_to :action => 'list' and return
-    #end
-
+    # seek for job info in db
     @job = Job.find(params[:id].to_s)
+
+    # only owner and admin are allowed
+    if (@job != nil) && (@job.owner != current_user.name) && (current_user.admin != true)
+      redirect_to :controller => 'jobs' and return
+    end
+
     nr = params[:nr].to_i
     current_task = @job['startframe'].to_i + nr
     end_of_block = @job['startframe'].to_i + @job['blocksize'].to_i - 1 + nr
@@ -156,14 +155,16 @@ class JobsController < ApplicationController
 
   def view_image
 
+    # seek for job info in db
+    @job = Job.find(params[:id].to_s)
+
     # only owner and admin are allowed
-    #if (job_db.profile_id != session[:profile].id) && (session[:profile].status != 'admin')
-    #  redirect_to :action => 'list' and return
-    #end
+    if (@job != nil) && (@job.owner != current_user.name) && (current_user.admin != true)
+      redirect_to :controller => 'jobs' and return
+    end
 
     @nr = params[:nr].to_i
     @job_id = params[:id]
-    @job = Job.find(params[:id].to_s)
 
     if @nr >= @job['endframe'].to_i
       redirect_to :action => 'list' and return
@@ -190,11 +191,18 @@ class JobsController < ApplicationController
 
   def load_image
 
-    job = Job.find(params[:id].to_s)
-    jobdir = File.dirname(job['scenefile'].to_s)
+    # seek for job info in db
+    @job = Job.find(params[:id].to_s)
+
+    # only owner and admin are allowed
+    if (@job != nil) && (@job.owner != current_user.name) && (current_user.admin != true)
+      redirect_to :controller => 'jobs' and return
+    end
+
+    jobdir = File.dirname(@job['scenefile'].to_s)
 
     # get all files which are newer than the job scenefile
-    scene_ctime = File.ctime(job['scenefile'].to_s).to_i
+    scene_ctime = File.ctime(@job['scenefile'].to_s).to_i
     found_files = []
     dir = Dir.open(jobdir)
     dir.each do |entry|
@@ -246,10 +254,13 @@ class JobsController < ApplicationController
   # continue a stopped job
   def continue
 
+    # seek for job info in db
+    @job = Job.find(params[:id].to_s)
+
     # only owner and admin are allowed
-    #if (job_db.profile_id != session[:profile].id) && (session[:profile].status != 'admin')
-    #  redirect_to :action => 'list' and return
-    #end
+    if (@job != nil) && (@job.owner != current_user.name) && (current_user.admin != true)
+      redirect_to :controller => 'jobs' and return
+    end
 
     id_string = params[:id].to_s
     $pyDrQueueClient.job_continue(id_string)
@@ -260,10 +271,13 @@ class JobsController < ApplicationController
   # stop a job
   def stop
 
+    # seek for job info in db
+    @job = Job.find(params[:id].to_s)
+
     # only owner and admin are allowed
-    #if (job_db.profile_id != session[:profile].id) && (session[:profile].status != 'admin')
-    #  redirect_to :action => 'list' and return
-    #end
+    if (@job != nil) && (@job.owner != current_user.name) && (current_user.admin != true)
+      redirect_to :controller => 'jobs' and return
+    end
 
     id_string = params[:id].to_s
     $pyDrQueueClient.job_stop(id_string)
@@ -274,10 +288,13 @@ class JobsController < ApplicationController
   # hard stop a job
   def hstop
 
+    # seek for job info in db
+    @job = Job.find(params[:id].to_s)
+
     # only owner and admin are allowed
-    #if (job_db.profile_id != session[:profile].id) && (session[:profile].status != 'admin')
-    #  redirect_to :action => 'list' and return
-    #end
+    if (@job != nil) && (@job.owner != current_user.name) && (current_user.admin != true)
+      redirect_to :controller => 'jobs' and return
+    end
 
     id_string = params[:id].to_s
     $pyDrQueueClient.job_kill(id_string)
@@ -288,14 +305,17 @@ class JobsController < ApplicationController
   # delete a job
   def destroy
 
+    # seek for job info in db
+    @job = Job.find(params[:id].to_s)
+
+    # only owner and admin are allowed
+    if (@job != nil) && (@job.owner != current_user.name) && (current_user.admin != true)
+      redirect_to :controller => 'jobs' and return
+    end
+
     id_string = params[:id].to_s
     job = Job.find(id_string)
     jobdir = File.dirname(job['scenefile'].to_s)
-
-    # only owner and admin are allowed
-    #if (job_db.profile_id != session[:profile].id) && (session[:profile].status != 'admin')
-    #  redirect_to :action => 'list' and return
-    #end
 
     if ENV['USER_TMP_PREFIX'] == "id"
       userdir = session[:profile].id.to_s
@@ -324,14 +344,17 @@ class JobsController < ApplicationController
   # rerun a job
   def rerun
 
+    # seek for job info in db
+    @job = Job.find(params[:id].to_s)
+
+    # only owner and admin are allowed
+    if (@job != nil) && (@job.owner != current_user.name) && (current_user.admin != true)
+      redirect_to :controller => 'jobs' and return
+    end
+
     id_string = params[:id].to_s
     job = Job.find(id_string)
     jobdir = File.dirname(job['scenefile'].to_s)
-
-    # only owner and admin are allowed
-    #if (job_db.profile_id != session[:profile].id) && (session[:profile].status != 'admin')
-    #  redirect_to :action => 'list' and return
-    #end
 
     # delete output archive
     #if `find . -maxdepth 1 -type f -name *.zip`.length > 0
@@ -360,14 +383,17 @@ class JobsController < ApplicationController
   # download results of a job
   def download
 
+    # seek for job info in db
+    @job = Job.find(params[:id].to_s)
+
+    # only owner and admin are allowed
+    if (@job != nil) && (@job.owner != current_user.name) && (current_user.admin != true)
+      redirect_to :controller => 'jobs' and return
+    end
+
     id_string = params[:id].to_s
     job = Job.find(id_string)
     jobdir = File.dirname(job['scenefile'].to_s)
-
-    # only owner and admin are allowed
-    #if (job_db.profile_id != session[:profile].id) && (session[:profile].status != 'admin')
-    #  redirect_to :action => 'list' and return
-    #end
 
     # path to renderings
     FileUtils.cd(jobdir)
