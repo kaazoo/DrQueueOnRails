@@ -1,0 +1,30 @@
+<h1>Listing rendersessions</h1>
+
+<table>
+  <tr>
+    <th>Num slaves</th>
+    <th>Run time</th>
+    <th>Payment</th>
+    <th>Time passed</th>
+    <th>Costs</th>
+    <th>Start timestamp</th>
+  </tr>
+
+<% @rendersessions.each do |rendersession| %>
+  <tr>
+    <td><%=h rendersession.num_slaves %></td>
+    <td><%=h rendersession.run_time %></td>
+    <td><%=h rendersession.payment_id %></td>
+    <td><%=h rendersession.time_passed %></td>
+    <td><%=h rendersession.costs %></td>
+    <td><%=h rendersession.start_timestamp %></td>
+    <td><%= link_to 'Show', rendersession %></td>
+    <td><%= link_to 'Edit', edit_rendersession_path(rendersession) %></td>
+    <td><%= link_to 'Destroy', rendersession, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New rendersession', new_rendersession_path %>

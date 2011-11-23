@@ -1,0 +1,24 @@
+<h1>Listing payments</h1>
+
+<table>
+  <tr>
+    <th>Profile</th>
+    <th>Paid on</th>
+    <th>Amount</th>
+  </tr>
+
+<% @payments.each do |payment| %>
+  <tr>
+    <td><%=h payment.profile_id %></td>
+    <td><%=h payment.paid_on %></td>
+    <td><%=h payment.amount %></td>
+    <td><%= link_to 'Show', payment %></td>
+    <td><%= link_to 'Edit', edit_payment_path(payment) %></td>
+    <td><%= link_to 'Destroy', payment, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New payment', new_payment_path %>

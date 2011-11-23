@@ -1,0 +1,38 @@
+<p>
+  <b>Num slaves:</b>
+  <%=h @rendersession.num_slaves %>
+</p>
+
+<p>
+  <b>Run time:</b>
+  <%=h @rendersession.run_time %>
+</p>
+
+<p>
+  <b>Profile:</b>
+  <%=h @rendersession.profile_id %>
+</p>
+
+<p>
+  <b>Payment:</b>
+  <%=h @rendersession.payment_id %>
+</p>
+
+<p>
+  <b>Time passed:</b>
+  <%=h @rendersession.time_passed %>
+</p>
+
+<p>
+  <b>Costs:</b>
+  <%=h @rendersession.costs %>
+</p>
+
+<p>
+  <b>Start timestamp:</b>
+  <%=h @rendersession.start_timestamp %>
+</p>
+
+
+<%= link_to 'Edit', edit_rendersession_path(@rendersession) %> |
+<%= link_to 'Back', rendersessions_path %>
