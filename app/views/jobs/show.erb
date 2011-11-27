@@ -112,22 +112,8 @@ case $pyDrQueueClient.job_status(@job._id.to_s).to_s
 		%>
 		<div id="ButtonDiv">
 		<%= button_to 'Stop', {:action => 'stop', :id => @job._id.to_s}, {:title => "Stop waiting job."} %></div>
-		<%
-	when "Drqueue::JOBSTATUS_ACTIVE"
-		%>
-		<div id="ButtonDiv">
-		<%= button_to 'Stop', {:action => 'stop', :id => @job._id.to_s}, {:title => "Stop running job."} %></div>
-		<div id="ButtonDiv">
-		<%= button_to 'Hard stop', {:action => 'hstop', :id => @job._id.to_s}, {:title => "Stop running job and processing of all frames."} %></div>
-		<%
-	when "Drqueue::JOBSTATUS_STOPPED"
-		%>
-		<div id="ButtonDiv">
-		<%= button_to 'Continue', {:action => 'continue', :id => @job._id.to_s}, {:title => "Continue stopped job."} %></div>
-		<div id="ButtonDiv">
-		<%= button_to 'Rerun', {:action => 'rerun', :id => @job._id.to_s}, {:title => "Run stopped job again."} %></div>
-		<div id="ButtonDiv">
-		<%= button_to 'Delete', {:action => 'delete', :id => @job._id.to_s}, {:title => "Delete stopped job.", :confirm => 'Are you sure?'} %></div>
+	  <div id="ButtonDiv">
+		<%= button_to 'Delete', {:action => 'destroy', :id => @job._id.to_s}, {:title => "Delete finished job.", :method => "delete", :confirm => 'Are you sure?'} %></div>
 		<%
 	when "ok"
 		%>
