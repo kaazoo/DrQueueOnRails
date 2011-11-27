@@ -452,6 +452,9 @@ class JobsController < ApplicationController
     # default rendertype is animation
     @job.rendertype = "animation"
 
+    # default file provider is upload
+    @job.file_provider = "upload"
+
     # check if there is at least 500 MB available
     if Job.check_diskspace(500) == false
       flash[:notice] = 'There is less than 500 MB of free disk space avaiable. No new jobs at this time. Please contact the system administrator.' + df_free.to_s
@@ -499,8 +502,12 @@ class JobsController < ApplicationController
       flash[:notice] = 'No name given.'
       redirect_to :action => 'new' and return
     end
-    if ((params[:file] == nil) || (params[:file] == "")) && ((params[:job][:scenefile] == nil) || (params[:job][:scenefile] == ""))
-      flash[:notice] = 'No file uploaded or scenefile specified.'
+    if ((params[:file] == nil) || (params[:file] == "")) && (params[:job][:file_provider] == "upload")
+      flash[:notice] = 'No file uploaded.'
+      redirect_to :action => 'new' and return
+    end
+    if ((params[:job][:scenefile] == nil) || (params[:job][:scenefile] == "")) && (params[:job][:file_provider] == "path")
+      flash[:notice] = 'No scenefile specified.'
       redirect_to :action => 'new' and return
     end
     if (params[:job][:renderer] == nil) || (params[:job][:renderer] == "")
@@ -532,9 +539,8 @@ class JobsController < ApplicationController
     job_renderer = params[:job][:renderer].strip
     job_scenefile = params[:job][:scenefile].strip
     job_retries = 1
-    # TODO
-    #job_owner = session[:profile].name
-    job_owner = "testuser"
+    # set current user as owner
+    job_owner = current_user.name
     job_created_with = "DrQueueOnRails"
     job_options = {}
     job_options['rendertype'] = params[:job][:rendertype]
@@ -607,7 +613,7 @@ class JobsController < ApplicationController
     else
       flash[:notice] = 'Job was successfully created.'
       # lookup job in order to get job id
-      created_job = Job.find_by_name(job_name)
+      created_job = Job.where(:name => job_name.to_s).first
       redirect_to :action => 'show', :id => created_job['_id'].to_s
     end
   end

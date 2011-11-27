@@ -14,6 +14,7 @@ class Job
   field :rendertype, :type => String
   field :send_email, :type => Boolean
   field :email_recipients, :type => String
+  field :file_provider, :type => String
 
 
   def self.check_diskspace(min_amount)
