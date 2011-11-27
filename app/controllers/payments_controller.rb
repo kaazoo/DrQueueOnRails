@@ -1,15 +1,15 @@
 class PaymentsController < ApplicationController
 
   # template
-  layout "main_layout"
+  #layout "main_layout"
 
 
   # GET /payments
   # GET /payments.xml
   def index
     # only admins are allowed to use cloudcontrol
-    if session[:profile].status != 'admin'
-      redirect_to :controller => 'main', :action => 'index' and return
+    if current_user.admin == false
+      redirect_to :controller => 'main' and return
     else
       @payments = Payment.all
   
@@ -38,11 +38,11 @@ class PaymentsController < ApplicationController
   # GET /payments/new.xml
   def new
     # only admins are allowed to use cloudcontrol
-    if session[:profile].status != 'admin'
-      redirect_to :controller => 'main', :action => 'index' and return
+    if current_user.admin == false
+      redirect_to :controller => 'main' and return
     else
       @payment = Payment.new
-      @profiles = Profile.find(:all)
+      @profiles = User.find(:all)
   
       respond_to do |format|
         format.html # new.html.erb
@@ -56,11 +56,11 @@ class PaymentsController < ApplicationController
   # GET /payments/1/edit
   def edit
     # only admins are allowed to use cloudcontrol
-    if session[:profile].status != 'admin'
-      redirect_to :controller => 'main', :action => 'index' and return
+    if current_user.admin == false
+      redirect_to :controller => 'main' and return
     else
       @payment = Payment.find(params[:id])
-      @profiles = Profile.find(:all)
+      @profiles = User.find(:all)
     end
   end
 
@@ -69,8 +69,8 @@ class PaymentsController < ApplicationController
   # POST /payments.xml
   def create
     # only admins are allowed to use cloudcontrol
-    if session[:profile].status != 'admin'
-      redirect_to :controller => 'main', :action => 'index' and return
+    if current_user.admin == false
+      redirect_to :controller => 'main' and return
     else
       @payment = Payment.new(params[:payment])
   
@@ -93,8 +93,8 @@ class PaymentsController < ApplicationController
   # PUT /payments/1.xml
   def update
     # only admins are allowed to use cloudcontrol
-    if session[:profile].status != 'admin'
-      redirect_to :controller => 'main', :action => 'index' and return
+    if current_user.admin == false
+      redirect_to :controller => 'main' and return
     else
       @payment = Payment.find(params[:id])
   
@@ -116,8 +116,8 @@ class PaymentsController < ApplicationController
   # DELETE /payments/1.xml
   def destroy
     # only admins are allowed to use cloudcontrol
-    if session[:profile].status != 'admin'
-      redirect_to :controller => 'main', :action => 'index' and return
+    if current_user.admin == false
+      redirect_to :controller => 'main' and return
     else
       @payment = Payment.find(params[:id])
       @payment.destroy

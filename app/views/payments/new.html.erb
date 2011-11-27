@@ -1,11 +1,13 @@
 <h1>New payment</h1>
 
 <% form_for(@payment) do |f| %>
-  <%= f.error_messages %>
+  <%= 
+  #f.error_messages 
+  %>
   
   <p>
-    <%= f.label :profile_id %><br />
-    <%= select("payment", "profile_id", @profiles.map {|p| [p.name,p.id]}) %>
+    <%= f.label :user %><br />
+    <%= select("payment", "user", @profiles.map {|p| [p.name,p.id]}) %>
   </p>
   <p>
     <%= f.label :paid_on %><br />
