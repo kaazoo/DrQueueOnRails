@@ -29,18 +29,16 @@ class JobsController < ApplicationController
 
 
   def list  
-    # update list of all computers
-    #Job.global_computer_list(1)
 
     if current_user.admin == true
       # get all jobs from db
-      @jobs = Job.all
+      @jobs = Job.all(:sort => [[ :name, :asc ]])
 
       # set return path to list action
       #session[:return_path] = url_for(:controller => 'jobs', :action => 'list', :id => 'all', :protocol => ENV['WEB_PROTO']+"://")
     else
       # get only owners jobs from db
-      @jobs = Job.all(:conditions => { :owner => current_user.name })
+      @jobs = Job.all(:conditions => { :owner => current_user.name }, :sort => [[ :name, :asc ]])
 
       # set return path to list action
       #session[:return_path] = url_for(:controller => 'jobs', :action => 'list', :protocol => ENV['WEB_PROTO']+"://")
