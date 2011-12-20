@@ -1,7 +1,6 @@
 source 'http://gemcutter.org'
 
 gem 'rails', '3.1.1'
-#gem "mongo_mapper"
 gem "mongoid"
 gem "bson_ext"
 gem "rubypython"
@@ -9,11 +8,10 @@ gem 'rmagick'
 gem 'json'
 gem 'jnunemaker-validatable', '>= 1.8.4'
 gem 'devise', '>= 1.2'
-#gem 'mm-devise', '>= 1.2'
 #gem "devise_ldap_authenticatable"
 gem 'google_currency'
 gem 'money'
-
+gem 'activemerchant'
 
 # Gems used only for assets and not required
 # in production environments by default.
