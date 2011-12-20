@@ -127,8 +127,8 @@ class JobsController < ApplicationController
     end
 
     nr = params[:nr].to_i
-    current_task = @job['startframe'].to_i + nr
-    end_of_block = @job['startframe'].to_i + @job['blocksize'].to_i - 1 + nr
+    current_task = @job['startframe'].to_i + nr * @job['blocksize'].to_i
+    end_of_block = @job['startframe'].to_i + nr * @job['blocksize'].to_i + @job['blocksize'].to_i - 1
     logfile = @job['name'].to_s + "-" + current_task.to_s + "_" + end_of_block.to_s + ".log"
     @logfile = File.join(ENV['DRQUEUE_LOGS'], logfile)
 
@@ -162,6 +162,8 @@ class JobsController < ApplicationController
     end
 
     @nr = params[:nr].to_i
+    @startframe = @job['startframe'].to_i
+    @nr_end = @nr + @job['blocksize'].to_i - 1
     @job_id = params[:id]
 
     if @nr >= @job['endframe'].to_i
