@@ -3,7 +3,7 @@ source 'http://gemcutter.org'
 gem 'rails', '3.1.1'
 gem "mongoid"
 gem "bson_ext"
-gem "rubypython"
+gem "rubypython", '0.5.3'
 gem 'rmagick'
 gem 'json'
 gem 'jnunemaker-validatable', '>= 1.8.4'
