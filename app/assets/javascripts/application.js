@@ -12,22 +12,9 @@
 $('form[data-remote]')
 $('a[data-remote],input[data-remote]')
 
-$('.mybutton').bind('ajax:beforeSend', function(){
-  alert("beforeSend!");
-  return false;
-});
-
-$('.mybutton').bind('ajax:success', function(){
-  alert("success!");
-  return false;
-});
 
 $(function () {
-  $('.mybutton').bind('ajax:beforeSend', function (evt, xhr, settings) {
-    alert("beforeSend!");
-    return false;
-  })
-  $('.mybutton').click(function () {
+  $('.calc_button').click(function () {
     nums = document.getElementById("rendersession_num_slaves").value
     rtime = document.getElementById("rendersession_run_time").value
     vtype = document.getElementById("rendersession_vm_type").value
@@ -36,6 +23,14 @@ $(function () {
     jQuery.post("/rendersessions/calculate_costs", { num_slaves: nums, run_time: rtime, vm_type: vtype }, function(data) {
       $('#costs').html(data);
     });
+
+    jQuery.post("/rendersessions/calculate_costs_form", { num_slaves: nums, run_time: rtime, vm_type: vtype }, function(data) {
+      $('#rendersession_costs').val(data);
+      $('#rendersession_costs_disp').val(data);
+    });
+
+    create_button = document.getElementById("createbutton")
+    create_button.disabled = false
 
     return false;
     })
