@@ -5,9 +5,10 @@
   <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
   <title>DrQueueOnRails - a webfrontend for DrQueue</title>
   <link rel="shortcut icon" href="<%= image_path '/favicon.ico' %>" type="image/x-icon" />
-    <%= csrf_meta_tag %>
-    <%= stylesheet_link_tag 'application' %>
-    <%= yield(:head) %>
+  <%= javascript_include_tag :application %>
+  <%= csrf_meta_tag %>
+  <%= stylesheet_link_tag 'application' %>
+  <%= yield(:head) %>
 
 </head>
 <body>
@@ -39,8 +40,11 @@ a webfrontend for DrQueue
 <% if user_signed_in? %>
   <a href="/">Start</a>
   <%= link_to('Jobs', jobs_path) %>
-  <%= link_to('Computers', main_computers_path) %>
-  <%= link_to('CloudControl', main_cloudcontrol_path) %>
+  <%= link_to('Rendersessions', rendersessions_path) %>
+  <% if current_user.admin == true %>
+    <%= link_to('Computers', main_computers_path) %>
+    <%= link_to('CloudControl', main_cloudcontrol_path) %>
+  <% end %>
   <%= link_to('Logout', destroy_user_session_path, :method=>'delete') %>
   <br /><br />
   Logged in as <%= link_to(current_user.name, edit_user_registration_path) %>
@@ -69,13 +73,10 @@ a webfrontend for DrQueue
 
 
 <div id="Footer">
-DrQueueOnRails Version 0.2 (<%= APP_VERSION.gsub(':','').rstrip %>)&nbsp;&ndash;&nbsp;2007-2011 Andreas Schr&ouml;der<br />
+DrQueueOnRails Version 0.2 (<%= APP_VERSION.gsub(':','').rstrip %>)&nbsp;&ndash;&nbsp;2007-2012 Andreas Schr&ouml;der<br />
 powered by <a href="http://www.drqueue.org" target="_blank">DrQueue</a> and <a href="http://www.rubyonrails.org" target="_blank">Ruby On Rails</a>
 <br /><br />
 </div>
 
-<%= javascript_include_tag :application %>
-
 </body>
 </html>
-
