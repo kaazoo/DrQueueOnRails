@@ -8,11 +8,15 @@ Refresh: <%= select_tag("refresh",
 </div>
 
 <br />
-This is frame #<%= (params[:nr].to_i + 1).to_s %> from job '<%= @job.name %>'.<br /><br /><br />
+These are the frames of task #<%= (params[:nr].to_i + 1).to_s %> from job '<%= @job.name %>'.<br /><br /><br />
 
+
+<% for frame in @nr..@nr_end %>
 <div id="image">
-<img src="<%= url_for :action => 'load_image', :nr => @nr, :id => @job_id %>" alt="Frame <%= (params[:nr].to_i + 1).to_s %>" /> 
+<img src="<%= url_for :action => 'load_image', :nr => frame, :id => @job_id %>" alt="Frame <%= (@startframe + frame).to_s %>" /> 
 </div>
+<br /><br /><br />
+<% end %>
 
 <br /><br /><br />
 

@@ -63,6 +63,7 @@ Task list:<br /><br />
 <%
 index = 0
 frame = @job['startframe'].to_i
+
 @tasks.each do |task|
   tmsg_id = task['msg_id']
   theader = task['header']
@@ -84,7 +85,19 @@ frame = @job['startframe'].to_i
 %>
 	<tr>
 	 <td title="<%= task['msg_id'].to_s %>"><%= task['msg_id'].to_s[0..7] + '…' %></td>
-	 <td style="text-align:center;"><%= frame.to_s %></td>
+	 <td style="text-align:center;">
+	 <%
+	 if @job['blocksize'].to_i > 1
+	   if frame + @job['blocksize'].to_i - 1 > @job['endframe'].to_i
+	   %>
+	     <%= frame.to_s + " - " + @job['endframe'].to_s %>
+	   <% else %>
+	     <%= frame.to_s + " - " + (frame + @job['blocksize'].to_i - 1).to_s %>
+	   <% end %>
+	 <% else %>
+	   <%= frame.to_s %>
+	 <% end %>
+	 </td>
    <td style="text-align:center;"><%= status %></td>
 	 <td style="text-align:center;"><%= task['resubmitted'].to_s[0..18] %></td>
 	 <td title="<%= computer %>"><%= computer[0..7] + '…' %></td>
@@ -95,7 +108,11 @@ frame = @job['startframe'].to_i
 	</tr>
 	<%
 	index += 1
-	frame += 1
+	if @job['blocksize'].to_i > 1
+    frame += @job['blocksize'].to_i
+  else
+    frame += 1
+  end
 end
 %>
 </table>
