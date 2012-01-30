@@ -1,21 +1,57 @@
 <p>
-  <b>Num slaves:</b>
+  <b>Number of slaves:</b>
   <%=h @rendersession.num_slaves %>
 </p>
 
 <p>
-  <b>Run time:</b>
+  <b>Run-time in hours:</b>
   <%=h @rendersession.run_time %>
 </p>
 
 <p>
-  <b>Profile:</b>
-  <%=h @rendersession.profile_id %>
+  <b>VM machine type:</b>
+  <% if @rendersession.vm_type == "t1.micro" %>
+    Mini
+  <% elsif @rendersession.vm_type == "m1.large" %>
+    Large
+  <% elsif @rendersession.vm_type == "m1.xlarge" %>
+    Extra Large (RAM)
+  <% elsif @rendersession.vm_type == "c1.xlarge" %>
+    Extra Large (Cores)
+  <% else %>
+    Unknown
+  <% end %>
+  (<%=h @rendersession.vm_type %>)
 </p>
 
 <p>
-  <b>Payment:</b>
-  <%=h @rendersession.payment_id %>
+  <b>Costs in Euro:</b>
+  <%=h @rendersession.costs %>
+</p>
+
+<% if current_user.admin == true %>
+  <p>
+    <b>Profile:</b>
+    <%=h @rendersession.user %>
+  </p>
+<% end %>
+
+
+<% if @rendersession.paid_at != nil %>
+
+<p>
+  <b>PayPal token:</b>
+  <%=h @rendersession.paypal_token %>
+</p>
+
+<p>
+  <b>PayPal Payer ID:</b>
+  <%=h @rendersession.paypal_payer_id %>
+</p>
+
+<p>
+  <b>Paid at:</b>
+  <%=h @rendersession.paid_at %>
 </p>
 
 <p>
@@ -24,15 +60,28 @@
 </p>
 
 <p>
-  <b>Costs:</b>
-  <%=h @rendersession.costs %>
+  <b>Overall time passed:</b>
+  <%=h @rendersession.overall_time_passed %>
 </p>
+
 
 <p>
   <b>Start timestamp:</b>
   <%=h @rendersession.start_timestamp %>
 </p>
 
+<p>
+  <b>Stop timestamp:</b>
+  <%=h @rendersession.stop_timestamp %>
+</p>
 
-<%= link_to 'Edit', edit_rendersession_path(@rendersession) %> |
+
+<% else %>
+  <br /><br />
+  This rendersession hasn't been paid yet. Click on the image below to pay via PayPal. <br />
+  <%= link_to image_tag('https://www.paypal.com/de_DE/i/btn/btn_xpressCheckout.gif'), :controller => 'payments', :action => 'checkout', :rendersession => @rendersession %>
+  <br /><br />
+  <%= link_to 'Edit', edit_rendersession_path(@rendersession) %> | 
+<% end %>
+
 <%= link_to 'Back', rendersessions_path %>

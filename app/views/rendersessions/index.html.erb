@@ -2,25 +2,50 @@
 
 <table>
   <tr>
-    <th>Num slaves</th>
-    <th>Run time</th>
-    <th>Payment</th>
+    <th>Number of slaves</th>
+    <th>Run-time in hours</th>
+    <th>VM machine type</th>
+    <th>Costs in Euro</th>
+    <th>Paid at</th>
     <th>Time passed</th>
-    <th>Costs</th>
+    <th>Overall time passed</th>
     <th>Start timestamp</th>
+    <th>Stop timestamp</th>
   </tr>
 
 <% @rendersessions.each do |rendersession| %>
   <tr>
     <td><%=h rendersession.num_slaves %></td>
     <td><%=h rendersession.run_time %></td>
-    <td><%=h rendersession.payment_id %></td>
-    <td><%=h rendersession.time_passed %></td>
+    <td>
+    <% if rendersession.vm_type == "t1.micro" %>
+      Mini
+    <% elsif rendersession.vm_type == "m1.large" %>
+      Large
+    <% elsif rendersession.vm_type == "m1.xlarge" %>
+      Extra Large (RAM)
+    <% elsif rendersession.vm_type == "c1.xlarge" %>
+      Extra Large (Cores)
+    <% else %>
+      Unknown
+    <% end %>
+    (<%=h rendersession.vm_type %>)
+    </td>
     <td><%=h rendersession.costs %></td>
+    <td><%=h rendersession.paid_at %></td>
+    <td><%=h rendersession.time_passed %></td>
+    <td><%=h rendersession.overall_time_passed %></td>
     <td><%=h rendersession.start_timestamp %></td>
-    <td><%= link_to 'Show', rendersession %></td>
-    <td><%= link_to 'Edit', edit_rendersession_path(rendersession) %></td>
-    <td><%= link_to 'Destroy', rendersession, :confirm => 'Are you sure?', :method => :delete %></td>
+    <td><%=h rendersession.stop_timestamp %></td>
+    <td>
+    <%= link_to 'Show', rendersession %>
+    <% if rendersession.paid_at == nil %>
+      <%= link_to 'Edit', edit_rendersession_path(rendersession) %>
+    <% end %>
+    <% if (current_user.admin == true) && (rendersession.paid_at == nil) %>
+      <%= link_to 'Destroy', rendersession, :confirm => 'Are you sure?', :method => :delete %>
+    <% end %>
+    </td>
   </tr>
 <% end %>
 </table>
