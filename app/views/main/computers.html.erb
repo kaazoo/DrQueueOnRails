@@ -1,0 +1,120 @@
+
+<div style="text-align:right; width:100%">
+<% form_tag :action => 'computers' do %>
+Refresh: <%= select_tag("refresh",
+		options_for_select([ ["", ""], ["30 seconds", "30"], ["1 minute", "60"], ["3 minutes", "180"], ["5 minutes", "300"], ["10 minutes", "600"] ], session[:last_refresh]),
+		{"onChange" => "document.forms[0].submit();"}) %>
+<% end %>
+</div>
+
+
+<% if @computer_info != nil %>
+
+<h2>Details of <%= @computer_info.hwinfo.name %></h2>
+<br />
+
+<table border="1">
+<tr>
+ <td>Id</td>
+ <td><%= @computer_info.hwinfo.id %></td>
+</tr>
+<tr>
+ <td>Name</td>
+ <td><%= @computer_info.hwinfo.name %></td>
+</tr>
+<tr>
+ <td>Load Average</td>
+ <td><%= @computer_info.status.get_loadavg(0).to_s+','+@computer_info.status.get_loadavg(1).to_s+','+@computer_info.status.get_loadavg(2).to_s %></td>
+</tr>
+<tr>
+ <td>Tasks running</td>
+ <td><%= @computer_info.status.ntasks %></td>
+</tr>
+<tr>
+ <td>Operating System</td>
+ <td><%= computer_os(@computer_info) %></td>
+</tr>
+</table>
+
+<br /><br />
+Task list:<br /><br />
+
+<% if @computer_info.status.ntasks > 0 %>
+
+<table border="1">
+<tr>
+ <td>Task ID</td>
+ <td>Job name</td>
+ <td>Status</td>
+ <td>Frame</td>
+</tr> 
+
+<% computer_tasks(@computer_info).each do |t| %>
+
+<tr>
+ <td><%= t.id %></td>
+ <td><a href="/jobs/show/<%= t.ijob %>"><%= t.jobname %></a></td>
+ <td><%= Drqueue::task_status_string(t.status) %></td>
+ <td><%= t.frame %></td>
+</tr>
+ 
+<% end %>
+
+</table>
+
+<% else %>
+
+No tasks found.
+
+<% end %>
+
+
+<% elsif @computer_list != nil %>
+
+<h2>Computers</h2>
+<br />
+
+<table border="1">
+<tr>
+ <td>Id</td>
+ <td>Hostname</td>
+ <td>Arch</td>
+ <td>OS</td>
+ <td>CPU type</td>
+ <td>Nbits</td>
+ <td>CPU speed</td>
+ <td>CPUs</td>
+ <td>Cores per CPU</td>
+ <td>Memory</td>
+ <td>Load Average</td>
+ <td>Status</td>
+ <td>Pools</td>
+</tr>
+
+<%
+@computer_list.each do |c|
+  #pools = DrQueueComputer.get_pools()
+  pools = ""
+  %>
+	<tr>
+	 <td><%= c['_id'] %></td>
+	 <td><%= c['hostname'] %></td>
+	 <td><%= c['arch'] %></td>
+	 <td><%= c['os'] %></td>
+	 <td><%= c['proctype'] %></td>
+	 <td><%= c['nbits'] %></td>
+	 <td><%= c['procspeed'] %></td>
+	 <td><%= c['ncpus'] %></td>
+	 <td><%= c['ncorescpu'] %></td>
+	 <td><%= c['memory'] %></td>
+	 <td><%= c['load'] %></td>
+	 <td> TODO </td>
+	 <td><%= pools %></td>
+	</tr>
+<% end %>
+
+</table>
+
+<% else %>
+There was an error.
+<% end %>
