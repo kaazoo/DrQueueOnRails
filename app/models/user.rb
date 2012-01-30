@@ -6,6 +6,7 @@ class User
   validates_presence_of :name
   validates_uniqueness_of :name, :email, :case_sensitive => false
   field :admin, :type => Boolean, :default => false
+  field :beta_user, :type => Boolean, :default => true
   attr_accessible :name, :email, :password, :password_confirmation, :remember_me, :admin
 
   # Include default devise modules. Others available are:
