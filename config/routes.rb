@@ -19,7 +19,13 @@ DrQueueOnRails::Application.routes.draw do
   match 'jobs/:id/hstop' => 'jobs#hstop'
 
   resources :rendersessions
-  resources :payments
+  match 'rendersessions/calculate_costs' => 'rendersessions#calculate_costs'
+
+  match 'payments/checkout' => 'payments#checkout'
+  match 'payments/confirm' => 'payments#confirm'
+  match 'payments/complete' => 'payments#complete'
+  match 'payments/error' => 'payments#error'
+
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
