@@ -21,10 +21,6 @@ $(function () {
     cdiv = document.getElementById("costs")
 
     jQuery.post("/rendersessions/calculate_costs", { num_slaves: nums, run_time: rtime, vm_type: vtype }, function(data) {
-      $('#costs').html(data);
-    });
-
-    jQuery.post("/rendersessions/calculate_costs_form", { num_slaves: nums, run_time: rtime, vm_type: vtype }, function(data) {
       $('#rendersession_costs').val(data);
       $('#rendersession_costs_disp').val(data);
     });
