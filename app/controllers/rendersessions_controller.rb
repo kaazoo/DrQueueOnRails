@@ -1,33 +1,64 @@
 class RendersessionsController < ApplicationController
+  before_filter :authenticate_user!
 
   require 'money'
   require 'money/bank/google_currency'
 
-  # template
-  #layout "main_layout"
+  protect_from_forgery
 
-
-  # GET /rendersessions
-  # GET /rendersessions.xml
-  #def index
-  #  @rendersessions = Rendersession.all
-  #
-  #  respond_to do |format|
-  #    format.html # index.html.erb
-  #    format.xml  { render :xml => @rendersessions }
-  #  end
-  #end
 
   # GET /rendersessions/1
   # GET /rendersessions/1.xml
-  #def show
-  #  @rendersession = Rendersession.find(params[:id])
-  #
-  #  respond_to do |format|
-  #    format.html # show.html.erb
-  #    format.xml  { render :xml => @rendersession }
-  #  end
-  #end
+  def show
+    @rendersession = Rendersession.find(params[:id])
+
+    respond_to do |format|
+      format.html # show.html.erb
+      format.xml  { render :xml => @rendersession }
+    end
+  end
+
+  # GET /rendersessions
+  # GET /rendersessions.xml
+  def index
+
+    if current_user.admin == true
+      # get all jobs from db
+      @rendersessions = Rendersession.all(:sort => [[ :name, :asc ]])
+
+      # set return path to list action
+      #session[:return_path] = url_for(:controller => 'jobs', :action => 'list', :id => 'all', :protocol => ENV['WEB_PROTO']+"://")
+    else
+      # get only owners jobs from db
+      @rendersessions = Rendersession.all(:conditions => { :user => current_user.name }, :sort => [[ :name, :asc ]])
+
+      # set return path to list action
+      #session[:return_path] = url_for(:controller => 'jobs', :action => 'list', :protocol => ENV['WEB_PROTO']+"://")
+    end
+
+    # refresh timer
+    #link = url_for(:controller => 'jobs', :action => 'list', :id => params[:id], :protocol => ENV['WEB_PROTO']+"://")
+    #if params[:refresh] != nil
+    #  if params[:refresh] == ""
+    #    @refresh_content = nil
+    #    session[:last_refresh] = nil
+    #  else
+    #   @refresh_content = params[:refresh]+'; URL='+link
+    #   session[:last_refresh] = params[:refresh]
+    #  end
+    #elsif session[:last_refresh] != nil
+    #  @refresh_content = session[:last_refresh]+'; URL='+link
+    #else
+    #  @refresh_content = '300; URL='+link
+    #end
+
+    respond_to do |format|
+      format.html # index.html.erb
+      format.xml  { render :xml => @rendersessions }
+    end
+
+  end
+
 
 
   # GET /rendersessions/new
@@ -35,39 +66,40 @@ class RendersessionsController < ApplicationController
   def new
     @rendersession = Rendersession.new
 
-    # only admins are allowed to use cloudcontrol
-    #if session[:profile].status != 'admin'
-      #redirect_to :controller => 'main', :action => 'index' and return
-    #else
-
-      # fetch all unconnected payments
-      all_payments = Payment.find(:all)
-      @payments = []
-      all_payments.each do |pm|
-        if Rendersession.find_by_payment_id(pm.id) == nil
-          @payments << pm
-        end
-      end
-
-      @profiles = User.find(:all)
-
-      respond_to do |format|
-        format.html # new.html.erb
-        format.xml  { render :xml => @rendersession }
-      end
+    # fetch all unconnected payments
+    #all_payments = Payment.find(:all)
+    #@payments = []
+    #all_payments.each do |pm|
+    #  if Rendersession.find_by_payment_id(pm.id) == nil
+    #    @payments << pm
+    #  end
     #end
+
+    @profiles = User.find(:all)
+
+    respond_to do |format|
+      format.html # new.html.erb
+      format.xml  { render :xml => @rendersession }
+    end
 
   end
 
 
   # GET /rendersessions/1/edit
   def edit
-    # only admins are allowed to use cloudcontrol
-    if session[:profile].status != 'admin'
+
+    @rendersession = Rendersession.find(params[:id])
+
+    # only admins and owner are allowed
+    if (current_user.admin != true) && (@rendersession.user != current_user.name)
       redirect_to :controller => 'main', :action => 'index' and return
     else
-      @rendersession = Rendersession.find(params[:id])
-      
+    
+    # it's not allowed to edit paid rendersessions
+    if @rendersession.paid_at != nil
+      redirect_to :controller => 'main', :action => 'index' and return
+    end
+
       # fetch all unconnected payments
       #all_payments = Payment.find(:all)
       #@payments = []
@@ -78,9 +110,9 @@ class RendersessionsController < ApplicationController
       #  end
       #end
 
-      @payments = Payment.find(:all)
+      #@payments = Payment.find(:all)
 
-      @profiles = Profile.find(:all)
+      #@profiles = Profile.find(:all)
 
     end
 
@@ -93,13 +125,23 @@ class RendersessionsController < ApplicationController
 
     @rendersession = Rendersession.new(params[:rendersession])
 
+    #puts params[:rendersession]
+    #puts params[:rendersession_num_slaves]
+    puts @rendersession.num_slaves
+    puts @rendersession.run_time
+    puts @rendersession.vm_type
+
     # only admins are allowed to use cloudcontrol
-    if session[:profile].status != 'admin'
+    if current_user.admin != true
       #redirect_to :controller => 'main', :action => 'index' and return
-      @rendersession.profile_id = session[:profile].id
-      @rendersession.payment_id = nil
-      @rendersession.costs = nil
+      @rendersession.user = current_user.name
+      #@rendersession.payment_id = 0
+      #@rendersession.costs = 0
     end
+
+    puts @rendersession.user
+    #puts @rendersession.payment_id
+    puts @rendersession.costs
 
       # fetch all unconnected payments
       #all_payments = Payment.find(:all)
@@ -115,10 +157,10 @@ class RendersessionsController < ApplicationController
 
       respond_to do |format|
         if @rendersession.save
-          if session[:profile].status == 'admin'
+          if current_user.admin == true
             format.html { redirect_to(:controller => 'main', :action => 'cloudcontrol') }
           else
-            format.html { redirect_to(:controller => 'profiles', :action => 'show', :id => session[:profile].id) }
+            format.html { redirect_to(:controller => 'rendersessions', :action => 'show', :id => @rendersession.id) }
           end
           #format.xml  { render :xml => @rendersession, :status => :created, :location => @rendersession }
         else
@@ -133,15 +175,17 @@ class RendersessionsController < ApplicationController
   # PUT /rendersessions/1
   # PUT /rendersessions/1.xml
   def update
-    # only admins are allowed to use cloudcontrol
-    if session[:profile].status != 'admin'
+
+    @rendersession = Rendersession.find(params[:id])
+
+    # only admins and owner are allowed
+    if (current_user.admin != true) && (@rendersession.user != current_user.name)
       redirect_to :controller => 'main', :action => 'index' and return
     else
-      @rendersession = Rendersession.find(params[:id])
 
       respond_to do |format|
         if @rendersession.update_attributes(params[:rendersession])
-          format.html { redirect_to(:controller => 'main', :action => 'cloudcontrol') }
+          format.html { redirect_to(:action => 'show', :id => @rendersession) }
           format.xml  { head :ok }
         else
           format.html { render :action => "edit" }
@@ -157,14 +201,14 @@ class RendersessionsController < ApplicationController
   # DELETE /rendersessions/1.xml
   def destroy
     # only admins are allowed to use cloudcontrol
-    if session[:profile].status != 'admin'
+    if current_user.admin != true
       redirect_to :controller => 'main', :action => 'index' and return
     else
       @rendersession = Rendersession.find(params[:id])
       @rendersession.destroy
 
       respond_to do |format|
-        format.html { redirect_to(:controller => 'main', :action => 'cloudcontrol') }
+        format.html { redirect_to(:controller => 'rendersessions') }
         format.xml  { head :ok }
       end
     end
@@ -174,10 +218,10 @@ class RendersessionsController < ApplicationController
 
   # costs calculation
   def calculate_costs
-    form_vars = params[:rendersession]
-    num_nodes = form_vars[:num_slaves].to_i
-    usage_time = form_vars[:run_time].to_i
-    vm_type = form_vars[:vm_type].to_s
+
+    puts num_nodes = params[:num_slaves].to_i
+    puts usage_time = params[:run_time].to_i
+    puts vm_type = params[:vm_type].to_s
 
     af_arr = ENV['CC_AWS_FEES'].split(",")
     aws_fee_t1micro = af_arr[0].to_f
@@ -250,9 +294,19 @@ class RendersessionsController < ApplicationController
     n = customer_costs_usd.to_money(:USD)
     customer_costs_euro = n.exchange_to(:EUR)
 
-    render :text => "Normal price: "+customer_costs_euro.to_s+" EUR / "+customer_costs_usd.to_s+" USD - Discount: "+((100 - discount*100).to_i).to_s+" %<br />Beta users: "+beta_costs_euro.to_s+" EUR / "+beta_costs_usd.to_s+" USD", :layout => false
-  end
+    beta_costs_euro_cents = (beta_costs_euro * 100).to_f.to_i
 
+    #output_text = "Normal price: "+customer_costs_euro.to_s+" EUR / "+customer_costs_usd.to_s+" USD - Discount: "+((100 - discount*100).to_i).to_s+" %<br />"
+    #output_text += "Beta users: "+beta_costs_euro.to_s+" EUR / "+beta_costs_usd.to_s+" USD"
+    #render :text => output_text, :layout => false
+
+    if current_user.beta_user == true
+      render :text => beta_costs_euro, :layout => false
+    else
+      render :text => customer_costs_euro, :layout => false
+    end
+
+  end
 
 
 end
