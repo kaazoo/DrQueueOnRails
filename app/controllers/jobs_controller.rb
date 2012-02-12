@@ -38,7 +38,7 @@ class JobsController < ApplicationController
       #session[:return_path] = url_for(:controller => 'jobs', :action => 'list', :id => 'all', :protocol => ENV['WEB_PROTO']+"://")
     else
       # get only owners jobs from db
-      @jobs = Job.all(:conditions => { :owner => current_user.name }, :sort => [[ :name, :asc ]])
+      @jobs = Job.all(:conditions => { :owner => current_user.id }, :sort => [[ :name, :asc ]])
 
       # set return path to list action
       #session[:return_path] = url_for(:controller => 'jobs', :action => 'list', :protocol => ENV['WEB_PROTO']+"://")
@@ -69,9 +69,11 @@ class JobsController < ApplicationController
     @job = Job.find(params[:id].to_s)
 
     # only owner and admin are allowed
-    if (@job != nil) && (@job.owner != current_user.name) && (current_user.admin != true)
+    if (@job != nil) && (@job.owner != current_user.id.to_s) && (current_user.admin != true)
       redirect_to :controller => 'jobs' and return
     end
+
+    @owner_name = User.find(@job.owner).name
 
     # get tasks of job
     tasks_db = $pyDrQueueClient.query_task_list(@job._id.to_s)
@@ -122,7 +124,7 @@ class JobsController < ApplicationController
     @job = Job.find(params[:id].to_s)
 
     # only owner and admin are allowed
-    if (@job != nil) && (@job.owner != current_user.name) && (current_user.admin != true)
+    if (@job != nil) && (@job.owner != current_user.id.to_s) && (current_user.admin != true)
       redirect_to :controller => 'jobs' and return
     end
 
@@ -157,7 +159,7 @@ class JobsController < ApplicationController
     @job = Job.find(params[:id].to_s)
 
     # only owner and admin are allowed
-    if (@job != nil) && (@job.owner != current_user.name) && (current_user.admin != true)
+    if (@job != nil) && (@job.owner != current_user.id.to_s) && (current_user.admin != true)
       redirect_to :controller => 'jobs' and return
     end
 
@@ -195,7 +197,7 @@ class JobsController < ApplicationController
     @job = Job.find(params[:id].to_s)
 
     # only owner and admin are allowed
-    if (@job != nil) && (@job.owner != current_user.name) && (current_user.admin != true)
+    if (@job != nil) && (@job.owner != current_user.id.to_s) && (current_user.admin != true)
       redirect_to :controller => 'jobs' and return
     end
 
@@ -258,7 +260,7 @@ class JobsController < ApplicationController
     @job = Job.find(params[:id].to_s)
 
     # only owner and admin are allowed
-    if (@job != nil) && (@job.owner != current_user.name) && (current_user.admin != true)
+    if (@job != nil) && (@job.owner != current_user.id.to_s) && (current_user.admin != true)
       redirect_to :controller => 'jobs' and return
     end
 
@@ -275,7 +277,7 @@ class JobsController < ApplicationController
     @job = Job.find(params[:id].to_s)
 
     # only owner and admin are allowed
-    if (@job != nil) && (@job.owner != current_user.name) && (current_user.admin != true)
+    if (@job != nil) && (@job.owner != current_user.id.to_s) && (current_user.admin != true)
       redirect_to :controller => 'jobs' and return
     end
 
@@ -292,7 +294,7 @@ class JobsController < ApplicationController
     @job = Job.find(params[:id].to_s)
 
     # only owner and admin are allowed
-    if (@job != nil) && (@job.owner != current_user.name) && (current_user.admin != true)
+    if (@job != nil) && (@job.owner != current_user.id.to_s) && (current_user.admin != true)
       redirect_to :controller => 'jobs' and return
     end
 
@@ -309,7 +311,7 @@ class JobsController < ApplicationController
     @job = Job.find(params[:id].to_s)
 
     # only owner and admin are allowed
-    if (@job != nil) && (@job.owner != current_user.name) && (current_user.admin != true)
+    if (@job != nil) && (@job.owner != current_user.id.to_s) && (current_user.admin != true)
       redirect_to :controller => 'jobs' and return
     end
 
@@ -348,7 +350,7 @@ class JobsController < ApplicationController
     @job = Job.find(params[:id].to_s)
 
     # only owner and admin are allowed
-    if (@job != nil) && (@job.owner != current_user.name) && (current_user.admin != true)
+    if (@job != nil) && (@job.owner != current_user.id.to_s) && (current_user.admin != true)
       redirect_to :controller => 'jobs' and return
     end
 
@@ -387,7 +389,7 @@ class JobsController < ApplicationController
     @job = Job.find(params[:id].to_s)
 
     # only owner and admin are allowed
-    if (@job != nil) && (@job.owner != current_user.name) && (current_user.admin != true)
+    if (@job != nil) && (@job.owner != current_user.id.to_s) && (current_user.admin != true)
       redirect_to :controller => 'jobs' and return
     end
 
@@ -540,7 +542,7 @@ class JobsController < ApplicationController
     job_scenefile = params[:job][:scenefile].strip
     job_retries = 1
     # set current user as owner
-    job_owner = current_user.name
+    job_owner = current_user.id.to_s
     job_created_with = "DrQueueOnRails"
     job_options = {}
     job_options['rendertype'] = params[:job][:rendertype]

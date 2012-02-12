@@ -30,7 +30,7 @@ class RendersessionsController < ApplicationController
       #session[:return_path] = url_for(:controller => 'jobs', :action => 'list', :id => 'all', :protocol => ENV['WEB_PROTO']+"://")
     else
       # get only owners jobs from db
-      @rendersessions = Rendersession.all(:conditions => { :user => current_user.name }, :sort => [[ :name, :asc ]])
+      @rendersessions = Rendersession.all(:conditions => { :user => current_user.id }, :sort => [[ :name, :asc ]])
 
       # set return path to list action
       #session[:return_path] = url_for(:controller => 'jobs', :action => 'list', :protocol => ENV['WEB_PROTO']+"://")
@@ -91,7 +91,7 @@ class RendersessionsController < ApplicationController
     @rendersession = Rendersession.find(params[:id])
 
     # only admins and owner are allowed
-    if (current_user.admin != true) && (@rendersession.user != current_user.name)
+    if (current_user.admin != true) && (@rendersession.user != current_user.id)
       redirect_to :controller => 'main', :action => 'index' and return
     else
     
@@ -134,7 +134,7 @@ class RendersessionsController < ApplicationController
     # only admins are allowed to use cloudcontrol
     if current_user.admin != true
       #redirect_to :controller => 'main', :action => 'index' and return
-      @rendersession.user = current_user.name
+      @rendersession.user = current_user.id
       #@rendersession.payment_id = 0
       #@rendersession.costs = 0
     end
@@ -179,7 +179,7 @@ class RendersessionsController < ApplicationController
     @rendersession = Rendersession.find(params[:id])
 
     # only admins and owner are allowed
-    if (current_user.admin != true) && (@rendersession.user != current_user.name)
+    if (current_user.admin != true) && (@rendersession.user != current_user.id)
       redirect_to :controller => 'main', :action => 'index' and return
     else
 

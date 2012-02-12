@@ -8,7 +8,7 @@ class PaymentsController < ApplicationController
     # get rendersession from id
     rendersession = Rendersession.find(params[:rendersession])
     # check owner of rendersession
-    if rendersession.user != current_user.name
+    if rendersession.user != current_user.id.to_s
       redirect_to :controller => 'main', :action => 'index' and return
     end
     # get costs of rendersession and use for gateway.setup_purchase()
@@ -35,7 +35,7 @@ class PaymentsController < ApplicationController
     # get rendersession from token
     rendersession = Rendersession.first(:conditions => { :paypal_token => params[:token] })
     # check owner of rendersession
-    if rendersession.user != current_user.name
+    if rendersession.user != current_user.id.to_s
       redirect_to :controller => 'main', :action => 'index' and return
     end
     details_response = gateway.details_for(params[:token])
@@ -54,7 +54,7 @@ class PaymentsController < ApplicationController
     # get rendersession from token
     rendersession = Rendersession.first(:conditions => { :paypal_token => params[:token] })
     # check owner of rendersession
-    if rendersession.user != current_user.name
+    if rendersession.user != current_user.id.to_s
       redirect_to :controller => 'main', :action => 'index' and return
     end
     # get costs of rendersession and use for gateway.purchase()

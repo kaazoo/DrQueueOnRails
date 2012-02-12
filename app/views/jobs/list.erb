@@ -48,11 +48,12 @@ for job in @jobs
   if pool == nil
     pool = "not set"
   end
+  owner_name = User.find(job.owner).name
 %>
   <tr>
   <td><%= job._id %></td>
   <td><%= link_to job.name, :action => 'show', :id => job._id.to_s %></td>
-  <td><%= job.owner %></td>  
+  <td><%= owner_name %></td>
   <td><%= $pyDrQueueClient.job_status(job._id.to_s) %></td>
   <td style="text-align:center;"><%= total_tasks %></td>
   <td style="text-align:center;"><%= tasks_left %></td>
