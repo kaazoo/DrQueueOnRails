@@ -17,6 +17,11 @@ class Job
   field :file_provider, :type => String
 
 
+  # for working with files
+  require 'ftools'
+  require 'fileutils'
+
+
   def self.check_diskspace(min_amount)
     # check if more than min_amount MB free space avaiable
     ### FIXME: ugly way to determine disk space
@@ -153,17 +158,20 @@ class Job
     else
       # save uploaded archive file to jobdir
       # copy is used when filesize > 10 KB (class ActionController::UploadedStringIO)
-      if params[:file].class == ActionController::UploadedStringIO
-        File.open(File.join(jobdir, just_filename),'wb') do |file|
-          file.write upload.read
-        end
-      else
-        FileUtils.mv(upload.local_path, File.join(jobdir, just_filename))
-      end
+      #if params[:file].class == ActionController::UploadedStringIO
+      #  File.open(File.join(jobdir, just_filename),'wb') do |file|
+      #    file.write upload.read
+      #  end
+      #else
+      #  FileUtils.mv(upload.tempfile.path, File.join(jobdir, just_filename))
+      puts final_path = File.join(userdir, jobdir, just_filename)
+      puts upload.tempfile.path
+      File.cp(upload.tempfile.path, final_path)
+      #end
     end
 
     # extract files from archive file
-    FileUtils.cd(jobdir)
+    FileUtils.cd(File.join(userdir, jobdir))
     if (ending == 'tgz')
       exit_status = system("tar -xvzf " + just_filename)
     elsif (ending == 'tbz2')
@@ -185,7 +193,7 @@ class Job
   end
 
 
-  def check_blender_file(userdir, jobdir)
+  def self.check_blender_file(userdir, jobdir)
 
     # find scene file in jobdir
     scenefile = Job.find_scenefile("blend")
@@ -203,6 +211,8 @@ class Job
       return false, 'No scene file was found. Please check your archive file.'
     end
 
+    return true, "found.", File.join(userdir, jobdir, scenefile)
+
     ### FIXME: do we really have to do this?
     ### how can we automate the script file generation?
     #@jobm.koj = 2
@@ -211,51 +221,69 @@ class Job
     #@jobm.koji.general.scriptdir = jobdir
 
     # add job to specific pool
-    if ENV['CLOUDCONTROL'] == "true"
-      @jobm.limits.pool=user_hash+"_blender"
-    else
-      @jobm.limits.pool="blender"
-    end
+    #if ENV['CLOUDCONTROL'] == "true"
+    #  @jobm.limits.pool=user_hash+"_blender"
+    #else
+    #  @jobm.limits.pool="blender"
+    #end
 
     # use internal multithreading/multiprocessing
-    @jobm.limits.nmaxcpuscomputer = 1
+    #@jobm.limits.nmaxcpuscomputer = 1
 
     # create job script
-    if params[:job][:sort] == "animation"
-      # each computer renders one frame of an animation
-      puts @jobm.cmd = @jobm.generate_jobscript("blender", jobdir+"/"+scenefile, jobdir)
-    elsif params[:job][:sort] == "image"
-      # each computer renders one part of an image
-      puts @jobm.cmd = @jobm.generate_jobscript("blender_image", jobdir+"/"+scenefile, jobdir)
+    #if params[:job][:sort] == "animation"
+    #  # each computer renders one frame of an animation
+    #  puts @jobm.cmd = @jobm.generate_jobscript("blender", jobdir+"/"+scenefile, jobdir)
+    #elsif params[:job][:sort] == "image"
+    #  # each computer renders one part of an image
+    #  puts @jobm.cmd = @jobm.generate_jobscript("blender_image", jobdir+"/"+scenefile, jobdir)
 
-      # set number of parts
-      @jobm.frame_start = 1
+    #  # set number of parts
+    #  @jobm.frame_start = 1
 
-      if params[:res_height].include? "low"
-        @jobm.frame_end = 4
-      elsif params[:res_height].include? "medium"
-        @jobm.frame_end = 8
-      elsif params[:res_height].include? "high"
-        @jobm.frame_end = 16
-      else
-        @jobm.frame_end = 4
-      end
-    else
-      # delete jobdir
-      #system("rm -rf "+jobdir)
-      FileUtils.cd(userdir)
-      FileUtils.remove_dir(jobdir, true)
-      flash[:notice] = 'Wrong scene sort specified.'
-      redirect_to :action => 'new' and return
-    end
+    #  if params[:res_height].include? "low"
+    #    @jobm.frame_end = 4
+    #  elsif params[:res_height].include? "medium"
+    #    @jobm.frame_end = 8
+    #  elsif params[:res_height].include? "high"
+    #    @jobm.frame_end = 16
+    #  else
+    #    @jobm.frame_end = 4
+    #  end
+    #else
+    #  # delete jobdir
+    #  #system("rm -rf "+jobdir)
+    #  FileUtils.cd(userdir)
+    #  FileUtils.remove_dir(jobdir, true)
+    #  flash[:notice] = 'Wrong scene sort specified.'
+    #  redirect_to :action => 'new' and return
+    #end
 
-    if (@jobm.cmd == nil)
-      flash[:notice] = 'The job script could not be generated.'
-      redirect_to :action => 'new' and return
-    end
+    #if (@jobm.cmd == nil)
+    #  flash[:notice] = 'The job script could not be generated.'
+    #  redirect_to :action => 'new' and return
+    #end
   end
 
 
+  # find scenefile in current dir (jobdir)
+  def self.find_scenefile(render_ending)
+
+    count = `find . -type f -maxdepth 1 ! -name '.*' | grep -i .#{render_ending}$ | wc -l`.to_i
+    if count > 1
+      return -1
+    elsif count == 0
+      return -2
+    end
+
+    scenefile = `find . -type f -maxdepth 1 ! -name '.*' | grep -i .#{render_ending}$`.gsub("\n","").gsub("./","")
+    if $?.exitstatus != 0
+      return -2
+    end
+
+    return scenefile
+
+  end
 
 
 end

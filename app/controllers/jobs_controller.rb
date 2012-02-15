@@ -567,8 +567,7 @@ class JobsController < ApplicationController
       # create job directory
       # we cannot use job_id here as we do not know it yet
       # we use all alphanumeric chars of the name plus current time in seconds as jobdir name
-      puts jobdir = File.join(userdir, job_name.downcase.strip.gsub(/[^\w]/,'') + "_" + Time.now.to_i.to_s)
-      #puts jobdir = File.join(userdir, @job['_id'].to_s)
+      puts jobdir = job_name.downcase.strip.gsub(/[^\w]/,'') + "_" + Time.now.to_i.to_s
 
       # process uploaded file
       status, message = Job.handle_upload(params[:file], userdir, jobdir)
@@ -581,6 +580,11 @@ class JobsController < ApplicationController
       # Blender internal renderer
       if job_renderer == "blender"
         status, message, scenefile = Job.check_blender_file(userdir, jobdir)
+
+        # debug return values
+        puts status
+        puts message
+        puts scenefile
 
         if status == false
           flash[:notice] = message
