@@ -7,7 +7,7 @@ gem "rubypython", '0.5.3'
 gem 'rmagick'
 gem 'json'
 gem 'jnunemaker-validatable', '>= 1.8.4'
-gem 'devise', '>= 1.2'
+gem 'devise', '1.4.9'
 #gem "devise_ldap_authenticatable"
 gem 'google_currency'
 gem 'money'
