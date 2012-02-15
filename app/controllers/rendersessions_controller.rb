@@ -91,7 +91,7 @@ class RendersessionsController < ApplicationController
     @rendersession = Rendersession.find(params[:id])
 
     # only admins and owner are allowed
-    if (current_user.admin != true) && (@rendersession.user != current_user.id)
+    if (current_user.admin != true) && (@rendersession.user != current_user.id.to_s)
       redirect_to :controller => 'main', :action => 'index' and return
     else
     
@@ -179,7 +179,7 @@ class RendersessionsController < ApplicationController
     @rendersession = Rendersession.find(params[:id])
 
     # only admins and owner are allowed
-    if (current_user.admin != true) && (@rendersession.user != current_user.id)
+    if (current_user.admin != true) && (@rendersession.user != current_user.id.to_s)
       redirect_to :controller => 'main', :action => 'index' and return
     else
 
