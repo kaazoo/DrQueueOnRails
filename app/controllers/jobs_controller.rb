@@ -425,7 +425,7 @@ class JobsController < ApplicationController
         Job.pack_files(params[:id])
       else
         # combine parts and pack files
-        Job.combine_parts(job_db)
+        Job.combine_parts(job)
         #if Job.combine_parts(job_db) == nil
         # redirect_to :action => 'new' and return
         #end

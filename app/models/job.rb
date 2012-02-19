@@ -139,8 +139,12 @@ class Job
   # process uploaded file
   def self.handle_upload(upload, userdir, jobdir)
 
+    full_dir_path = File.join(userdir, jobdir)
     # create jobdir inside userdir
-    File.makedirs(File.join(userdir, jobdir))
+    File.makedirs(full_dir_path)
+    # fix permissions
+    FileUtils.chmod(0775, full_dir_path)
+    FileUtils.chown("drqueueonrails", "drqueue", full_dir_path)
 
     # get only the filename (not the whole path) and use only alphanumeric chars
     just_filename = File.basename(upload.original_filename).downcase.gsub(/^.*(\\|\/)/, '').gsub(/[^\w\.\-]/, '')
