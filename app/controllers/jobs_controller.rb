@@ -386,15 +386,13 @@ class JobsController < ApplicationController
   def download
 
     # seek for job info in db
-    @job = Job.find(params[:id].to_s)
+    job = Job.find(params[:id].to_s)
 
     # only owner and admin are allowed
-    if (@job != nil) && (@job.owner != current_user.id.to_s) && (current_user.admin != true)
+    if (job != nil) && (job.owner != current_user.id.to_s) && (current_user.admin != true)
       redirect_to :controller => 'jobs' and return
     end
 
-    id_string = params[:id].to_s
-    job = Job.find(id_string)
     jobdir = File.dirname(job['scenefile'].to_s)
 
     # path to renderings
@@ -422,7 +420,7 @@ class JobsController < ApplicationController
       end
     else
       # animation and cinema4d are always only packed
-      if (job_db.sort == "animation") || (job_db.renderer == "cinema4d")
+      if (job.rendertype == "animation") || (job.renderer == "cinema4d")
         # pack files in archive and send it to the user
         Job.pack_files(params[:id].to_i)
       else

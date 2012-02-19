@@ -286,6 +286,48 @@ class Job
   end
 
 
+  # pack file to archive
+  def self.pack_files(job_id)
+
+    # seek for job info in db
+    job = Job.find(job_id.to_s)
+
+    # path to renderings
+    puts jobdir = File.dirname(job['scenefile'].to_s)
+    FileUtils.cd(jobdir)
+
+    puts job_mtime = File.mtime(job.scenefile).to_i
+    files = `find . -maxdepth 1 -type f ! -name '.*'`.split("\n")
+
+    # save all newly created files into archive
+    created_files = Array.new
+    files.each do |file|
+      # each file is newer than the jobfile
+      # exclude some array entries (empty, nil, Mac OSX meta information)
+      if (file != "") && (file != nil) && (file[0..4] != "__MAC") && (File.mtime(file).to_i > job_mtime)
+        created_files << file
+      end
+    end
+    puts created_files
+
+    id_string = job_id.to_s
+
+    # create archive depending on uploaded file by user
+    if `find . -maxdepth 1 -type f -name *.zip`.length > 0
+      puts `zip rendered_files_#{id_string}.zip #{created_files.join(' ')}`
+    elsif `find . -maxdepth 1 -type f -name *.tgz`.length > 0
+      puts `tar -cvf - #{created_files.join(' ')} | gzip -1 >rendered_files_#{id_string}.tgz`
+    elsif `find . -maxdepth 1 -type f -name *.tbz2`.length > 0
+      puts `tar -cvf - #{created_files.join(' ')} | bzip2 -1 >rendered_files_#{id_string}.tbz2`
+    elsif `find . -maxdepth 1 -type f -name *.rar`.length > 0
+      puts `rar a rendered_files_#{id_string}.rar #{created_files.join(' ')}`
+    else
+      puts `zip rendered_files_#{id_string}.zip #{created_files.join(' ')}`
+    end
+
+  end
+
+
 end
 
 
