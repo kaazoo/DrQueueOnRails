@@ -422,7 +422,7 @@ class JobsController < ApplicationController
       # animation and cinema4d are always only packed
       if (job.rendertype == "animation") || (job.renderer == "cinema4d")
         # pack files in archive and send it to the user
-        Job.pack_files(params[:id].to_i)
+        Job.pack_files(params[:id])
       else
         # combine parts and pack files
         Job.combine_parts(job_db)
