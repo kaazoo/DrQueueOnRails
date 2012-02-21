@@ -131,8 +131,9 @@ class JobsController < ApplicationController
     nr = params[:nr].to_i
     current_task = @job['startframe'].to_i + nr * @job['blocksize'].to_i
     end_of_block = @job['startframe'].to_i + nr * @job['blocksize'].to_i + @job['blocksize'].to_i - 1
-    logfile = @job['name'].to_s + "-" + current_task.to_s + "_" + end_of_block.to_s + ".log"
-    @logfile = File.join(ENV['DRQUEUE_LOGS'], logfile)
+    # use job directory as filename base
+    logfile = @job['scenefile'].to_s.split(File::SEPARATOR)[-2] + "-" + current_task.to_s + "_" + end_of_block.to_s + ".log"
+    @logfile = File.join(ENV['DRQUEUE_ROOT'], "logs", logfile)
 
     # refresh timer
     #link = url_for(:controller => 'jobs', :action => 'view_log', :id => params[:id], :nr => params[:nr], :protocol => ENV['WEB_PROTO']+"://")
@@ -319,21 +320,17 @@ class JobsController < ApplicationController
     job = Job.find(id_string)
     jobdir = File.dirname(job['scenefile'].to_s)
 
-    if ENV['USER_TMP_PREFIX'] == "id"
-      userdir = session[:profile].id.to_s
-    elsif ENV['USER_TMP_PREFIX'] == "ldap_account"
-      userdir = session[:profile].ldap_account.to_s
-    elsif ENV['USER_TMP_PREFIX'] == "hash"
-      userdir = Digest::MD5.hexdigest(session[:profile].ldap_account)
+    if ENV['CLOUDCONTROL'] == "true"
+      userdir = File.join(ENV['DRQUEUE_ROOT'], "tmp", current_user.id.to_s)
     else
-      userdir = nil
+      userdir = File.join(ENV['DRQUEUE_ROOT'], "tmp", current_user.name)
     end
 
-    puts userdir
     if (job.created_with.to_s == "DrQueueOnRails") && (File.exist? jobdir) && (jobdir.include? userdir)
       FileUtils.cd(jobdir)
       FileUtils.cd("..")
-      puts job_dirname = jobdir.split(File::SEPARATOR)[-2]
+      job_dirname = jobdir.split(File::SEPARATOR)[-1]
+      puts "DEBUG: Deleted directory " + jobdir
       FileUtils.remove_dir(job_dirname, true)
     end
 
@@ -358,7 +355,7 @@ class JobsController < ApplicationController
     job = Job.find(id_string)
     jobdir = File.dirname(job['scenefile'].to_s)
 
-    # delete output archive
+    # TODO: delete output archive
     #if `find . -maxdepth 1 -type f -name *.zip`.length > 0
     #  archive = renderpath + "/rendered_files_#{id_string}.zip"
     #elsif `find . -maxdepth 1 -type f -name *.tgz`.length > 0
@@ -557,10 +554,9 @@ class JobsController < ApplicationController
 
     # prepare some stuff when an archive was uploaded
     if (params[:file] != nil) && (params[:file] != "")
+
       # create user directory
-      # TODO
-      #userdir = create_userdir(session[:profile])
-      puts userdir = File.join(ENV['DRQUEUE_ROOT'], "tmp", "testuser")
+      puts userdir = Job.create_userdir(current_user)
 
       # create job directory
       # we cannot use job_id here as we do not know it yet
@@ -589,6 +585,14 @@ class JobsController < ApplicationController
         else
           puts job_scenefile = scenefile
         end
+
+        # add job to specific pool
+        if ENV['CLOUDCONTROL'] == "true"
+          job_limits['pool_name']=current_user.id.to_s+"_blender"
+        else
+          job_limits['pool_name']="blender"
+        end
+
       else
         # delete jobdir
         FileUtils.cd(userdir)

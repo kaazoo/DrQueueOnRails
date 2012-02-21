@@ -144,7 +144,7 @@ class Job
     File.makedirs(full_dir_path)
     # fix permissions
     FileUtils.chmod(0775, full_dir_path)
-    FileUtils.chown("drqueueonrails", "drqueue", full_dir_path)
+    FileUtils.chown(ENV['DQOR_USER'], ENV['DQOR_GROUP'], full_dir_path)
 
     # get only the filename (not the whole path) and use only alphanumeric chars
     just_filename = File.basename(upload.original_filename).downcase.gsub(/^.*(\\|\/)/, '').gsub(/[^\w\.\-]/, '')
@@ -223,13 +223,6 @@ class Job
     #@jobm.koji.blender.scene = jobdir+"/"+scenefile
     #@jobm.koji.blender.viewcmd = "fcheck $PROJECT/images/$IMAGE.$FRAME.sgi"
     #@jobm.koji.general.scriptdir = jobdir
-
-    # add job to specific pool
-    #if ENV['CLOUDCONTROL'] == "true"
-    #  @jobm.limits.pool=user_hash+"_blender"
-    #else
-    #  @jobm.limits.pool="blender"
-    #end
 
     # use internal multithreading/multiprocessing
     #@jobm.limits.nmaxcpuscomputer = 1
@@ -331,6 +324,21 @@ class Job
 
   end
 
+
+  def self.create_userdir(user)
+    # create user directory
+    if ENV['CLOUDCONTROL'] == "true"
+      userdir = File.join(ENV['DRQUEUE_ROOT'], "tmp", user.id.to_s)
+    else
+      userdir = File.join(ENV['DRQUEUE_ROOT'], "tmp", user.name)
+    end
+
+    if File.directory?(userdir)
+      File.makedirs(userdir)
+    end
+
+    return userdir
+  end
 
 end
 
