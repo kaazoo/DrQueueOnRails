@@ -44,17 +44,10 @@ class Job
 
   def self.check_disk_usage(profile)
 
-    # user hash
-    user_hash = Digest::MD5.hexdigest(profile.ldap_account)
-
-    # TODO: use File.join()
-    # create user directory
     if ENV['CLOUDCONTROL'] == "true"
-      userdir = ENV['DRQUEUE_TMP']+"/"+user_hash.to_s
-    elsif ENV['USER_TMP_DIR'] == "id"
-      userdir = ENV['DRQUEUE_TMP']+"/"+profile.id.to_s
-    elsif ENV['USER_TMP_DIR'] == "ldap_account"
-      userdir = ENV['DRQUEUE_TMP']+"/"+profile.ldap_account.to_s
+      userdir = File.join(ENV['DRQUEUE_ROOT'], "tmp", user.id.to_s)
+    else
+      userdir = File.join(ENV['DRQUEUE_ROOT'], "tmp", user.name)
     end
 
     if File.directory?(userdir)
@@ -114,25 +107,6 @@ class Job
     end
 
     return priority
-  end
-
-
-  # create user directory
-  def self.create_userdir(profile)
-
-    # TODO: use File.join()
-    if ENV['CLOUDCONTROL'] == "true"
-      user_hash = Digest::MD5.hexdigest(profile.ldap_account)
-      userdir = ENV['DRQUEUE_TMP'] + "/" + user_hash.to_s
-    elsif ENV['USER_TMP_DIR'] == "id"
-      userdir = ENV['DRQUEUE_TMP'] + "/" + profile.id.to_s
-    elsif ENV['USER_TMP_DIR'] == "ldap_account"
-      userdir = ENV['DRQUEUE_TMP'] + "/" + profile.ldap_account.to_s
-    end
-
-    if File.directory?(userdir)
-      File.makedirs(userdir)
-    end
   end
 
 

@@ -2,18 +2,10 @@ class JobsController < ApplicationController
 
   before_filter :authenticate_user!
 
-  # for hash computation
-  require 'digest/md5'
-
-  # for generating job scripts
-  #require_dependency 'jobscript_generators'
 
   # for working with files
   require 'ftools'
   require 'fileutils'
-
-  # for text sanitizing
-  #include ActionView::Helpers::TextHelper
 
   # for working with images
   require 'RMagick'
@@ -535,7 +527,7 @@ class JobsController < ApplicationController
     job_blocksize = params[:job][:blocksize].strip.to_i
     job_renderer = params[:job][:renderer].strip
     job_scenefile = params[:job][:scenefile].strip
-    job_retries = 1
+    job_retries = 1000
     # set current user as owner
     job_owner = current_user.id.to_s
     job_created_with = "DrQueueOnRails"
