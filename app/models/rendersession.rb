@@ -7,6 +7,7 @@ class Rendersession
   field :run_time, :type => Integer
   field :vm_type, :type => String, :default => 't1.micro'
   field :costs, :type => Float
+  field :active, :type => Boolean
 
   field :paypal_token, :type => String
   field :paypal_payer_id, :type => String

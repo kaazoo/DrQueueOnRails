@@ -19,6 +19,7 @@ DrQueueOnRails::Application.routes.draw do
   match 'jobs/:id/hstop' => 'jobs#hstop'
 
   resources :rendersessions
+  match 'rendersessions/set_active' => 'rendersessions#set_active'
   match 'rendersessions/calculate_costs' => 'rendersessions#calculate_costs'
 
   match 'payments/checkout' => 'payments#checkout'

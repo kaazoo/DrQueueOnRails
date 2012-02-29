@@ -125,8 +125,6 @@ class RendersessionsController < ApplicationController
 
     @rendersession = Rendersession.new(params[:rendersession])
 
-    #puts params[:rendersession]
-    #puts params[:rendersession_num_slaves]
     puts @rendersession.num_slaves
     puts @rendersession.run_time
     puts @rendersession.vm_type
@@ -140,35 +138,27 @@ class RendersessionsController < ApplicationController
     end
 
     puts @rendersession.user
-    #puts @rendersession.payment_id
     puts @rendersession.costs
 
-      # fetch all unconnected payments
-      #all_payments = Payment.find(:all)
-      #@payments = []
-      #all_payments.each do |pm|
-      #  puts pm.id
-      #  if Rendersession.find_by_payment_id(pm.id) == nil
-      #    @payments << pm
-      #  end
-      #end
+    # make rendersession active if none existing
+    rendersessions = Rendersession.all(:conditions => { :user => current_user.id })
+    if rendersessions.count > 0
+      @rendersession.active = true
+    else
+      @rendersession.active = false
+    end
 
-      #@profiles = Profile.find(:all)
-
-      respond_to do |format|
-        if @rendersession.save
-          if current_user.admin == true
-            format.html { redirect_to(:controller => 'main', :action => 'cloudcontrol') }
-          else
-            format.html { redirect_to(:controller => 'rendersessions', :action => 'show', :id => @rendersession.id) }
-          end
-          #format.xml  { render :xml => @rendersession, :status => :created, :location => @rendersession }
+    respond_to do |format|
+      if @rendersession.save
+        if current_user.admin == true
+          format.html { redirect_to(:controller => 'main', :action => 'cloudcontrol') }
         else
-          format.html { render :action => "new" }
-          #format.xml  { render :xml => @rendersession.errors, :status => :unprocessable_entity }
+          format.html { redirect_to(:controller => 'rendersessions', :action => 'show', :id => @rendersession.id) }
         end
+      else
+        format.html { render :action => "new" }
       end
-    #end
+    end
    end
 
 
@@ -200,12 +190,41 @@ class RendersessionsController < ApplicationController
   # DELETE /rendersessions/1
   # DELETE /rendersessions/1.xml
   def destroy
-    # only admins are allowed to use cloudcontrol
+    # only admins are allowed
     if current_user.admin != true
       redirect_to :controller => 'main', :action => 'index' and return
     else
       @rendersession = Rendersession.find(params[:id])
       @rendersession.destroy
+
+      respond_to do |format|
+        format.html { redirect_to(:controller => 'rendersessions') }
+        format.xml  { head :ok }
+      end
+    end
+
+  end
+
+
+  # set active rendersession
+  def set_active
+
+    rendersession = Rendersession.find(params[:id])
+
+    # only admins and owner are allowed
+    if (current_user.admin != true) && (rendersession.user != current_user.id.to_s)
+      redirect_to :controller => 'main', :action => 'index' and return
+    else
+      # mark all rendersesions of user as inactive
+      rendersessions = Rendersession.all(:conditions => { :user => current_user.id })
+      rendersessions.each do |rs|
+        rs.active = false
+        rs.save!
+      end
+      # mark current rendersession as active
+      rendersession = Rendersession.find(params[:id])
+      rendersession.active = true
+      rendersession.save!
 
       respond_to do |format|
         format.html { redirect_to(:controller => 'rendersessions') }

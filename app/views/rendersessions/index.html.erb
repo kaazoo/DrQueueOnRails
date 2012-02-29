@@ -1,5 +1,7 @@
 <h1>Listing rendersessions</h1>
 
+<%= form_tag :action => "set_active" %>
+
 <table>
   <tr>
     <th>Number of slaves</th>
@@ -11,6 +13,8 @@
     <th>Overall time passed</th>
     <th>Start timestamp</th>
     <th>Stop timestamp</th>
+    <th>active</th>
+    <th>activate</th>
   </tr>
 
 <% @rendersessions.each do |rendersession| %>
@@ -37,6 +41,13 @@
     <td><%=h rendersession.overall_time_passed %></td>
     <td><%=h rendersession.start_timestamp %></td>
     <td><%=h rendersession.stop_timestamp %></td>
+    <% if rendersession.active == true %>
+      <td>yes</td>
+      <td><%= radio_button_tag("id", rendersession.id, true) %></td>
+    <% else %>
+      <td>no</td>
+      <td><%= radio_button_tag("id", rendersession.id, false) %></td>
+    <% end %>
     <td>
     <%= link_to 'Show', rendersession %>
     <% if rendersession.paid_at == nil %>
@@ -52,4 +63,5 @@
 
 <br />
 
+<%= button_to 'Set active' %>
 <%= link_to 'New rendersession', new_rendersession_path %>
