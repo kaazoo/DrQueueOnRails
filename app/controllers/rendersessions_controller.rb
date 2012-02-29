@@ -142,7 +142,7 @@ class RendersessionsController < ApplicationController
 
     # make rendersession active if none existing
     rendersessions = Rendersession.all(:conditions => { :user => current_user.id })
-    if rendersessions.count > 0
+    if rendersessions.count == 0
       @rendersession.active = true
     else
       @rendersession.active = false
