@@ -33,9 +33,9 @@ class PaymentsController < ApplicationController
     # check if token is given
     redirect_to :action => 'index' unless params[:token]
     # get rendersession from token
-    rendersession = Rendersession.first(:conditions => { :paypal_token => params[:token] })
+    @rendersession = Rendersession.first(:conditions => { :paypal_token => params[:token] })
     # check owner of rendersession
-    if rendersession.user != current_user.id.to_s
+    if @rendersession.user != current_user.id.to_s
       redirect_to :controller => 'main', :action => 'index' and return
     end
     details_response = gateway.details_for(params[:token])

@@ -1,3 +1,5 @@
+<h2>Rendersession details</h2>
+
 <p>
   <b>Number of slaves:</b>
   <%=h @rendersession.num_slaves %>
@@ -51,17 +53,17 @@
 
 <p>
   <b>Paid at:</b>
-  <%=h @rendersession.paid_at %>
+  <%=h @rendersession.paid_at.strftime("%Y-%m-%d %H:%M") %>
 </p>
 
 <p>
   <b>Time passed:</b>
-  <%=h @rendersession.time_passed %>
+  <%=h Time.at(@rendersession.time_passed).gmtime.strftime('%R:%S') %>
 </p>
 
 <p>
   <b>Overall time passed:</b>
-  <%=h @rendersession.overall_time_passed %>
+  <%=h Time.at(@rendersession.overall_time_passed).gmtime.strftime('%R:%S') %>
 </p>
 
 
@@ -75,9 +77,9 @@
   <%=h @rendersession.stop_timestamp %>
 </p>
 
+<br /><br />
 
 <% else %>
-  <br /><br />
   This rendersession hasn't been paid yet. Click on the image below to pay via PayPal. <br />
   <%= link_to image_tag('https://www.paypal.com/de_DE/i/btn/btn_xpressCheckout.gif'), :controller => 'payments', :action => 'checkout', :rendersession => @rendersession %>
   <br /><br />

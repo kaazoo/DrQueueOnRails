@@ -1,4 +1,4 @@
-<h1>Listing rendersessions</h1>
+<h2>Rendersessions</h2>
 
 <%= form_tag :action => "set_active" %>
 
@@ -36,9 +36,9 @@
     (<%=h rendersession.vm_type %>)
     </td>
     <td><%=h rendersession.costs %></td>
-    <td><%=h rendersession.paid_at %></td>
-    <td><%=h rendersession.time_passed %></td>
-    <td><%=h rendersession.overall_time_passed %></td>
+    <td><%=h rendersession.paid_at.strftime("%Y-%m-%d %H:%M") %></td>
+    <td><%=h Time.at(rendersession.time_passed).gmtime.strftime('%R:%S') %></td>
+    <td><%=h Time.at(rendersession.overall_time_passed).gmtime.strftime('%R:%S') %></td>
     <td><%=h rendersession.start_timestamp %></td>
     <td><%=h rendersession.stop_timestamp %></td>
     <% if rendersession.active == true %>
