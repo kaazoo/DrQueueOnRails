@@ -1,0 +1,20 @@
+development:
+  host: <%= ENV['DRQUEUE_MASTER'] %>
+  database: ipythondb
+
+test:
+  host: <%= ENV['DRQUEUE_MASTER'] %>
+  database: ipythondb
+
+# set these environment variables on your prod server
+production:
+  host: <%= ENV['DRQUEUE_MASTER'] %>
+  port: <%= ENV['MONGOID_PORT'] %>
+  username: <%= ENV['MONGOID_USERNAME'] %>
+  password: <%= ENV['MONGOID_PASSWORD'] %>
+  database: <%= ENV['MONGOID_DATABASE'] %>
+  # slaves:
+  #   - host: slave1.local
+  #     port: 27018
+  #   - host: slave2.local
+  #     port: 27019
