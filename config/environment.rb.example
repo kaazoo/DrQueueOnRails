@@ -1,0 +1,86 @@
+# Load the rails application
+require File.expand_path('../application', __FILE__)
+
+
+######## BEGIN DQOR CONFIG
+
+# DrQueue variables
+ENV['DRQUEUE_MASTER'] ||= '192.168.1.1'
+ENV['DRQUEUE_TMP'] ||= "/usr/local/drqueue"
+ENV['DRQUEUE_TMP'] ||= "/usr/local/drqueue/tmp"
+ENV['DRQUEUE_ETC'] ||= "/usr/local/drqueue/etc"
+ENV['DRQUEUE_LOGS'] ||= "/usr/local/drqueue/logs"
+
+# owner and group of DrQueueOnRails instance
+ENV['DQOR_USER'] ||= "kaazoo"
+ENV['DQOR_GROUP'] ||= "staff"
+
+### TODO:
+# LDAP variables
+ENV['LDAP_TREEBASE'] ||= "dc=drqueue, dc=org"
+ENV['LDAP_HOST'] ||= "127.0.0.1"
+ENV['LDAP_PORT'] ||= "389"
+ENV['LDAP_FILTER'] ||= "uid"
+ENV['LDAP_ATTRS'] ||= "mail,cn"
+
+# protocol for webserver (HTTP, HTTPS)
+ENV['WEB_PROTO'] ||= "http"
+
+# user status, quota (disk space in GB), job priorities 
+ENV['USER_STATUS'] ||= "demo,customer,advanced,admin"
+ENV['USER_QUOTA'] ||= "5,15,25,35"
+ENV['USER_PRIO'] ||= "100,500,750,1000"
+
+### TODO:
+# suffix for user's temp dir (use "id" for number, "ldap_account" for user's account name)
+ENV['USER_TMP_DIR'] ||= "id"
+
+# available renderers on DrQueue slaves
+# HINT: Your slaves must be a member of these pools.
+# possible values:
+# Blender (internal renderer): "blender"
+# Blender (LuxRender renderer): "blenderlux"
+# Cinema 4D: "cinema4d"
+# LuxRender Standalone: "luxrender"
+# Maya (internal renderer): "maya"
+# Maya (MentalRay renderer): "mayamr"
+# MentalRay Standalone: "mentalray"
+# V-Ray Standalone: "vray" 
+#ENV['AVAIL_RENDERERS'] ||= "blender,blenderlux,cinema4d,luxrender,maya,mayamr,mentalray,vray"
+ENV['AVAIL_RENDERERS'] ||= "blender"
+
+# enable / disable features
+ENV['DQOR_TUTORIALS'] ||= "true"
+ENV['DQOR_SHOW_FRAME_IMG'] ||= "true"
+
+# CloudControl support
+ENV['CLOUDCONTROL'] ||= "false"
+ENV['CC_AWS_FEES'] ||= "0.03,0.16,0.32,0.33"
+ENV['CC_SERVICE_FEES'] ||= "0.4,0.5,0.6,0.6"
+ENV['CC_SERVICE_BETA_FEES'] ||= "0.1,0.15,0.2,0.2"
+ENV['CC_DISCOUNTS'] ||= "1.0,0.95,0.9,0.85,0.8,0.75,0.7"
+
+# PayPal marchant account
+ENV['PP_API_LOGIN'] ||= "your-api-login"
+ENV['PP_API_PASSWORD'] ||= "your-api-pw"
+ENV['PP_API_SIGNATURE'] ||= "your-api-sig"
+ENV['PP_CURRENCY'] ||= "EUR"
+
+# revision version number
+APP_VERSION = IO.popen("git show --abbrev-commit | head -n 1").readline.split(" ")[1]
+
+######## END DQOR CONFIG
+
+
+# RubyPython is started only once at the start of the app
+require 'rubypython'
+RubyPython.start(:python_exe => "python2.7")
+sys = RubyPython.import "sys"
+sys.argv = [""]
+$pyDrQueue = RubyPython.import("DrQueue")
+$pyDrQueueClient = $pyDrQueue.Client.new
+$pyDrQueueJob = RubyPython.import("DrQueue.job").Job
+
+
+# Initialize the rails application
+DrQueueOnRails::Application.initialize!
