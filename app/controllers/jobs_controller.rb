@@ -399,14 +399,7 @@ class JobsController < ApplicationController
     end
 
     if File.exist? archive
-      # find out which web server we are using
-      if request.env["SERVER_SOFTWARE"].index("Apache") == nil
-        # too slow for big files, only used without apache
-        send_file archive
-      else
-        # use mod_xsendfile which is much faster
-        x_send_file archive
-      end
+      send_file archive
     else
       # animation and cinema4d are always only packed
       if (job.rendertype == "animation") || (job.renderer == "cinema4d")
@@ -420,14 +413,7 @@ class JobsController < ApplicationController
         #end
       end
 
-      # find out which web server we are using
-      if request.env["SERVER_SOFTWARE"].index("Apache") == nil
-        # too slow for big files, only used without apache
-        send_file archive
-      else
-        # use mod_xsendfile which is much faster
-        x_send_file archive
-      end
+      send_file archive
     end
   end
 
