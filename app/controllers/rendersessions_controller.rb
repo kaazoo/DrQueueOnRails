@@ -242,26 +242,31 @@ class RendersessionsController < ApplicationController
     puts usage_time = params[:run_time].to_i
     puts vm_type = params[:vm_type].to_s
 
+    # fees by AWS for t.micro, m1.large, m1.xlarge, c1.xlarge
     af_arr = ENV['CC_AWS_FEES'].split(",")
     aws_fee_t1micro = af_arr[0].to_f
     aws_fee_m1large = af_arr[1].to_f
     aws_fee_m1xlarge = af_arr[2].to_f
     aws_fee_c1xlarge = af_arr[3].to_f
 
+    # service fees for customers
     sf_arr = ENV['CC_SERVICE_FEES'].split(",")
     service_fee_t1micro = sf_arr[0].to_f
     service_fee_m1large = sf_arr[1].to_f
     service_fee_m1xlarge = sf_arr[2].to_f
     service_fee_c1xlarge = sf_arr[3].to_f
 
+    # service fees for beta users
     sbf_arr = ENV['CC_SERVICE_BETA_FEES'].split(",")
     service_fee_beta_t1micro = sbf_arr[0].to_f
     service_fee_beta_m1large = sbf_arr[1].to_f
     service_fee_beta_m1xlarge = sbf_arr[2].to_f
     service_fee_beta_c1xlarge = sbf_arr[3].to_f
 
+    # discounts
     discount_arr = ENV['CC_DISCOUNTS'].split(",")
 
+    # costs are first calculated in USD because AWS fees are in USD
     case vm_type
       when "t1.micro":
         real_costs = aws_fee_t1micro * usage_time * num_nodes
@@ -304,21 +309,18 @@ class RendersessionsController < ApplicationController
         discount = discount_arr[0].to_f
     end
 
-    beta_costs_usd = sprintf('%.2f', beta_costs * discount)
+    # final costs with discount included
     customer_costs_usd = sprintf('%.2f', customer_costs * discount)
+    beta_costs_usd = sprintf('%.2f', beta_costs * discount)
 
+    # convert costs to EUR
     Money.default_bank = Money::Bank::GoogleCurrency.new
-    n = beta_costs_usd.to_money(:USD)
-    beta_costs_euro = n.exchange_to(:EUR)
     n = customer_costs_usd.to_money(:USD)
     customer_costs_euro = n.exchange_to(:EUR)
+    n = beta_costs_usd.to_money(:USD)
+    beta_costs_euro = n.exchange_to(:EUR)
 
-    beta_costs_euro_cents = (beta_costs_euro * 100).to_f.to_i
-
-    #output_text = "Normal price: "+customer_costs_euro.to_s+" EUR / "+customer_costs_usd.to_s+" USD - Discount: "+((100 - discount*100).to_i).to_s+" %<br />"
-    #output_text += "Beta users: "+beta_costs_euro.to_s+" EUR / "+beta_costs_usd.to_s+" USD"
-    #render :text => output_text, :layout => false
-
+    # return lower price for beta users
     if current_user.beta_user == true
       render :text => beta_costs_euro, :layout => false
     else
