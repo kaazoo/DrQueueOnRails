@@ -37,5 +37,6 @@ DrQueueOnRails::Application.configure do
   config.assets.debug = true
 
   ActiveMerchant::Billing::Base.mode = :test
+  ActiveMerchant::Billing::PaypalExpressGateway.default_currency = "EUR"
 
 end

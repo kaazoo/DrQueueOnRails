@@ -59,5 +59,6 @@ DrQueueOnRails::Application.configure do
   config.active_support.deprecation = :notify
 
   ActiveMerchant::Billing::Base.mode = :production
+  ActiveMerchant::Billing::PaypalExpressGateway.default_currency = "EUR"
 
 end
