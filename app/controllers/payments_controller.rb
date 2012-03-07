@@ -86,7 +86,8 @@ class PaymentsController < ApplicationController
     @gateway ||= PaypalExpressGateway.new(
       :login => ENV['PP_API_LOGIN'],
       :password => ENV['PP_API_PASSWORD'],
-      :signature => ENV['PP_API_SIGNATURE']
+      :signature => ENV['PP_API_SIGNATURE'],
+      :default_currency => ENV['PP_CURRENCY']
     )
   end
 
