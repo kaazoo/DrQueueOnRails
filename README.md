@@ -16,6 +16,6 @@ Support development
 License
 -------
 
-Copyright (C) 2007-2011 Andreas Schroeder
+Copyright (C) 2007-2012 Andreas Schroeder
 
 Licensed under GNU General Public License version 3. See LICENSE for details.
