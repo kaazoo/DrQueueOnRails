@@ -22,20 +22,6 @@ class MainController < ApplicationController
   end
 
 
-  # TODO: remove later
-  def make_noadmin
-    current_user.update_attribute :admin, false
-    redirect_to :action => 'index' and return
-  end
-
-
-  # TODO: remove later
-  def make_admin
-    current_user.update_attribute :admin, true
-    redirect_to :action => 'index' and return
-  end
-
-
   # tutorials page
   def tutorials
   end
