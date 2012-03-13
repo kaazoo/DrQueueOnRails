@@ -10,13 +10,13 @@ class MainController < ApplicationController
     #  redirect_to :action => 'disclaimer' and return
     #end
 
-    # check for contacts file in public directory
-    contacts_file = File.join(Rails.root, '/public/contacts.html')
-    if File.exist?(contacts_file)
-      cf = File.open(contacts_file, "r")
-      @contacts = cf.read
+    # check for greetings file in public directory
+    greetings_file = File.join(Rails.root, '/public/greetings.html')
+    if File.exist?(greetings_file)
+      gf = File.open(greetings_file, "r")
+      @greetings = gf.read
     else
-      @contacts = ""
+      @greetings = ""
     end
 
   end
