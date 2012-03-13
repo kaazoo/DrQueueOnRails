@@ -1,6 +1,11 @@
 <h2>Rendersessions</h2>
 
-<%= form_tag :action => "set_active" %>
+
+<% if @rendersessions.length > 0 %>
+
+<% if @rendersessions.length > 1 %>
+  <%= form_tag :action => "set_active" %>
+<% end %>
 
 <table>
   <tr>
@@ -36,7 +41,11 @@
     (<%=h rendersession.vm_type %>)
     </td>
     <td><%=h rendersession.costs %></td>
-    <td><%=h rendersession.paid_at.strftime("%Y-%m-%d %H:%M") %></td>
+    <% if rendersession.paid_at != nil %>
+      <td><%=h rendersession.paid_at.strftime("%Y-%m-%d %H:%M") %></td>
+    <% else %>
+      <td>not yet</td>
+    <% end %>
     <td><%=h Time.at(rendersession.time_passed).gmtime.strftime('%R:%S') %></td>
     <td><%=h Time.at(rendersession.overall_time_passed).gmtime.strftime('%R:%S') %></td>
     <td><%=h rendersession.start_timestamp %></td>
@@ -63,5 +72,20 @@
 
 <br />
 
-<%= button_to 'Set active' %>
-<%= link_to 'New rendersession', new_rendersession_path %>
+
+<% else %>
+<br />No rendersessions were found.<br />
+
+<% end %>
+
+<br /><br />
+
+
+<% if @rendersessions.length > 1 %>
+  <div style="float:left; width:auto;">
+  <%= button_to 'Activate' %>
+  </form>
+  </div>
+<% end %>
+
+<%= button_to 'New rendersession', new_rendersession_path, :method => :get %>
