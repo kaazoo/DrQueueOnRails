@@ -1,7 +1,7 @@
 <% if current_user.admin != nil && current_user.admin == true %>
-<h1>New rendersession</h1>
+<h2>New rendersession</h2>
 <% else %>
-<h1>Request rendersession</h1>
+<h2>Request rendersession</h2>
 <% end %>
 
 <%= form_for @rendersession do |f| %>
@@ -23,15 +23,12 @@
     <%= f.hidden_field :costs %>
   </p>
 
+  <div style="float:left; width:auto;">
   <%= f.submit "Request rendersession", :id => "createbutton", :disabled => true %>
+  </div>
 <% end %>
-
 <%= button_to "Calculate costs", "#", :class => "calc_button" %>
 
 
-<br />
-<% if current_user.admin == true %>
-<%= link_to 'Back', {:controller => 'main', :action => 'cloudcontrol'} %>
-<% else %>
+<br /><br /><br />
 <%= link_to 'Back', {:controller => 'rendersessions' } %>
-<% end %>

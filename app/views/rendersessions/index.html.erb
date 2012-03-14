@@ -9,6 +9,9 @@
 
 <table>
   <tr>
+    <% if current_user.admin == true %>
+    <th>User</th>
+    <% end %>
     <th>Number of slaves</th>
     <th>Run-time in hours</th>
     <th>VM machine type</th>
@@ -23,7 +26,10 @@
   </tr>
 
 <% @rendersessions.each do |rendersession| %>
-  <tr>
+  <tr align="center">
+    <% if current_user.admin == true %>
+    <td><%=h User.find(rendersession.user).name rescue "unknown" %></td>
+    <% end %>
     <td><%=h rendersession.num_slaves %></td>
     <td><%=h rendersession.run_time %></td>
     <td>
@@ -52,12 +58,20 @@
     <td><%=h rendersession.stop_timestamp %></td>
     <% if rendersession.active == true %>
       <td>yes</td>
-      <td><%= radio_button_tag("id", rendersession.id, true) %></td>
+      <% if rendersession.user == current_user.id.to_s %>
+        <td><%= radio_button_tag("id", rendersession.id, true) %></td>
+      <% else %>
+        <td></td>
+      <% end %>
     <% else %>
       <td>no</td>
-      <td><%= radio_button_tag("id", rendersession.id, false) %></td>
+      <% if rendersession.user == current_user.id.to_s %>
+        <td><%= radio_button_tag("id", rendersession.id, false) %></td>
+      <% else %>
+        <td></td>
+      <% end %>
     <% end %>
-    <td>
+    <td align="left">
     <%= link_to 'Show', rendersession %>
     <% if rendersession.paid_at == nil %>
       <%= link_to 'Edit', edit_rendersession_path(rendersession) %>

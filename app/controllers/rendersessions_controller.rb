@@ -12,6 +12,11 @@ class RendersessionsController < ApplicationController
   def show
     @rendersession = Rendersession.find(params[:id])
 
+    # only admins and owner are allowed
+    if (current_user.admin != true) && (@rendersession.user != current_user.id.to_s)
+      redirect_to :controller => 'rendersessions', :action => 'index' and return
+    end
+
     respond_to do |format|
       format.html # show.html.erb
       format.xml  { render :xml => @rendersession }
@@ -92,28 +97,12 @@ class RendersessionsController < ApplicationController
 
     # only admins and owner are allowed
     if (current_user.admin != true) && (@rendersession.user != current_user.id.to_s)
-      redirect_to :controller => 'main', :action => 'index' and return
+      redirect_to :controller => 'rendersessions', :action => 'index' and return
     else
-    
-    # it's not allowed to edit paid rendersessions
-    if @rendersession.paid_at != nil
-      redirect_to :controller => 'main', :action => 'index' and return
-    end
-
-      # fetch all unconnected payments
-      #all_payments = Payment.find(:all)
-      #@payments = []
-      #all_payments.each do |pm|
-      #  puts pm.id
-      #  if Rendersession.find_by_payment_id(pm.id) == nil
-      #    @payments << pm
-      #  end
-      #end
-
-      #@payments = Payment.find(:all)
-
-      #@profiles = Profile.find(:all)
-
+      # it's not allowed to edit paid rendersessions
+      if @rendersession.paid_at != nil
+        redirect_to :controller => 'rendersessions', :action => 'index' and return
+      end
     end
 
   end
@@ -125,20 +114,7 @@ class RendersessionsController < ApplicationController
 
     @rendersession = Rendersession.new(params[:rendersession])
 
-    puts @rendersession.num_slaves
-    puts @rendersession.run_time
-    puts @rendersession.vm_type
-
-    # only admins are allowed to use cloudcontrol
-    if current_user.admin != true
-      #redirect_to :controller => 'main', :action => 'index' and return
-      @rendersession.user = current_user.id
-      #@rendersession.payment_id = 0
-      #@rendersession.costs = 0
-    end
-
-    puts @rendersession.user
-    puts @rendersession.costs
+    @rendersession.user = current_user.id
 
     # make rendersession active if none existing
     rendersessions = Rendersession.all(:conditions => { :user => current_user.id })
@@ -150,11 +126,7 @@ class RendersessionsController < ApplicationController
 
     respond_to do |format|
       if @rendersession.save
-        if current_user.admin == true
-          format.html { redirect_to(:controller => 'main', :action => 'cloudcontrol') }
-        else
-          format.html { redirect_to(:controller => 'rendersessions', :action => 'show', :id => @rendersession.id) }
-        end
+        format.html { redirect_to(:controller => 'rendersessions', :action => 'show', :id => @rendersession.id) }
       else
         format.html { render :action => "new" }
       end
@@ -170,8 +142,12 @@ class RendersessionsController < ApplicationController
 
     # only admins and owner are allowed
     if (current_user.admin != true) && (@rendersession.user != current_user.id.to_s)
-      redirect_to :controller => 'main', :action => 'index' and return
+      redirect_to :controller => 'rendersessions', :action => 'index' and return
     else
+      # it's not allowed to update paid rendersessions
+      if @rendersession.paid_at != nil
+        redirect_to :controller => 'rendersessions', :action => 'index' and return
+      end
 
       respond_to do |format|
         if @rendersession.update_attributes(params[:rendersession])
@@ -190,11 +166,18 @@ class RendersessionsController < ApplicationController
   # DELETE /rendersessions/1
   # DELETE /rendersessions/1.xml
   def destroy
-    # only admins are allowed
-    if current_user.admin != true
-      redirect_to :controller => 'main', :action => 'index' and return
+
+    @rendersession = Rendersession.find(params[:id])
+
+    # only admins and owner are allowed
+    if (current_user.admin != true) && (rendersession.user != current_user.id.to_s)
+      redirect_to :controller => 'rendersessions', :action => 'index' and return
     else
-      @rendersession = Rendersession.find(params[:id])
+      # it's not allowed to delete paid rendersessions
+      if @rendersession.paid_at != nil
+        redirect_to :controller => 'rendersessions', :action => 'index' and return
+      end
+
       @rendersession.destroy
 
       respond_to do |format|
