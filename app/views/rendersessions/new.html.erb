@@ -7,15 +7,15 @@
 <%= form_for @rendersession do |f| %>
   <p>
     <%= f.label :num_slaves, "Number of slaves" %>:<br/>
-    <%= f.text_field :num_slaves, :size => 3, :maxlength => 2, :value => "1" %>
+    <%= f.text_field :num_slaves, :size => 3, :maxlength => 2, :value => "1", :onchange => "document.getElementById('createbutton').disabled = true;" %>
   </p>
   <p>
     <%= f.label :run_time, "Run-time in hours" %>:<br/>
-    <%= f.text_field :run_time, :size => 6, :maxlength => 5, :value => "1" %>
+    <%= f.text_field :run_time, :size => 6, :maxlength => 5, :value => "1", :onchange => "document.getElementById('createbutton').disabled = true;" %>
   </p>
   <p>
     <%= f.label :vm_type, "VM machine type" %>:<br/>
-    <%= f.select(:vm_type, [ ["Mini", "t1.micro"], ["Large", "m1.large"], ["Extra Large (RAM)", "m1.xlarge"], ["Extra Large (Cores)", "c1.xlarge"] ]) %>
+    <%= f.select(:vm_type, [ ["Mini", "t1.micro"], ["Large", "m1.large"], ["Extra Large (RAM)", "m1.xlarge"], ["Extra Large (Cores)", "c1.xlarge"] ], {}, :onchange => "document.getElementById('createbutton').disabled = true;") %>
   </p>
   <p>
     <%= f.label :costs, "Costs in Euro" %>:<br/>
