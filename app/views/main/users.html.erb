@@ -1,0 +1,47 @@
+<h2>Users</h2>
+
+<%= form_tag({:action => 'update_user'}, :multipart => true) do -%>
+
+<table border="1" style="border-width:1px; border-style:solid; border-color:black;">
+  <tr>
+  <th>Name</th>
+  <th>Email</th>
+  <th>Status<br/>(Normal/Admin)</th>
+  <th>Payments<br/>(Normal/Beta user)</th>
+  <th>Current login</th>
+  <th>Current IP</th>
+  <th>Last login</th>
+  <th>Last IP</th>
+  <th>Number of logins</th>
+  <th>Password reset</th>
+  </tr>
+
+<% @users.each do |user| %>
+  <tr>
+  <td><%= text_field_tag user.id.to_s + "[name]", user.name, {:size => 7} %></td>
+  <td><%= text_field_tag user.id.to_s + "[email]", user.email, {:size => 15} %></td>
+  <% if user.admin == true %>
+    <td>Admin</td>
+  <% else %>
+    <td>Normal</td>
+  <% end %>
+  <% if user.beta_user == true %>
+    <td><%= select_tag user.id.to_s + "[beta_user]", "<option value=\"1\" selected=\"selected\">Beta prices</option><option value=\"0\">Normal prices</option>".html_safe %></td>
+  <% else %>
+    <td><%= select_tag user.id.to_s + "[beta_user]", "<option value=\"1\">Beta prices</option><option value=\"0\" selected=\"selected\">Normal prices</option>".html_safe %></td>
+  <% end %>
+  <td><%= user.current_sign_in_at %></td>
+  <td><%= user.current_sign_in_ip %></td>
+  <td><%= user.last_sign_in_at %></td>
+  <td><%= user.last_sign_in_ip %></td>
+  <td><%= user.sign_in_count %></td>
+  <td><%= user.reset_password_sent_at %></td>
+  </tr>
+<% end %>
+
+</table>
+
+<br /><br />
+<%= submit_tag "Update" %>
+<% end -%>
+

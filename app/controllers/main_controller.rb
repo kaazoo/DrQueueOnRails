@@ -63,25 +63,52 @@ class MainController < ApplicationController
   end
 
 
-  # cloudcontrol page
-  def cloudcontrol
-    # only admins are allowed to use cloudcontrol
+  # user administration page
+  def users
+    # only admins are allowed
     if current_user.admin == false
       redirect_to :controller => 'main' and return
-    else
-      # fetch all running sessions
-      @rendersessions = Rendersession.find(:all)
+    end
 
-      # fetch all unconnected payments
-      all_payments = Payment.find(:all)
-      @payments = []
-      all_payments.each do |pm|
-        puts pm.id
-        if Rendersession.find_by_payment_id(pm.id) == nil
-          @payments << pm
+    @users = User.find(:all)
+
+  end
+
+
+  # update user settings
+  def update_user
+    # only admins are allowed
+    if current_user.admin == false
+      redirect_to :controller => 'main' and return
+    end
+
+    users = User.find(:all)
+    users.each do |user|
+      if params[user.id.to_s] != nil
+        # check name attribute
+        if params[user.id.to_s]['name'] != user.name
+          user.name = params[user.id.to_s]['name']
+          user.save!
+        end
+        # check email attribute
+        if params[user.id.to_s]['email'] != user.email
+          user.email = params[user.id.to_s]['email']
+          user.save!
+        end
+        # check beta_user attribute
+        if (params[user.id.to_s]['beta_user'].to_i == 1) && (user.beta_user == false)
+          user.beta_user = true
+          user.save!
+        end
+        if (params[user.id.to_s]['beta_user'].to_i == 0) && (user.beta_user == true)
+          user.beta_user = false
+          user.save!
         end
       end
     end
+
+    redirect_to :action => "users"
   end
+
 
 end

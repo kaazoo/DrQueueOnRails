@@ -4,10 +4,9 @@ DrQueueOnRails::Application.routes.draw do
 
   root :to => 'main#index'
   resources :main, :only => :index
-  match 'main/cloudcontrol' => 'main#cloudcontrol'
   match 'main/computers' => 'main#computers'
-  match 'main/make_admin' => 'main#make_admin'
-  match 'main/make_noadmin' => 'main#make_noadmin'
+  match 'main/users' => 'main#users'
+  match 'main/update_user' => 'main#update_user'
 
   resources :jobs
   match 'jobs/:id/view_log' => 'jobs#view_log'
