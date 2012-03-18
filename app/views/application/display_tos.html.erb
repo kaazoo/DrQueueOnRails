@@ -1,0 +1,13 @@
+<div id="Terms_of_service">
+<%= raw(@terms_of_service) %>
+</div>
+
+<br /><br />
+
+<div align="center">
+<%= form_tag({:controller => 'application', :action => 'accept_tos'}) do -%>
+  Yes, I aggree: 
+ <%= check_box_tag "accepted", "1" %>
+ <%= submit_tag "Send" %>
+<% end -%>
+</div>

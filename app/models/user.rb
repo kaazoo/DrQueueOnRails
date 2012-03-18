@@ -7,7 +7,8 @@ class User
   validates_uniqueness_of :name, :email, :case_sensitive => false
   field :admin, :type => Boolean, :default => false
   field :beta_user, :type => Boolean, :default => true
-  attr_accessible :name, :email, :password, :password_confirmation, :remember_me, :admin
+  field :accepted_tos, :type => Boolean, :default => false
+  attr_accessible :name, :email, :password, :password_confirmation, :remember_me
 
   # Include default devise modules. Others available are:
   # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable

@@ -104,6 +104,12 @@ class MainController < ApplicationController
           user.beta_user = false
           user.save!
         end
+        # check accepted_tos attribute
+        puts params[user.id.to_s]['accepted_tos']
+        if params[user.id.to_s]['accepted_tos'] != user.accepted_tos
+          user.accepted_tos = params[user.id.to_s]['accepted_tos']
+          user.save!
+        end
       end
     end
 

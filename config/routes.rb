@@ -26,6 +26,7 @@ DrQueueOnRails::Application.routes.draw do
   match 'payments/complete' => 'payments#complete'
   match 'payments/error' => 'payments#error'
 
+  match 'accept_tos' => 'application#accept_tos'
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

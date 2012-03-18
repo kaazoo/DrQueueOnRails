@@ -205,9 +205,17 @@ div.progressBar div.background {
 	border-style: solid;
 	border-color: #3354AA;
 	padding: 3px;
-}	
+}
 
 #ButtonDiv {
 	float:left;
 	margin-right:3px;
+}
+
+#Terms_of_service {
+	font-size: 12px;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #3354AA;
+	padding: 3px;
 }

@@ -8,6 +8,7 @@
   <th>Email</th>
   <th>Status<br/>(Normal/Admin)</th>
   <th>Payments<br/>(Normal/Beta user)</th>
+  <th>Accepted terms of service</th>
   <th>Current login</th>
   <th>Current IP</th>
   <th>Last login</th>
@@ -29,6 +30,11 @@
     <td><%= select_tag user.id.to_s + "[beta_user]", "<option value=\"1\" selected=\"selected\">Beta prices</option><option value=\"0\">Normal prices</option>".html_safe %></td>
   <% else %>
     <td><%= select_tag user.id.to_s + "[beta_user]", "<option value=\"1\">Beta prices</option><option value=\"0\" selected=\"selected\">Normal prices</option>".html_safe %></td>
+  <% end %>
+  <% if user.accepted_tos == true %>
+    <td><%= check_box_tag user.id.to_s + "[accepted_tos]", true, true %></td>
+  <% else %>
+    <td><%= check_box_tag user.id.to_s + "[accepted_tos]", true, false %></td>
   <% end %>
   <td><%= user.current_sign_in_at %></td>
   <td><%= user.current_sign_in_ip %></td>
