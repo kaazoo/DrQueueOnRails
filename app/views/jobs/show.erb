@@ -30,8 +30,16 @@ end
  <td><%= Time.at(@job.submit_time) %></td>
 </tr>
 <tr>
+ <td>Average render time per frame:</td>
+ <td><%= @meantime.to_s %></td>
+</tr>
+<tr>
+ <td>Time left:</td>
+ <td><%= @time_left.to_s %></td>
+</tr>
+<tr>
  <td>Estimated finish time:</td>
- <td>don't know yet</td>
+ <td><%= @finish_time.to_s %></td>
 </tr>
 <tr>
  <td>Renderer:</td>

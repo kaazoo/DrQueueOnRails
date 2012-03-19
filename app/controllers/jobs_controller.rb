@@ -76,6 +76,13 @@ class JobsController < ApplicationController
       @tasks << tasks_db.pop
     end
 
+    # get average time per frame, time left and estimated finish time
+    times = $pyDrQueueClient.job_estimated_finish_time(@job._id.to_s)
+    @meantime = times[0].to_s
+    @time_left = times[1].to_s
+    @finish_time = times[2].to_s[0..18]
+
+
     # get list of all computers
     #@computer_list = Job.global_computer_list()
     # get all frames of job
