@@ -19,7 +19,7 @@ DrQueueOnRails::Application.routes.draw do
 
   resources :rendersessions
   match 'rendersessions/set_active' => 'rendersessions#set_active'
-  match 'rendersessions/calculate_costs' => 'rendersessions#calculate_costs'
+  match 'rendersessions/calculate_costs_text' => 'rendersessions#calculate_costs_text'
 
   match 'payments/checkout' => 'payments#checkout'
   match 'payments/confirm' => 'payments#confirm'
