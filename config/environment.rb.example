@@ -69,6 +69,11 @@ ENV['PP_API_LOGIN'] ||= "your-api-login"
 ENV['PP_API_PASSWORD'] ||= "your-api-pw"
 ENV['PP_API_SIGNATURE'] ||= "your-api-sig"
 
+# free rendersessions
+ENV["FREE_RS_NUM_SLAVES"] ||= "3"
+ENV["FREE_RS_RUN_TIME"] ||= "1"
+ENV["FREE_RS_VM_TYPE"] ||= "m1.large"
+
 # revision version number
 APP_VERSION = IO.popen("git show --abbrev-commit | head -n 1").readline.split(" ")[1]
 

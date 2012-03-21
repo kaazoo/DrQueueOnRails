@@ -223,6 +223,41 @@ class RendersessionsController < ApplicationController
   end
 
 
+  # give free rendersession to user
+  def give_free_rendersession
+
+    # only admins are allowed
+    if current_user.admin != true
+      redirect_to :controller => 'main', :action => 'index' and return
+    end
+
+    user_id = params[:id].to_s
+
+    new_rs = Hash.new
+    new_rs["user"] = user_id
+    new_rs["num_slaves"] = ENV["FREE_RS_NUM_SLAVES"].to_i
+    new_rs["run_time"] = ENV["FREE_RS_RUN_TIME"].to_i
+    new_rs["vm_type"] = ENV["FREE_RS_VM_TYPE"].to_s
+    new_rs["costs"] = 0
+    new_rs["paypal_token"] = "NOT_NEEDED"
+    new_rs["paypal_payer_id"] = "NOT_NEEDED"
+    new_rs["paid_at"] = DateTime.now
+
+    rendersession = Rendersession.new(new_rs)
+
+    # make rendersession active if none existing
+    rendersessions = Rendersession.all(:conditions => { :user => user_id })
+    if rendersessions.count == 0
+      rendersession.active = true
+    else
+      rendersession.active = false
+    end
+
+    rendersession.save
+    redirect_to :controller => 'rendersessions', :action => 'index'
+   end
+
+
   # costs calculation
   def calculate_costs_text
 
