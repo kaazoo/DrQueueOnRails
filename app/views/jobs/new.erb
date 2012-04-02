@@ -34,8 +34,12 @@
 <input type="file" name="file"></p>
 </div>
 
-<p><label for="job_renderer">Renderer</label><br/>
-<%= select("job", "renderer", @renderers, {}, {}) %></p>
+<% if @renderers.length > 1 %>
+  <p><label for="job_renderer">Renderer</label><br/>
+  <%= select("job", "renderer", @renderers, {}, {}) %></p>
+<% else %>
+  <%= hidden_field_tag("job[renderer]", @renderers[0][1]) %>
+<% end %>
 
 <p><label for="job_rendertype">Rendertype</label><br/>
 <%= select("job", "rendertype", [ ["Animation", "animation"], ["Single image", "image"] ], {}, {"onChange" => "if(this.value == 'image') {document.getElementById('frame_div').style.display='none'; document.getElementById('res_div').style.display='block';} else {document.getElementById('frame_div').style.display='block'; document.getElementById('res_div').style.display='none';}"}) 
