@@ -112,8 +112,14 @@ frame = @job['startframe'].to_i
 	 <td><%= start_time %></td>
    <td><%= finish_time %></td>
    <td><%= link_to 'View log', :action => 'view_log', :id => @job._id.to_s, :nr => index %></td>
-   <td><%= link_to 'View Output Image', :action => 'view_image', :id => @job._id.to_s, :nr => index %></td>
-	</tr>
+   <td>
+     <% if status == "ok" %>
+       <%= link_to 'View Output Image', :action => 'view_image', :id => @job._id.to_s, :nr => index %>
+     <% else %>
+       View Output Image
+     <% end %>
+   </td>
+ </tr>
 	<%
 	index += 1
 	if @job['blocksize'].to_i > 1
