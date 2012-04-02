@@ -8,7 +8,7 @@
 <p><label for="job_name">Name</label><br/>
 <%= text_field 'job', 'name'  %></p>
 
-<% if ENV['CLOUDCONTROL'] != "true" %>
+<% if (ENV['CLOUDCONTROL'] != "true") && (ENV['DQOR_JOB_SPECIFY_PATH'] == "true") %>
   <p><label for="job_file_provider">Provide files by</label><br/>
   <%= select("job", "file_provider", [ ["Upload", "upload"], ["Path", "path"] ], {}, {"onChange" => "if(this.value == 'upload') {document.getElementById('path_div').style.display='none'; document.getElementById('upload_div').style.display='block';} else {document.getElementById('path_div').style.display='block'; document.getElementById('upload_div').style.display='none';}"}) 
 %></p>
@@ -45,10 +45,13 @@
   <%= hidden_field_tag("job[renderer]", @renderers[0][1]) %>
 <% end %>
 
-<p><label for="job_rendertype">Rendertype</label><br/>
-<%= select("job", "rendertype", [ ["Animation", "animation"], ["Single image", "image"] ], {}, {"onChange" => "if(this.value == 'image') {document.getElementById('frame_div').style.display='none'; document.getElementById('res_div').style.display='block';} else {document.getElementById('frame_div').style.display='block'; document.getElementById('res_div').style.display='none';}"}) 
+<% if ENV['DQOR_JOB_SINGLE_FRAME'] == "true" %>
+  <p><label for="job_rendertype">Rendertype</label><br/>
+  <%= select("job", "rendertype", [ ["Animation", "animation"], ["Single image", "image"] ], {}, {"onChange" => "if(this.value == 'image') {document.getElementById('frame_div').style.display='none'; document.getElementById('res_div').style.display='block';} else {document.getElementById('frame_div').style.display='block'; document.getElementById('res_div').style.display='none';}"}) 
 %></p>
-
+<% else %>
+  <%= hidden_field_tag("job[rendertype]", "animation") %>
+<% end %>
 
 <div id="frame_div" 
 <% if @job.rendertype == "animation" %>
@@ -69,11 +72,15 @@
 <input name="decrement" type="submit" value=" - " onClick="document.getElementById('job_endframe').value = parseInt(eval(document.getElementById('job_endframe').value) - 1); return false;" />
 </p>
 
-<p><label for="job_blocksize">Blocksize</label><br/>
-<%= text_field_tag 'job[blocksize]', 1, {:size => 5, :maxlength => 5} %>
-<input name="increment" type="submit" value=" + " onClick="document.getElementById('job_blocksize').value = parseInt(eval(document.getElementById('job_blocksize').value) + 1); return false;" />
-<input name="decrement" type="submit" value=" - " onClick="document.getElementById('job_blocksize').value = parseInt(eval(document.getElementById('job_blocksize').value) - 1); return false;" />
-</p>
+<% if ENV['DQOR_JOB_SPECIFY_BLOCKSIZE'] == "true" %>
+  <p><label for="job_blocksize">Blocksize</label><br/>
+  <%= text_field_tag 'job[blocksize]', 1, {:size => 5, :maxlength => 5} %>
+  <input name="increment" type="submit" value=" + " onClick="document.getElementById('job_blocksize').value = parseInt(eval(document.getElementById('job_blocksize').value) + 1); return false;" />
+  <input name="decrement" type="submit" value=" - " onClick="document.getElementById('job_blocksize').value = parseInt(eval(document.getElementById('job_blocksize').value) - 1); return false;" />
+  </p>
+<% else %>
+  <%= hidden_field_tag("job[blocksize]", 1) %>
+<% end %>
 </div>
 
 

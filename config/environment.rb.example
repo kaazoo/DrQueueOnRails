@@ -52,6 +52,9 @@ ENV['AVAIL_RENDERERS'] ||= "blender"
 # enable / disable features
 ENV['DQOR_TUTORIALS'] ||= "true"
 ENV['DQOR_SHOW_FRAME_IMG'] ||= "true"
+ENV['DQOR_JOB_SPECIFY_PATH'] ||= "true"
+ENV['DQOR_JOB_SINGLE_FRAME'] ||= "true"
+ENV['DQOR_JOB_SPECIFY_BLOCKSIZE'] ||= "true"
 
 # CloudControl support
 ENV['CLOUDCONTROL'] ||= "false"
