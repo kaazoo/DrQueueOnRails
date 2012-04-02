@@ -519,7 +519,9 @@ class JobsController < ApplicationController
     job_endframe = params[:job][:endframe].strip.to_i
     job_blocksize = params[:job][:blocksize].strip.to_i
     job_renderer = params[:job][:renderer].strip
-    job_scenefile = params[:job][:scenefile].strip
+    if params[:job][:file_provider] == "path"
+      job_scenefile = params[:job][:scenefile].strip
+    end
     job_retries = 1000
     # set current user as owner
     job_owner = current_user.id.to_s

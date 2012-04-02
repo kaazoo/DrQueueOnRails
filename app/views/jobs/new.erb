@@ -8,20 +8,24 @@
 <p><label for="job_name">Name</label><br/>
 <%= text_field 'job', 'name'  %></p>
 
-<p><label for="job_file_provider">Provide files by</label><br/>
-<%= select("job", "file_provider", [ ["Upload", "upload"], ["Path", "path"] ], {}, {"onChange" => "if(this.value == 'upload') {document.getElementById('path_div').style.display='none'; document.getElementById('upload_div').style.display='block';} else {document.getElementById('path_div').style.display='block'; document.getElementById('upload_div').style.display='none';}"}) 
+<% if ENV['CLOUDCONTROL'] != "true" %>
+  <p><label for="job_file_provider">Provide files by</label><br/>
+  <%= select("job", "file_provider", [ ["Upload", "upload"], ["Path", "path"] ], {}, {"onChange" => "if(this.value == 'upload') {document.getElementById('path_div').style.display='none'; document.getElementById('upload_div').style.display='block';} else {document.getElementById('path_div').style.display='block'; document.getElementById('upload_div').style.display='none';}"}) 
 %></p>
 
-<div id="path_div" 
-<% if @job.file_provider == "path" %>
-  style="display:block">
-<% else %>
-  style="display:none">
-<% end %>
+  <div id="path_div" 
+  <% if @job.file_provider == "path" %>
+    style="display:block">
+  <% else %>
+    style="display:none">
+  <% end %>
 
-<p><label for="job_scenefile">Path to scenefile</label><br/>
-<%= text_field 'job', 'scenefile'  %></p>
-</div>
+  <p><label for="job_scenefile">Path to scenefile</label><br/>
+  <%= text_field 'job', 'scenefile'  %></p>
+  </div>
+<% else %>
+  <%= hidden_field_tag("job[file_provider]", "upload") %>
+<% end %>
 
 <div id="upload_div" 
 <% if @job.file_provider == "upload" %>
