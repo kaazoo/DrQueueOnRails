@@ -15,7 +15,7 @@
   <th>Last IP</th>
   <th>Number of logins</th>
   <th>Password reset</th>
-  <th>Free RS</th>
+  <th>Actions</th>
   </tr>
 
 <% @users.each do |user| %>
@@ -43,7 +43,10 @@
   <td><%= user.last_sign_in_ip %></td>
   <td><%= user.sign_in_count %></td>
   <td><%= user.reset_password_sent_at %></td>
-  <td><%= link_to "give", :controller => :rendersessions, :action => :give_free_rendersession, :id => user.id %></td>
+  <td>
+    <%= link_to "give free RS", :controller => :rendersessions, :action => :give_free_rendersession, :id => user.id %>
+    <%= link_to "delete", {:action => :delete_user, :id => user.id}, :confirm => "Are you sure?" %>
+  </td>
   </tr>
 <% end %>
 

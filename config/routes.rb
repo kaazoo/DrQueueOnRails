@@ -7,6 +7,7 @@ DrQueueOnRails::Application.routes.draw do
   match 'main/computers' => 'main#computers'
   match 'main/users' => 'main#users'
   match 'main/update_user' => 'main#update_user'
+  match 'main/delete_user' => 'main#delete_user'
 
   resources :jobs
   match 'jobs/:id/view_log' => 'jobs#view_log'

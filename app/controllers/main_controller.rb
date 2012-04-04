@@ -117,4 +117,22 @@ class MainController < ApplicationController
   end
 
 
+  # delete user
+  def delete_user
+    # only admins are allowed
+    if current_user.admin == false
+      redirect_to :controller => 'main' and return
+    end
+
+    user = User.find(params[:id])
+    if user.admin == true
+      flash[:notice] = "Error: Won't delete another admin user."
+    else
+      user.destroy
+      flash[:notice] = "Successfully deleted user."
+    end
+
+    redirect_to :action => "users"
+  end
+
 end
