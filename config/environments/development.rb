@@ -17,10 +17,10 @@ DrQueueOnRails::Application.configure do
   #config.action_mailer.raise_delivery_errors = false
 
   # ActionMailer Config
-  config.action_mailer.default_url_options = { :host => 'localhost:3000' }
+  config.action_mailer.default_url_options = { :host => 'login.blendercloud.net', :protocol => 'https' }
   # A dummy setup for development - no deliveries, but logged
-  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.perform_deliveries = false
+  config.action_mailer.delivery_method = :sendmail
+  config.action_mailer.perform_deliveries = true
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.default :charset => "utf-8"
 
@@ -36,7 +36,7 @@ DrQueueOnRails::Application.configure do
   # Expands the lines which load the assets
   config.assets.debug = true
 
-  ActiveMerchant::Billing::Base.mode = :test
+  ActiveMerchant::Billing::Base.mode = :production
   ActiveMerchant::Billing::PaypalExpressGateway.default_currency = "EUR"
 
 end
