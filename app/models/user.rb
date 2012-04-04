@@ -6,7 +6,7 @@ class User
   validates_presence_of :name
   validates_uniqueness_of :name, :email, :case_sensitive => false
   field :admin, :type => Boolean, :default => false
-  field :beta_user, :type => Boolean, :default => true
+  field :beta_user, :type => Boolean, :default => false
   field :accepted_tos, :type => Boolean, :default => false
   attr_accessible :name, :email, :password, :password_confirmation, :remember_me
 
