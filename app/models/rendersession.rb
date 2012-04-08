@@ -32,26 +32,36 @@ class Rendersession
     puts usage_time
     puts vm_type
 
-    # fees by AWS for t.micro, m1.large, m1.xlarge, c1.xlarge
+    # fees by AWS for t1.micro, m1.small, m1.medium, m1.large, m1.xlarge, c1.xlarge in USD
     af_arr = ENV['CC_AWS_FEES'].split(",")
     aws_fee_t1micro = af_arr[0].to_f
-    aws_fee_m1large = af_arr[1].to_f
-    aws_fee_m1xlarge = af_arr[2].to_f
-    aws_fee_c1xlarge = af_arr[3].to_f
+    aws_fee_m1small = af_arr[1].to_f
+    aws_fee_m1medium = af_arr[2].to_f
+    aws_fee_m1large = af_arr[3].to_f
+    aws_fee_m1xlarge = af_arr[4].to_f
+    aws_fee_c1xlarge = af_arr[5].to_f
 
-    # service fees for customers
+    # fees by PayPal in Euro
+    paypal_percentage = ENV['PP_PERCENTAGE'].to_f
+    paypal_transaction_fee = ENV['PP_TRANSACTION_FEE'].to_f
+
+    # service fees for customers in USD
     sf_arr = ENV['CC_SERVICE_FEES'].split(",")
     service_fee_t1micro = sf_arr[0].to_f
-    service_fee_m1large = sf_arr[1].to_f
-    service_fee_m1xlarge = sf_arr[2].to_f
-    service_fee_c1xlarge = sf_arr[3].to_f
+    service_fee_m1small = sf_arr[1].to_f
+    service_fee_m1medium = sf_arr[2].to_f
+    service_fee_m1large = sf_arr[3].to_f
+    service_fee_m1xlarge = sf_arr[4].to_f
+    service_fee_c1xlarge = sf_arr[5].to_f
 
-    # service fees for beta users
+    # service fees for beta users in USD
     sbf_arr = ENV['CC_SERVICE_BETA_FEES'].split(",")
     service_fee_beta_t1micro = sbf_arr[0].to_f
-    service_fee_beta_m1large = sbf_arr[1].to_f
-    service_fee_beta_m1xlarge = sbf_arr[2].to_f
-    service_fee_beta_c1xlarge = sbf_arr[3].to_f
+    service_fee_beta_m1small = sbf_arr[1].to_f
+    service_fee_beta_m1medium = sbf_arr[2].to_f
+    service_fee_beta_m1large = sbf_arr[3].to_f
+    service_fee_beta_m1xlarge = sbf_arr[4].to_f
+    service_fee_beta_c1xlarge = sbf_arr[5].to_f
 
     # discounts
     discount_arr = ENV['CC_DISCOUNTS'].split(",")
@@ -62,24 +72,29 @@ class Rendersession
         real_costs = aws_fee_t1micro * usage_time * num_nodes
         beta_costs = (aws_fee_t1micro + service_fee_beta_t1micro) * usage_time * num_nodes
         customer_costs = (aws_fee_t1micro + service_fee_t1micro) * usage_time * num_nodes
-        #puts real_costs.to_s+" "+beta_costs.to_s+" "+customer_costs.to_s
+      when "m1.small":
+        real_costs = aws_fee_m1small * usage_time * num_nodes
+        beta_costs = (aws_fee_m1small + service_fee_beta_m1small) * usage_time * num_nodes
+        customer_costs = (aws_fee_m1small + service_fee_m1small) * usage_time * num_nodes
+      when "m1.medium":
+        real_costs = aws_fee_m1medium * usage_time * num_nodes
+        beta_costs = (aws_fee_m1medium + service_fee_beta_m1medium) * usage_time * num_nodes
+        customer_costs = (aws_fee_m1medium + service_fee_m1medium) * usage_time * num_nodes
       when "m1.large":
         real_costs = aws_fee_m1large * usage_time * num_nodes
         beta_costs = (aws_fee_m1large + service_fee_beta_m1large) * usage_time * num_nodes
         customer_costs = (aws_fee_m1large + service_fee_m1large) * usage_time * num_nodes
-        #puts real_costs.to_s+" "+beta_costs.to_s+" "+customer_costs.to_s
       when "m1.xlarge":
         real_costs = aws_fee_m1xlarge * usage_time * num_nodes
         beta_costs = (aws_fee_m1xlarge + service_fee_beta_m1xlarge) * usage_time * num_nodes
         customer_costs = (aws_fee_m1xlarge + service_fee_m1xlarge) * usage_time * num_nodes
-        #puts real_costs.to_s+" "+beta_costs.to_s+" "+customer_costs.to_s
       when "c1.xlarge":
         real_costs = aws_fee_c1xlarge * usage_time * num_nodes
         beta_costs = (aws_fee_c1xlarge + service_fee_beta_c1xlarge) * usage_time * num_nodes
         customer_costs = (aws_fee_c1xlarge + service_fee_c1xlarge) * usage_time * num_nodes
-        #puts real_costs.to_s+" "+beta_costs.to_s+" "+customer_costs.to_s
     end
 
+    # make discount depend on usage time
     case usage_time
       when 1..9:
         discount = discount_arr[0].to_f
@@ -99,16 +114,36 @@ class Rendersession
         discount = discount_arr[0].to_f
     end
 
-    # final costs with discount included
-    customer_costs_usd = sprintf('%.2f', customer_costs * discount)
+    # add discount in USD
+    real_costs_usd = real_costs
     beta_costs_usd = sprintf('%.2f', beta_costs * discount)
+    customer_costs_usd = sprintf('%.2f', customer_costs * discount)
 
-    # convert costs to EUR
+    # calculate Euro from USD prices
     Money.default_bank = Money::Bank::GoogleCurrency.new
-    n = customer_costs_usd.to_money(:USD)
-    customer_costs_euro = n.exchange_to(:EUR)
+    n = real_costs_usd.to_money(:USD)
+    real_costs_euro = n.exchange_to(:EUR)
     n = beta_costs_usd.to_money(:USD)
     beta_costs_euro = n.exchange_to(:EUR)
+    n = customer_costs_usd.to_money(:USD)
+    customer_costs_euro = n.exchange_to(:EUR)
+
+    # add PayPal fees in Euro
+    real_costs_euro = sprintf('%.2f', (real_costs_euro.to_f * paypal_percentage + paypal_transaction_fee))
+    beta_costs_euro = sprintf('%.2f', (beta_costs_euro.to_f * paypal_percentage + paypal_transaction_fee))
+    customer_costs_euro = sprintf('%.2f', (customer_costs_euro.to_f * paypal_percentage + paypal_transaction_fee))
+
+    # calculate USD from Euro prices (just for display)
+    Money.default_bank = Money::Bank::GoogleCurrency.new
+    n = real_costs_euro.to_money(:EUR)
+    real_costs_usd = n.exchange_to(:USD)
+    n = beta_costs_euro.to_money(:EUR)
+    beta_costs_usd = n.exchange_to(:USD)
+    n = customer_costs_euro.to_money(:EUR)
+    customer_costs_usd = n.exchange_to(:USD)
+
+    puts "USD costs: "+real_costs_usd.to_s+" "+beta_costs_usd.to_s+" "+customer_costs_usd.to_s
+    puts "Euro costs: "+real_costs_euro.to_s+" "+beta_costs_euro.to_s+" "+customer_costs_euro.to_s
 
     # return lower price for beta users
     if beta_user == true

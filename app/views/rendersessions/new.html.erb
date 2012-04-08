@@ -15,7 +15,7 @@
   </p>
   <p>
     <%= f.label :vm_type, "VM machine type" %>:<br/>
-    <%= f.select(:vm_type, [ ["Mini", "t1.micro"], ["Large", "m1.large"], ["Extra Large (RAM)", "m1.xlarge"], ["Extra Large (Cores)", "c1.xlarge"] ], {}, :onchange => "document.getElementById('createbutton').disabled = true;") %>
+    <%= f.select(:vm_type, [ ["Micro (testing only)", "t1.micro"], ["Small", "m1.small"], ["Medium", "m1.medium"], ["Large", "m1.large"], ["Extra Large (RAM)", "m1.xlarge"], ["Extra Large (CPU)", "c1.xlarge"] ], {}, :onchange => "document.getElementById('createbutton').disabled = true;") %>
   </p>
   <p>
     <%= f.label :costs, "Costs in Euro" %>:<br/>

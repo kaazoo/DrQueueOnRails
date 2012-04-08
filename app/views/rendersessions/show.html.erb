@@ -13,7 +13,11 @@
 <p>
   <b>VM machine type:</b>
   <% if @rendersession.vm_type == "t1.micro" %>
-    Mini
+    Micro
+  <% elsif @rendersession.vm_type == "m1.small" %>
+    Small
+  <% elsif @rendersession.vm_type == "m1.medium" %>
+    Medium
   <% elsif @rendersession.vm_type == "m1.large" %>
     Large
   <% elsif @rendersession.vm_type == "m1.xlarge" %>
@@ -80,8 +84,9 @@
 <br /><br />
 
 <% else %>
-  This rendersession hasn't been paid yet. Click on the image below to pay via PayPal. <br />
-  <%= link_to image_tag('https://www.paypal.com/de_DE/i/btn/btn_xpressCheckout.gif'), :controller => 'payments', :action => 'checkout', :rendersession => @rendersession %>
+  <br />
+  This rendersession hasn't been paid yet. Click on the image below to pay via PayPal. <br /><br />
+  <%= link_to image_tag('btn_xpressCheckout.gif'), :controller => 'payments', :action => 'checkout', :rendersession => @rendersession %>
   <br /><br />
   <%= link_to 'Edit', edit_rendersession_path(@rendersession) %> | 
 <% end %>
