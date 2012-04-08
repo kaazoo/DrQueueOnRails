@@ -13,7 +13,11 @@
   <tr><td>Run-time in hours:</td><td><%= @rendersession.run_time %></td></tr>
   <tr><td>VM machine type:</td><td>
   <% if @rendersession.vm_type == "t1.micro" %>
-    Mini
+    Micro
+  <% elsif @rendersession.vm_type == "m1.small" %>
+    Small
+  <% elsif @rendersession.vm_type == "m1.medium" %>
+    Medium
   <% elsif @rendersession.vm_type == "m1.large" %>
     Large
   <% elsif @rendersession.vm_type == "m1.xlarge" %>
