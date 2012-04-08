@@ -34,7 +34,11 @@
     <td><%=h rendersession.run_time %></td>
     <td>
     <% if rendersession.vm_type == "t1.micro" %>
-      Mini
+      Micro
+    <% elsif rendersession.vm_type == "m1.small" %>
+      Small
+    <% elsif rendersession.vm_type == "m1.medium" %>
+      Medium
     <% elsif rendersession.vm_type == "m1.large" %>
       Large
     <% elsif rendersession.vm_type == "m1.xlarge" %>
