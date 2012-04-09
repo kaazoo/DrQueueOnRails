@@ -267,7 +267,7 @@ class Job
     puts jobdir = File.dirname(job['scenefile'].to_s)
     FileUtils.cd(jobdir)
 
-    puts job_mtime = File.mtime(job.scenefile).to_i
+    puts job_ctime = File.ctime(job.scenefile).to_i
     files = `find . -maxdepth 1 -type f ! -name '.*'`.split("\n")
 
     # save all newly created files into archive
@@ -275,7 +275,7 @@ class Job
     files.each do |file|
       # each file is newer than the jobfile
       # exclude some array entries (empty, nil, Mac OSX meta information)
-      if (file != "") && (file != nil) && (file[0..4] != "__MAC") && (File.mtime(file).to_i > job_mtime)
+      if (file != "") && (file != nil) && (file[0..4] != "__MAC") && (File.ctime(file).to_i > job_ctime)
         created_files << file
       end
     end
