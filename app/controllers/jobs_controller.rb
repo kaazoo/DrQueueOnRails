@@ -569,6 +569,7 @@ class JobsController < ApplicationController
 
         if status == false
           flash[:notice] = message
+          redirect_to :action => 'new' and return
         else
           puts job_scenefile = scenefile
         end
