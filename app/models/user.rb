@@ -15,4 +15,12 @@ class User
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable, :confirmable
 
+  after_create :send_admin_mail
+
+
+  # notify admin about new user registration
+  def send_admin_mail
+    AdminMailer.registration_notifier(self.email, self.name).deliver
+  end
+
 end
