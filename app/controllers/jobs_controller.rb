@@ -76,6 +76,9 @@ class JobsController < ApplicationController
       @tasks << tasks_db.pop
     end
 
+    # reverse elements in array
+    @tasks.reverse!
+
     # get average time per frame, time left and estimated finish time
     times = $pyDrQueueClient.job_estimated_finish_time(@job._id.to_s)
     @meantime = times[0].to_s
