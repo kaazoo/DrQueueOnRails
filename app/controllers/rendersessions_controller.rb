@@ -223,6 +223,36 @@ class RendersessionsController < ApplicationController
   end
 
 
+  # set active rendersession for user
+  def set_active_for_user
+
+    puts rendersession = Rendersession.find(params[:id])
+    puts user = User.find(params[:user])
+
+    # only admins are allowed
+    if current_user.admin != true
+      redirect_to :controller => 'main', :action => 'index' and return
+    else
+      # mark all rendersesions of user as inactive
+      rendersessions = Rendersession.all(:conditions => { :user => user.id })
+      rendersessions.each do |rs|
+        rs.active = false
+        rs.save!
+      end
+      # mark current rendersession as active
+      rendersession = Rendersession.find(params[:id])
+      rendersession.active = true
+      rendersession.save!
+
+      respond_to do |format|
+        format.html { redirect_to(:controller => 'rendersessions') }
+        format.xml  { head :ok }
+      end
+    end
+
+  end
+
+
   # give free rendersession to user
   def give_free_rendersession
 

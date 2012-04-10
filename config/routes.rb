@@ -20,6 +20,7 @@ DrQueueOnRails::Application.routes.draw do
 
   resources :rendersessions
   match 'rendersessions/set_active' => 'rendersessions#set_active'
+  match 'rendersessions/set_active_for_user/:user' => 'rendersessions#set_active_for_user'
   match 'rendersessions/calculate_costs_text' => 'rendersessions#calculate_costs_text'
   match 'rendersessions/give_free_rendersession/:id' => 'rendersessions#give_free_rendersession'
 

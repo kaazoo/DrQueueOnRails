@@ -83,6 +83,9 @@
     <% if (current_user.admin == true) && (rendersession.paid_at == nil) %>
       <%= link_to 'Destroy', rendersession, :confirm => 'Are you sure?', :method => :delete %>
     <% end %>
+    <% if (current_user.admin == true) && (rendersession.user != current_user.id.to_s) %>
+      <%= link_to 'Set active for user', {:action => :set_active_for_user, :id => rendersession, :user => rendersession.user}, :confirm => 'Are you sure?' %>
+    <% end %>
     </td>
   </tr>
 <% end %>
