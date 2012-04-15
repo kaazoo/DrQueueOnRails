@@ -7,7 +7,7 @@
     Hello <%= @user_name %>,
     <br /><br />
     you received a free rendersession from <%= ENV['DQOR_INSTANCE_NAME'] %>!<br />
-    Now, you can render <%= ENV["FREE_RS_RUN_TIME"] %> hour(s) with <%= ENV["FREE_RS_NUM_SLAVES"] %> of type "<%= @vm_type_name %>".
+    Now, you can render <%= ENV["FREE_RS_RUN_TIME"] %> hour(s) with <%= ENV["FREE_RS_NUM_SLAVES"] %> VMs of type "<%= @vm_type_name %>".
     <br />
     Please activate this rendersession at <%= url_for(:controller => "rendersessions", :only_path => false) %> if you already have other sessions.
   </body>
