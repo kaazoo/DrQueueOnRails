@@ -262,6 +262,7 @@ class RendersessionsController < ApplicationController
     end
 
     user_id = params[:id].to_s
+    user = User.find(user_id)
 
     new_rs = Hash.new
     new_rs["user"] = user_id
@@ -284,6 +285,10 @@ class RendersessionsController < ApplicationController
     end
 
     rendersession.save
+
+    # notify user about free rendersession
+    UserMailer.free_rendersession_notifier(user.email, user.name).deliver
+
     redirect_to :controller => 'rendersessions', :action => 'index'
    end
 
