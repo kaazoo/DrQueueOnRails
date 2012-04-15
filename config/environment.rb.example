@@ -14,6 +14,8 @@ ENV['DRQUEUE_LOGS'] ||= "/usr/local/drqueue/logs"
 # owner and group of DrQueueOnRails instance
 ENV['DQOR_USER'] ||= "kaazoo"
 ENV['DQOR_GROUP'] ||= "staff"
+# name of instance
+ENV['DQOR_INSTANCE_NAME'] ||= "Example company"
 # email sender
 ENV['DQOR_MAIL_FROM'] ||= "example@example.com"
 # admin email address
