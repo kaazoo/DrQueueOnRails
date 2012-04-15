@@ -4,6 +4,7 @@ DrQueueOnRails::Application.routes.draw do
 
   root :to => 'main#index'
   resources :main, :only => :index
+  match 'main/tutorials' => 'main#tutorials'
   match 'main/computers' => 'main#computers'
   match 'main/users' => 'main#users'
   match 'main/update_user' => 'main#update_user'

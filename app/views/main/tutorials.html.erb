@@ -1,0 +1,147 @@
+
+<h3>Workflow</h3>
+<ol>
+<li>Keep or copy your scene file and all resources in one directory.</li>
+<li>Pack the contents (not the directory itself) in one archive. You can use the archive types rar, zip, tgz, tbz2 (DO NOT use tar.gz or tar.bz2).</li>
+<li>In the web interface, click on 'Jobs' and press the button 'Create a new job'.</li>
+<li>Choose a name for the job. Select the archive file on your harddisk. Set start frame (>= 1) and end frame (>= 1).</li>
+<li>Press the 'Create' button and wait for the upload to finish. A status message will appear.</li>
+<% if ENV['CLOUDCONTROL'] ||= "true" %>
+<li>If there is an error, contact the support and provide the message which is shown in order to get help on finding a solution.</li>
+<li>If the form completes successfully and you have a valid rendersession, a number of render VMs are started immediately to process your scene.</li>
+<li>The render VMs will be shut down if the job is finished or if the time of your rendersession is exceeded.</li>
+<% else %>
+<li>If there is an error, try to figure the problem. Contact the system administrator if needed.</li>
+<li>If the form completes successfully and there are available render slaves, your scene will be processed immediately.</li>
+<% end %>
+<li>You can preview single frames when you click on 'View Output Image'. The results of your job can be retrieved through clicking on 'Download'.</li>
+</ol>
+<br />
+
+<h3>General tips</h3>
+<ul>
+<li>Manage your files in a project (a project directory with all files belonging to it).</li>
+<li>When working with additional files like textures, always choose the path out of your project directory (relative instead of absolute).</li>
+<li>Avoid filenames with special characters or spaces in it.</li>
+<li>Don't use video formats for render output, because video files would be created for every single frame. Create a video out of all frames later on your own machine.</li>
+<li>Use lossless image formats if you need high quality for post-processing. </li>
+<li>Use always only one active camera for rendering.</li>
+<% if ENV['DQOR_JOB_SINGLE_FRAME'] != "false" %>
+  <li>When rendering single images, the image height has to be a multiple of 4 (low), 8 (medium) or 16 (high resolution).</li>
+<% end %>
+</ul>
+<br />
+
+<%
+
+rend_array = ENV['AVAIL_RENDERERS'].split(",")
+rend_array.each do |ren|
+  case ren
+    when "blender"
+      %>
+<h3>Rendering with Blender</h3>
+<ul>
+<img src="/images/tutorials/blender_render_dialog.jpg" /><br />
+<li>choose 'Blender Internal' in the render dialog</li><br />
+<img src="/images/tutorials/blender_format_dialog.jpg" /><br />
+<li>set resolution ('SizeX', 'SizeY') and image output settings in the format dialog</li>
+</ul>
+
+<h4>Useful links</h4>
+<ul>
+<li><a target="_blank" href="http://www.blender.org">www.blender.org</a></li>
+<li><a target="_blank" href="http://www.blenderartists.org">www.blenderartists.org</a></li>
+<li><a target="_blank" href="http://www.blendernation.com">www.blendernation.com</a></li>
+</ul>
+<br />
+
+      <%
+    when "cinema4d"
+      %>
+<h3>Rendering with Cinema4D</h3>
+<ul>
+<li>Open your scene.</li>
+<li>At 'Render Settings' -> 'Save' enable 'Save Image' and add a name with no path into the textbox.</li>
+<li>At 'Options' enable 'Log File' to be able to see some more output in the logfiles.</li>
+<li>To get all material paths right, save your scene into a new directory via 'File' -> 'Save Project...'.</li>
+<li>Pack the contents of that directory and upload the archive.</li>
+</ul>
+<br />
+
+      <%
+    when "luxrender"
+      %>
+<h3>Rendering with LuxRender</h3>
+todo
+<br />
+
+      <%
+    when "maya"
+      %>
+<h3>Rendering with Maya</h3>
+todo
+<br />
+
+      <%
+    when "mentalray"
+      %>
+<h3>Rendering with MentalRay</h3>
+
+<h4>Exporting from 3DStudioMax:</h4>
+<ul>
+<li>DO NOT use any hair functions (we don't have support for it yet)</li>
+<li>you can use the tool 'Resource Collector' from 'Utilities' -> 'More...' to save all files into one directory (enable 'Include MAX File' and 'Copy')</li>
+<li>when using Final Gather, render the scene once, then enable 'Read Only (FG Freeze)' in 'Indirect Illumination' -> 'Final Gather Map' and save that .fgm file also into the archive</li>
+<li>select 'mental ray Renderer' in 'Rendering' -> 'Render...' -> 'Common' -> 'Assign Renderer'</li>
+<li>at 'Common' -> 'Render Output' choose format and name of the output image file</li>
+<li>at 'Processing' -> 'Export to .mi File' choose the name of the mi file</li>
+<li>activate 'Export on Render', 'Un-compressed' and 'Incremental (Single File)'</li>
+<li>click the 'Render' button to save the mi file</li>
+</ul>
+
+<h4>Exporting from Maya:</h4>
+<ul>
+<img src="/images/tutorials/maya_export_all.jpg" /><br />
+<li>click on 'File' -> 'Export All'</li><br />
+<img src="/images/tutorials/maya_export_format.jpg" /><br />
+<li>at 'Write As:' select 'mentalRay'</li><br />
+<img src="/images/tutorials/maya_export_options.jpg" /><br />
+<li>at 'Options' -> 'Options...' activate 'ASCII' file format and set 'Compression' to 'Off'</li><br />
+<li>disable 'Output file per frame' and enable 'Output file per layer'</li>
+<img src="/images/tutorials/maya_export_options2.jpg" /><br />
+<li>enable 'Export file paths' and set all selection fields to 'Relative to project'</li>
+<li>set 'Export selection output' to 'Renderable scene'</li><br />
+<img src="/images/tutorials/maya_export_options3.jpg" /><br />
+<li>click 'Export All'</li>
+<li>select a path and specify a mi filename</li>
+<li>click 'Export All' again</li>
+</ul>
+
+<h4>Useful links</h4>
+<ul>
+<li><a target="_blank" href="http://www.mentalimages.com">www.mentalimages.com</a></li>
+<li><a target="_blank" href="http://www.mymentalray.com">www.mymentalray.com</a></li>
+<li><a target="_blank" href="http://mentalraytips.blogspot.com">mentalraytips.blogspot.com</a></li>
+<li><a target="_blank" href="http://www.lamrug.org">www.lamrug.org</a></li>
+<li><a target="_blank" href="http://www.german-mentalray-wiki.info">www.german-mentalray-wiki.info</a></li>
+</ul>
+<br />
+
+      <%
+    when "vray"
+      %>
+<h3>Rendering with V-Ray</h3>
+todo
+<br />
+
+      <%
+  end
+end
+
+%>
+
+
+
+
+
+ 
