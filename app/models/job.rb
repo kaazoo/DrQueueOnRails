@@ -264,10 +264,10 @@ class Job
     job = Job.find(job_id.to_s)
 
     # path to renderings
-    puts jobdir = File.dirname(job['scenefile'].to_s)
+    jobdir = File.dirname(job['scenefile'].to_s)
     FileUtils.cd(jobdir)
 
-    puts job_ctime = File.ctime(job.scenefile).to_i
+    job_ctime = File.ctime(job.scenefile).to_i
     files = `find . -maxdepth 1 -type f ! -name '.*'`.split("\n")
 
     # save all newly created files into archive
@@ -276,10 +276,13 @@ class Job
       # each file is newer than the jobfile
       # exclude some array entries (empty, nil, Mac OSX meta information)
       if (file != "") && (file != nil) && (file[0..4] != "__MAC") && (File.ctime(file).to_i > job_ctime)
-        created_files << file
+        # shell-escape filename
+        file_converted = file.dup
+        file_converted.gsub!(/([^A-Za-z0-9_\-.,:\/@\n])/n, "\\\\\\1")
+        file_converted.gsub!(/\n/, "'\n'")
+        created_files << file_converted
       end
     end
-    puts created_files
 
     id_string = job_id.to_s
 
