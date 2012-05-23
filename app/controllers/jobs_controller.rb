@@ -66,31 +66,17 @@ class JobsController < ApplicationController
       redirect_to :controller => 'jobs' and return
     end
 
+    # name of job owner
     @owner_name = User.find(@job.owner).name
 
     # get tasks of job
-    tasks_db = $pyDrQueueClient.query_task_list(@job._id.to_s)
-
-    # add each Python task object to Ruby array
-    @tasks = []
-    while tasks_db.__len__ > 0
-      @tasks << tasks_db.pop
-    end
-
-    # reverse elements in array
-    @tasks.reverse!
+    @tasks = Task.all(:conditions => { "header.session" => params[:id].to_s })
 
     # get average time per frame, time left and estimated finish time
     times = $pyDrQueueClient.job_estimated_finish_time(@job._id.to_s)
     @meantime = times[0].to_s
     @time_left = times[1].to_s
     @finish_time = times[2].to_s[0..18]
-
-
-    # get list of all computers
-    #@computer_list = Job.global_computer_list()
-    # get all frames of job
-    #@frame_list = @job_data.request_frame_list(Drqueue::CLIENT)
 
     # refresh timer
     #if( (@job_data.status == Drqueue::JOBSTATUS_FINISHED) || (@job_data.status == Drqueue::JOBSTATUS_STOPPED) )
