@@ -17,7 +17,7 @@ DrQueueOnRails::Application.routes.draw do
   match 'jobs/:id/rerun' => 'jobs#rerun'
   match 'jobs/:id/download' => 'jobs#download'
   match 'jobs/:id/stop' => 'jobs#stop'
-  match 'jobs/:id/hstop' => 'jobs#hstop'
+  match 'jobs/:id/kill' => 'jobs#kill'
 
   resources :rendersessions
   match 'rendersessions/set_active' => 'rendersessions#set_active'

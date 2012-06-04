@@ -75,6 +75,7 @@ frame = @job['startframe'].to_i
 @tasks.each do |task|
   tmsg_id = task['msg_id']
   theader = task['header']
+  puts task['resubmitted']
   if task['completed'] == nil:
     status = "pending"
     computer = "Unknown"
@@ -107,9 +108,9 @@ frame = @job['startframe'].to_i
 	 <% end %>
 	 </td>
    <td style="text-align:center;"><%= status %></td>
-	 <td style="text-align:center;"><%= task['resubmitted'].to_s[0..18] %></td>
-	 <td title="<%= computer %>"><%= computer[0..7] + '…' %></td>
-	 <td><%= start_time %></td>
+   <td style="text-align:center;"><%= task['resubmitted'].to_s[0..18] %></td>
+   <td title="<%= computer %>"><%= computer[0..7] + '…' %></td>
+   <td><%= start_time %></td>
    <td><%= finish_time %></td>
    <td><%= link_to 'View log', :action => 'view_log', :id => @job._id.to_s, :nr => index %></td>
    <td>
@@ -142,17 +143,18 @@ case $pyDrQueueClient.job_status(@job._id.to_s).to_s
 	when "pending"
 		%>
 		<div id="ButtonDiv">
-		<%= button_to 'Stop', {:action => 'stop', :id => @job._id.to_s}, {:title => "Stop waiting job."} %></div>
-	  <div id="ButtonDiv">
-		<%= button_to 'Delete', {:action => 'destroy', :id => @job._id.to_s}, {:title => "Delete finished job.", :method => "delete", :confirm => 'Are you sure?'} %></div>
+		<%= button_to 'Stop', {:action => 'stop', :id => @job._id.to_s}, {:title => "Stop running job. Queued tasks will be finished."} %></div>
+		<div id="ButtonDiv">
+		<%= button_to 'Kill', {:action => 'kill', :id => @job._id.to_s}, {:title => "Kill running job. All unfinished tasks will interupted."} %></div>
+	    <div id="ButtonDiv">
 		<%
 	when "ok"
 		%>
 		<div id="ButtonDiv">
 		<%= button_to 'Rerun', {:action => 'rerun', :id => @job._id.to_s}, {:title => "Run finished job again."} %></div>
 		<% if @job.created_with.to_s == "DrQueueOnRails" %>
-		<div id="ButtonDiv">
-		<%= button_to 'Download', {:action => 'download', :id => @job._id.to_s}, {:title => "Download renderings of job."} %></div>
+		  <div id="ButtonDiv">
+		  <%= button_to 'Download', {:action => 'download', :id => @job._id.to_s}, {:title => "Download renderings of job."} %></div>
 		<% end %>
 		<div id="ButtonDiv">
 		<%= button_to 'Delete', {:action => 'destroy', :id => @job._id.to_s}, {:title => "Delete finished job.", :method => "delete", :confirm => 'Are you sure?'} %></div>

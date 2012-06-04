@@ -277,8 +277,8 @@ class JobsController < ApplicationController
   end
 
 
-  # hard stop a job
-  def hstop
+  # kill a job
+  def kill
 
     # seek for job info in db
     @job = Job.find(params[:id].to_s)
