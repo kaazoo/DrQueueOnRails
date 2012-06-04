@@ -146,7 +146,6 @@ case $pyDrQueueClient.job_status(@job._id.to_s).to_s
 		<%= button_to 'Stop', {:action => 'stop', :id => @job._id.to_s}, {:title => "Stop running job. Queued tasks will be finished."} %></div>
 		<div id="ButtonDiv">
 		<%= button_to 'Kill', {:action => 'kill', :id => @job._id.to_s}, {:title => "Kill running job. All unfinished tasks will interupted."} %></div>
-	    <div id="ButtonDiv">
 		<%
 	when "ok"
 		%>
