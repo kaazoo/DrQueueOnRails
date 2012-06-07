@@ -113,8 +113,20 @@ class RendersessionsController < ApplicationController
 
     @rendersession.user = current_user.id
 
+    # round and have at least 1
+    @rendersession.num_slaves = params[:rendersession][:num_slaves].to_f.round
+    if @rendersession.num_slaves < 1
+      @rendersession.num_slaves = 1
+    end
+    @rendersession.run_time = params[:rendersession][:run_time].to_f.round
+    if @rendersession.run_time < 1
+      @rendersession.run_time = 1
+    end
+
+    @rendersession.vm_type = params[:rendersession][:vm_type].to_s
+
     # recalculate costs, so we don't trust form input
-    puts @rendersession.costs = Rendersession.calculate_costs(current_user.beta_user, params[:rendersession][:num_slaves].to_i, params[:rendersession][:run_time].to_i, params[:rendersession][:vm_type].to_s)
+    puts @rendersession.costs = Rendersession.calculate_costs(current_user.beta_user, @rendersession.num_slaves, @rendersession.run_time, @rendersession.vm_type)
 
     # make rendersession active if none existing
     rendersessions = Rendersession.all(:conditions => { :user => current_user.id })
@@ -149,11 +161,27 @@ class RendersessionsController < ApplicationController
         redirect_to :controller => 'rendersessions', :action => 'index' and return
       end
 
+      # round and have at least 1
+      num_slaves = params[:rendersession][:num_slaves].to_f.round
+      if num_slaves < 1
+        num_slaves = 1
+      end
+      run_time = params[:rendersession][:run_time].to_f.round
+      if run_time < 1
+        run_time = 1
+      end
+
+      vm_type = params[:rendersession][:vm_type].to_s
+
       respond_to do |format|
         if @rendersession.update_attributes(params[:rendersession])
 
           # recalculate costs, so we don't trust form input
-          puts @rendersession.costs = Rendersession.calculate_costs(current_user.beta_user, params[:rendersession][:num_slaves].to_i, params[:rendersession][:run_time].to_i, params[:rendersession][:vm_type].to_s)
+          puts @rendersession.costs = Rendersession.calculate_costs(current_user.beta_user, num_slaves, run_time, vm_type)
+
+          @rendersession.num_slaves = num_slaves
+          @rendersession.run_time = run_time
+
           @rendersession.save
 
           format.html { redirect_to(:action => 'show', :id => @rendersession) }
@@ -296,11 +324,19 @@ class RendersessionsController < ApplicationController
   # costs calculation
   def calculate_costs_text
 
-    puts num_nodes = params[:num_slaves].to_i
-    puts usage_time = params[:run_time].to_i
-    puts vm_type = params[:vm_type].to_s
+    # round and have at least 1
+    num_slaves = params[:num_slaves].to_f.round
+    if num_slaves < 1
+      num_slaves = 1
+    end
+    run_time = params[:run_time].to_f.round
+    if run_time < 1
+      run_time = 1
+    end
 
-    costs_euro = Rendersession.calculate_costs(current_user.beta_user, num_nodes, usage_time, vm_type)
+    vm_type = params[:vm_type].to_s
+
+    costs_euro = Rendersession.calculate_costs(current_user.beta_user, num_slaves, run_time, vm_type)
 
     render :text => costs_euro, :layout => false
   end
