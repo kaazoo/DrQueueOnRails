@@ -73,11 +73,15 @@
 </p>
 
 <% if ENV['DQOR_JOB_SPECIFY_BLOCKSIZE'] == "true" %>
+  <div id="advanced_options_enabler"><a href="javascript:" onClick="document.getElementById('advanced_options').style.display='block';document.getElementById('advanced_options_enabler').style.display='none';document.getElementById('advanced_options_disabler').style.display='block';">show advanced options</a></div>
+  <div id="advanced_options_disabler" style="display:none"><a href="javascript:" onClick="document.getElementById('advanced_options').style.display='none';document.getElementById('advanced_options_enabler').style.display='block';document.getElementById('advanced_options_disabler').style.display='none';">hide advanced options</a></div>
+  <div id="advanced_options" style="display:none">
   <p><label for="job_blocksize">Blocksize</label><br/>
   <%= text_field_tag 'job[blocksize]', 1, {:size => 5, :maxlength => 5} %>
   <input name="increment" type="submit" value=" + " onClick="document.getElementById('job_blocksize').value = parseInt(eval(document.getElementById('job_blocksize').value) + 1); return false;" />
   <input name="decrement" type="submit" value=" - " onClick="document.getElementById('job_blocksize').value = parseInt(eval(document.getElementById('job_blocksize').value) - 1); return false;" />
   </p>
+  </div>
 <% else %>
   <%= hidden_field_tag("job[blocksize]", 1) %>
 <% end %>
