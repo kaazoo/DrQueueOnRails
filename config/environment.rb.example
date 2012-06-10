@@ -72,6 +72,8 @@ ENV['CC_SERVICE_FEES'] ||= "0.4,0.45,0.5,0.55,0.6,0.6"
 ENV['CC_SERVICE_BETA_FEES'] ||= "0.1,0.125,0.15,0.175,0.2,0.2"
 # discounts
 ENV['CC_DISCOUNTS'] ||= "1.0,0.95,0.9,0.85,0.8,0.75,0.7"
+# maximum number of VMs per user
+ENV['CC_MAX_VMS_PER_USER'] ||= "25"
 
 # PayPal marchant account
 ENV['PP_API_LOGIN'] ||= "your-api-login"

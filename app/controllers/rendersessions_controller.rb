@@ -123,6 +123,12 @@ class RendersessionsController < ApplicationController
       @rendersession.run_time = 1
     end
 
+    # check number of VMs per user limit
+    if @rendersession.num_slaves > ENV['CC_MAX_VMS_PER_USER'].to_i
+      flash[:notice] = "You can't use more than " + ENV['CC_MAX_VMS_PER_USER'] + " slaves at the moment. Please contact " + ENV['DQOR_MAIL_ADMIN'] + " for help."
+      render :action => "new" and return
+    end
+
     @rendersession.vm_type = params[:rendersession][:vm_type].to_s
 
     # recalculate costs, so we don't trust form input
@@ -169,6 +175,12 @@ class RendersessionsController < ApplicationController
       run_time = params[:rendersession][:run_time].to_f.round
       if run_time < 1
         run_time = 1
+      end
+
+      # check number of VMs per user limit
+      if num_slaves > ENV['CC_MAX_VMS_PER_USER'].to_i
+        flash[:notice] = "You can't use more than " + ENV['CC_MAX_VMS_PER_USER'] + " slaves at the moment. Please contact " + ENV['DQOR_MAIL_ADMIN'] + " for help."
+        render(:action => "edit", :id => @rendersession) and return
       end
 
       vm_type = params[:rendersession][:vm_type].to_s
