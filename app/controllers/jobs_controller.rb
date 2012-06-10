@@ -24,13 +24,13 @@ class JobsController < ApplicationController
 
     if current_user.admin == true
       # get all jobs from db which have been created by DrQueueOnRails
-      @jobs = Job.all(:conditions => { :created_with => "DrQueueOnRails" }, :sort => [[ :name, :asc ]])
+      @jobs = Job.all(:conditions => { :created_with => "DrQueueOnRails" }, :sort => [[ :submit_time, :desc ]])
 
       # set return path to list action
       #session[:return_path] = url_for(:controller => 'jobs', :action => 'list', :id => 'all', :protocol => ENV['WEB_PROTO']+"://")
     else
       # get only owners jobs from db which have been created by DrQueueOnRails
-      @jobs = Job.all(:conditions => { :owner => current_user.id, :created_with => "DrQueueOnRails" }, :sort => [[ :name, :asc ]])
+      @jobs = Job.all(:conditions => { :owner => current_user.id, :created_with => "DrQueueOnRails" }, :sort => [[ :submit_time, :desc ]])
       puts @jobs
 
       # set return path to list action
