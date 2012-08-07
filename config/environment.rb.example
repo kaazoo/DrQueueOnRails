@@ -98,6 +98,12 @@ require 'rubypython'
 RubyPython.start(:python_exe => "python2.7")
 sys = RubyPython.import "sys"
 sys.argv = [""]
+# fix module search path on OSX
+pyos = sys.version.to_s
+if pyos.include?("2.7") && pyos.include?("Apple")
+    puts "Detected built-in Python on OSX. Fixing sys.path."
+    sys.path.extend(Dir.glob("/Library/Python/2.7/site-packages/*.egg"))
+end
 $pyDrQueue = RubyPython.import("DrQueue")
 $pyDrQueueClient = $pyDrQueue.Client.new
 $pyDrQueueJob = RubyPython.import("DrQueue.job").Job
