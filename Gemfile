@@ -1,9 +1,9 @@
 source 'http://gemcutter.org'
 
 gem 'rails', '3.1.1'
-gem "mongoid"
+gem "mongoid", "< 3.0"
 gem "bson_ext"
-gem "rubypython", '0.6.0'
+gem "rubypython", ">= 0.6"
 gem 'rmagick'
 gem 'json'
 gem 'jnunemaker-validatable', '>= 1.8.4'
