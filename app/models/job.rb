@@ -167,6 +167,9 @@ class Job
       return false, 'There was a problem while extracting the archive file.'
     end
 
+    # fix permissions for extracted files
+    FileUtils.chmod_R(0775, full_dir_path)
+
     return true
   end
 
