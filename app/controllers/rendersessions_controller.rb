@@ -26,13 +26,13 @@ class RendersessionsController < ApplicationController
 
     if current_user.admin == true
       # get all jobs from db
-      @rendersessions = Rendersession.all(:sort => [[ :name, :asc ]])
+      @rendersessions = Rendersession.all(:sort => [[ :paid_at, :asc ]])
 
       # set return path to list action
       #session[:return_path] = url_for(:controller => 'jobs', :action => 'list', :id => 'all', :protocol => ENV['WEB_PROTO']+"://")
     else
       # get only owners jobs from db
-      @rendersessions = Rendersession.all(:conditions => { :user => current_user.id }, :sort => [[ :name, :asc ]])
+      @rendersessions = Rendersession.all(:conditions => { :user => current_user.id }, :sort => [[ :paid_at, :asc ]])
 
       # set return path to list action
       #session[:return_path] = url_for(:controller => 'jobs', :action => 'list', :protocol => ENV['WEB_PROTO']+"://")
