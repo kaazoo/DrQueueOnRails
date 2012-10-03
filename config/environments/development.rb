@@ -30,6 +30,9 @@ DrQueueOnRails::Application.configure do
   # Only use best-standards-support built into browsers
   config.action_dispatch.best_standards_support = :builtin
 
+  # Specifies the header that your server uses for sending files
+  config.action_dispatch.x_sendfile_header = "X-Sendfile" # for apache
+
   # Do not compress assets
   config.assets.compress = false
 
