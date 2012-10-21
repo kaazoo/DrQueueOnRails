@@ -65,11 +65,13 @@ ENV['DQOR_JOB_SPECIFY_BLOCKSIZE'] ||= "true"
 # CloudControl support
 ENV['CLOUDCONTROL'] ||= "false"
 # fees by AWS for t1.micro, m1.small, m1.medium, m1.large, m1.xlarge, c1.xlarge in USD
-ENV['CC_AWS_FEES'] ||= "0.025,0.090,0.180,0.36,0.720,0.744"
+ENV['CC_AWS_FEES'] ||= "0.02,0.085,0.17,0.34,0.68,0.744"
+# value added tax (VAT) percentage by Amazon
+ENV['CC_AWS_VAT_PERCENTAGE'] ||= "1.19"
 # service fees for customers in USD
-ENV['CC_SERVICE_FEES'] ||= "0.4,0.45,0.5,0.55,0.6,0.6"
+ENV['CC_SERVICE_FEES'] ||= "0.5,0.55,0.6,0.65,0.7,0.7"
 # service fees for beta users in USD
-ENV['CC_SERVICE_BETA_FEES'] ||= "0.1,0.125,0.15,0.175,0.2,0.2"
+ENV['CC_SERVICE_BETA_FEES'] ||= "0.2,0.225,0.25,0.275,0.3,0.3"
 # discounts
 ENV['CC_DISCOUNTS'] ||= "1.0,0.95,0.9,0.85,0.8,0.75,0.7"
 # maximum number of VMs per user

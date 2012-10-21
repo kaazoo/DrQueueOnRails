@@ -32,14 +32,17 @@ class Rendersession
     puts usage_time
     puts vm_type
 
-    # fees by AWS for t1.micro, m1.small, m1.medium, m1.large, m1.xlarge, c1.xlarge in USD
+    # value added tax (VAT) percentage by Amazon
+    aws_vat_percentage = ENV['CC_AWS_VAT_PERCENTAGE'].to_f
+
+    # fees by AWS for t1.micro, m1.small, m1.medium, m1.large, m1.xlarge, c1.xlarge in USD including VAT
     af_arr = ENV['CC_AWS_FEES'].split(",")
-    aws_fee_t1micro = af_arr[0].to_f
-    aws_fee_m1small = af_arr[1].to_f
-    aws_fee_m1medium = af_arr[2].to_f
-    aws_fee_m1large = af_arr[3].to_f
-    aws_fee_m1xlarge = af_arr[4].to_f
-    aws_fee_c1xlarge = af_arr[5].to_f
+    aws_fee_t1micro = af_arr[0].to_f * aws_vat_percentage
+    aws_fee_m1small = af_arr[1].to_f * aws_vat_percentage
+    aws_fee_m1medium = af_arr[2].to_f * aws_vat_percentage
+    aws_fee_m1large = af_arr[3].to_f * aws_vat_percentage
+    aws_fee_m1xlarge = af_arr[4].to_f * aws_vat_percentage
+    aws_fee_c1xlarge = af_arr[5].to_f * aws_vat_percentage
 
     # fees by PayPal in Euro
     paypal_percentage = ENV['PP_PERCENTAGE'].to_f
